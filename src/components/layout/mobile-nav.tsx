@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, LogOut } from "lucide-react";
+import Link from "next/link";
+import { Menu, LogOut, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -38,9 +39,9 @@ export function MobileNav({
       <SheetContent side="left" className="flex w-[85%] flex-col p-0">
         <SheetTitle className="sr-only">Navigation</SheetTitle>
         <SheetHeader className="bg-avepo-green p-0 text-white">
-          <div className="flex items-center gap-2 px-4 pt-4">
+          <Link href="/" onClick={() => setOpen(false)} className="flex items-center gap-2 px-4 pt-4">
             <AvepoLogo size={28} src={logoUrl} />
-          </div>
+          </Link>
           <div className="flex items-center gap-3 px-4 py-4">
             <Avatar className="h-11 w-11">
               <AvatarFallback className="bg-avepo-yellow text-avepo-green font-semibold">
@@ -58,7 +59,15 @@ export function MobileNav({
           <NavLinks modules={modules} onNavigate={() => setOpen(false)} />
         </div>
 
-        <div className="border-t p-3">
+        <div className="border-t p-3 space-y-1">
+          <Button
+            render={<Link href="/" onClick={() => setOpen(false)} />}
+            nativeButton={false}
+            variant="ghost"
+            className="w-full justify-start gap-3"
+          >
+            <Home className="h-4 w-4" /> Back to Website
+          </Button>
           <form action={logoutAction}>
             <Button type="submit" variant="ghost" className="w-full justify-start gap-3 text-destructive">
               <LogOut className="h-4 w-4" /> Sign out

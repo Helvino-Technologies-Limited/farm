@@ -1,7 +1,8 @@
+import Link from "next/link";
 import { logoutAction } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut } from "lucide-react";
+import { LogOut, Home } from "lucide-react";
 import type { SessionUser } from "@/lib/auth";
 import type { ModuleKey } from "@/lib/permissions";
 import { MobileNav } from "./mobile-nav";
@@ -33,6 +34,16 @@ export function Topbar({
     <header className="flex h-16 items-center justify-between border-b bg-background px-4 sm:px-6">
       <MobileNav modules={modules} user={{ name: user.name, role: user.role }} logoUrl={logoUrl} />
       <div className="flex items-center gap-3 sm:gap-4 ml-auto">
+        <Button
+          render={<Link href="/" target="_blank" rel="noopener noreferrer" />}
+          nativeButton={false}
+          variant="ghost"
+          size="icon"
+          title="View website"
+          className="hidden md:inline-flex"
+        >
+          <Home className="h-4 w-4" />
+        </Button>
         <StaffNotificationBell />
         <div className="text-right hidden sm:block">
           <p className="text-sm font-medium leading-none">{user.name}</p>
