@@ -14,7 +14,10 @@ export const dynamic = "force-dynamic";
 export default async function PortalInvoicePage({ params }: { params: Promise<{ id: string }> }) {
   const customer = await requireCustomer();
   const { id } = await params;
-  const invoice = await db.invoice.findUnique({ where: { id }, include: { items: true } });
+  const [invoice, settings] = await Promise.all([
+    db.invoice.findUnique({ where: { id }, include: { items: true } }),
+    db.systemSetting.findUnique({ where: { id: 1 } }),
+  ]);
   if (!invoice || invoice.customerId !== customer.id) notFound();
 
   const pdfData = await buildInvoicePdfData(id);
@@ -58,7 +61,19 @@ export default async function PortalInvoicePage({ params }: { params: Promise<{ 
         </CardContent>
       </Card>
 
-      <PayInvoiceForm invoiceId={invoice.id} balance={Number(invoice.balance)} />
+      <PayInvoiceForm
+        invoiceId={invoice.id}
+        balance={Number(invoice.balance)}
+        paymentDetails={{
+          mpesaPaybill: settings?.mpesaPaybill ?? null,
+          mpesaTill: settings?.mpesaTill ?? null,
+          mpesaAccountName: settings?.mpesaAccountName ?? null,
+          bankName: settings?.bankName ?? null,
+          bankAccountName: settings?.bankAccountName ?? null,
+          bankAccountNumber: settings?.bankAccountNumber ?? null,
+          bankBranch: settings?.bankBranch ?? null,
+        }}
+      />
     </div>
   );
 }

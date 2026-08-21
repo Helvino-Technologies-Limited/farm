@@ -809,6 +809,14 @@ model SystemSetting {
   phone                     String?
   email                     String?
   location                  String?
+  whatsappNumber            String?
+  mpesaPaybill              String?
+  mpesaTill                 String?
+  mpesaAccountName          String?
+  bankName                  String?
+  bankAccountName           String?
+  bankAccountNumber         String?
+  bankBranch                String?
   currency                  String   @default("KES")
   defaultDiscountLimit      Decimal  @default(0) @db.Decimal(5, 2)
   creditSaleRequiresApproval Boolean @default(true)

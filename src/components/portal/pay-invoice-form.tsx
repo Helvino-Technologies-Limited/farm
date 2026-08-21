@@ -12,7 +12,52 @@ import { formatCurrency } from "@/lib/format";
 
 const METHODS = ["MPESA", "BANK", "CARD", "CHEQUE", "OTHER"] as const;
 
-export function PayInvoiceForm({ invoiceId, balance }: { invoiceId: string; balance: number }) {
+export interface PortalPaymentDetails {
+  mpesaPaybill: string | null;
+  mpesaTill: string | null;
+  mpesaAccountName: string | null;
+  bankName: string | null;
+  bankAccountName: string | null;
+  bankAccountNumber: string | null;
+  bankBranch: string | null;
+}
+
+function PaymentInstructions({ method, details }: { method: string; details: PortalPaymentDetails }) {
+  if (method === "MPESA") {
+    const hasPaybill = details.mpesaPaybill || details.mpesaTill;
+    if (!hasPaybill) return null;
+    return (
+      <div className="rounded-md bg-avepo-yellow-light/30 p-3 text-sm">
+        {details.mpesaPaybill && (
+          <div>Paybill: <span className="font-semibold">{details.mpesaPaybill}</span>{details.mpesaAccountName && <> · Account: <span className="font-semibold">{details.mpesaAccountName}</span></>}</div>
+        )}
+        {details.mpesaTill && <div>Till Number: <span className="font-semibold">{details.mpesaTill}</span></div>}
+      </div>
+    );
+  }
+  if (method === "BANK") {
+    if (!details.bankName) return null;
+    return (
+      <div className="rounded-md bg-avepo-yellow-light/30 p-3 text-sm space-y-0.5">
+        <div>Bank: <span className="font-semibold">{details.bankName}</span></div>
+        {details.bankAccountName && <div>Account Name: <span className="font-semibold">{details.bankAccountName}</span></div>}
+        {details.bankAccountNumber && <div>Account Number: <span className="font-semibold">{details.bankAccountNumber}</span></div>}
+        {details.bankBranch && <div>Branch: <span className="font-semibold">{details.bankBranch}</span></div>}
+      </div>
+    );
+  }
+  return null;
+}
+
+export function PayInvoiceForm({
+  invoiceId,
+  balance,
+  paymentDetails,
+}: {
+  invoiceId: string;
+  balance: number;
+  paymentDetails: PortalPaymentDetails;
+}) {
   const router = useRouter();
   const [amount, setAmount] = useState<number>(balance);
   const [method, setMethod] = useState<(typeof METHODS)[number]>("MPESA");
@@ -40,6 +85,9 @@ export function PayInvoiceForm({ invoiceId, balance }: { invoiceId: string; bala
     <div className="space-y-4 rounded-lg border bg-card p-5">
       <h3 className="font-medium">Make a Payment</h3>
       <p className="text-sm text-muted-foreground">Balance due: <span className="font-medium text-foreground">{formatCurrency(balance)}</span></p>
+
+      <PaymentInstructions method={method} details={paymentDetails} />
+
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-2">
           <Label htmlFor="pay-amount">Amount</Label>
@@ -63,7 +111,7 @@ export function PayInvoiceForm({ invoiceId, balance }: { invoiceId: string; bala
       </div>
       <Button onClick={onSubmit} disabled={submitting}>{submitting ? "Submitting..." : "Submit Payment"}</Button>
       <p className="text-xs text-muted-foreground">
-        Pay via M-Pesa or bank to Avepo Smart Farm first, then submit the confirmation code here — our team will verify it.
+        Pay using the details above first, then submit the confirmation code here — our team will verify it.
       </p>
     </div>
   );
