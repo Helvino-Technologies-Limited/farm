@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db, withTransaction } from "@/lib/db";
 import { nextDocumentNumber } from "./numbering";
 import { calculateCashSubmission } from "./cash";
 import { logAudit } from "./audit";
@@ -12,7 +12,7 @@ export async function openCashSession(openingCash: number, actingUser: SessionUs
   });
   if (existing) throw new Error(`You already have an open cash session (${existing.sessionNumber}).`);
 
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     const sessionNumber = await nextDocumentNumber(tx, "CASH_SESSION");
     const session = await tx.cashSession.create({
       data: { sessionNumber, openedById: actingUser.id, openingCash },
@@ -33,7 +33,7 @@ export async function submitCashSession(sessionId: string, actualCash: number, a
   const summary = await calculateCashSubmission(db, sessionId);
   const variance = Math.round((actualCash - summary.expectedCash) * 100) / 100;
 
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     const session = await tx.cashSession.update({
       where: { id: sessionId },
       data: { closingActualCash: actualCash, variance, closedAt: new Date(), status: "SUBMITTED" },
@@ -54,7 +54,7 @@ export async function verifyCashSession(sessionId: string, actingUser: SessionUs
   if (!canReverseCashVariance(actingUser.role)) {
     throw new Error("You do not have permission to verify cash sessions.");
   }
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     const session = await tx.cashSession.update({
       where: { id: sessionId },
       data: { status: "VERIFIED", verifiedById: actingUser.id, verifiedAt: new Date() },

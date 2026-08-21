@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db, withTransaction } from "@/lib/db";
 import { nextDocumentNumber } from "./numbering";
 import { calculateDocumentTotals } from "./finance";
 import { calculatePoultryBatchStock } from "./poultry";
@@ -29,7 +29,7 @@ export interface CreateBookingParams {
 /** Creates a booking, which reserves stock (spec §13) without moving physical inventory —
  *  availability checks reduce what's left for new sales/bookings until this one is fulfilled or cancelled. */
 export async function createBooking(params: CreateBookingParams, actingUser: SessionUser) {
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     for (const item of params.items) {
       if (item.poultryBatchId) {
         const stock = await calculatePoultryBatchStock(tx, item.poultryBatchId);
@@ -99,7 +99,7 @@ export async function updateBookingStatus(
   status: "CONFIRMED" | "READY" | "CANCELLED",
   actingUser: SessionUser
 ) {
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     const booking = await tx.booking.findUniqueOrThrow({ where: { id: bookingId } });
     await tx.booking.update({ where: { id: bookingId }, data: { status } });
     await logAudit(tx, {

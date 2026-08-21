@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db, withTransaction } from "@/lib/db";
 import { nextDocumentNumber } from "./numbering";
 import { logAudit } from "./audit";
 import type { SessionUser } from "@/lib/auth";
@@ -18,7 +18,7 @@ export interface CreateExpenseParams {
 
 /** Spec §37: Expense → Pending → Manager Review → Approved/Rejected → Financial Posting. */
 export async function createExpense(params: CreateExpenseParams, actingUser: SessionUser) {
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     const expenseNumber = await nextDocumentNumber(tx, "EXPENSE");
     const expense = await tx.expense.create({
       data: {
@@ -54,7 +54,7 @@ export async function reviewExpense(
   if (!canApproveExpense(actingUser.role)) {
     throw new Error("You do not have permission to approve or reject expenses.");
   }
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     const expense = await tx.expense.findUniqueOrThrow({ where: { id: expenseId } });
     if (expense.status !== "PENDING" && expense.status !== "MANAGER_REVIEW") {
       throw new Error(`Expense ${expense.expenseNumber} has already been ${expense.status.toLowerCase()}.`);

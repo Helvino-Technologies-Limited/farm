@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db, withTransaction } from "@/lib/db";
 import { nextDocumentNumber } from "./numbering";
 import { recordInventoryTransaction, calculateStock } from "./inventory";
 import { logAudit } from "./audit";
@@ -12,7 +12,7 @@ export async function recordStockMovement(
   params: { productId: string; type: InventoryTxnType; quantity: number; unitCost?: number; notes?: string },
   actingUser: SessionUser
 ) {
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     await recordInventoryTransaction(tx, { ...params, recordedById: actingUser.id });
     await logAudit(tx, {
       user: actingUser,
@@ -28,7 +28,7 @@ export async function requestStockAdjustment(
   params: { productId: string; quantity: number; reason: string },
   actingUser: SessionUser
 ) {
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     const adjustmentNumber = await nextDocumentNumber(tx, "STOCK_ADJ");
     const adjustment = await tx.stockAdjustment.create({
       data: {
@@ -59,7 +59,7 @@ export async function decideStockAdjustment(
   if (!canApproveStockAdjustment(actingUser.role)) {
     throw new Error("You do not have permission to approve stock adjustments.");
   }
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     const adj = await tx.stockAdjustment.findUniqueOrThrow({ where: { id: adjustmentId } });
     if (adj.status !== "PENDING") throw new Error(`Adjustment ${adj.adjustmentNumber} already decided.`);
 
@@ -99,7 +99,7 @@ export interface StockCountItemInput {
 
 /** Records a physical stock count against system quantities, then posts variances as ADJUSTMENT transactions. */
 export async function submitStockCount(items: StockCountItemInput[], actingUser: SessionUser) {
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     const countNumber = await nextDocumentNumber(tx, "STOCK_COUNT");
     const rows = [];
     for (const item of items) {

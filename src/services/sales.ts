@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db, withTransaction } from "@/lib/db";
 import type { SalesCentre, PaymentMethod } from "@prisma/client";
 import { nextDocumentNumber } from "./numbering";
 import { recordInventoryTransaction, assertSufficientStock } from "./inventory";
@@ -34,7 +34,7 @@ export interface CreateSaleParams {
 /** Creates a Sale end-to-end per spec §9/§58: sale + items + inventory movement + optional invoice
  *  (when a balance remains) + payment + allocation + audit log — one atomic transaction. */
 export async function createSale(params: CreateSaleParams, actingUser: SessionUser) {
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     if (params.items.length === 0) throw new Error("A sale must have at least one item.");
 
     const products = await tx.product.findMany({
@@ -195,7 +195,7 @@ export async function createSale(params: CreateSaleParams, actingUser: SessionUs
 }
 
 export async function voidSale(saleId: string, reason: string, actingUser: SessionUser) {
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     const sale = await tx.sale.findUniqueOrThrow({ where: { id: saleId }, include: { items: true } });
     if (sale.status === "VOIDED") throw new Error("Sale is already voided.");
 

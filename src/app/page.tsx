@@ -109,7 +109,7 @@ export default async function Home() {
             <a href="#capabilities" className="hover:text-foreground">Capabilities</a>
             <a href="#contact" className="hover:text-foreground">Contact</a>
           </nav>
-          <Button render={<Link href="/login" />}>Staff Login</Button>
+          <Button render={<Link href="/login" />} nativeButton={false}>Staff Login</Button>
         </div>
       </header>
 
@@ -127,9 +127,10 @@ export default async function Home() {
             actually works.
           </p>
           <div className="mt-8 flex gap-4">
-            <Button render={<Link href="/login" />} size="lg" variant="secondary">Staff Login</Button>
+            <Button render={<Link href="/login" />} nativeButton={false} size="lg" variant="secondary">Staff Login</Button>
             <Button
               render={<a href="#operations" />}
+              nativeButton={false}
               size="lg"
               variant="outline"
               className="border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white"

@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db, withTransaction } from "@/lib/db";
 import { nextDocumentNumber } from "./numbering";
 import { logAudit } from "./audit";
 import type { SessionUser } from "@/lib/auth";
@@ -15,7 +15,7 @@ export interface CreateCustomerParams {
 }
 
 export async function createCustomer(params: CreateCustomerParams, actingUser: SessionUser) {
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     const customerNumber = await nextDocumentNumber(tx, "CUSTOMER");
     const customer = await tx.customer.create({
       data: {

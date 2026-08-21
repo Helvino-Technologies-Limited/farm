@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db, withTransaction } from "@/lib/db";
 import { nextDocumentNumber } from "./numbering";
 import { recordInventoryTransaction } from "./inventory";
 import { logAudit } from "./audit";
@@ -15,7 +15,7 @@ export interface CreatePoultryBatchParams {
 }
 
 export async function createPoultryBatch(params: CreatePoultryBatchParams, actingUser: SessionUser) {
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     const batchNumber = await nextDocumentNumber(tx, "POULTRY_BATCH");
     const batch = await tx.poultryBatch.create({
       data: {
@@ -55,7 +55,7 @@ export async function recordMortality(
   params: { batchId: string; date?: Date; quantity: number; cause: string; remarks?: string },
   actingUser: SessionUser
 ) {
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     const batch = await tx.poultryBatch.findUniqueOrThrow({ where: { id: params.batchId } });
     const mortality = await tx.poultryMortality.create({
       data: {

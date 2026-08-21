@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db, withTransaction } from "@/lib/db";
 import { nextDocumentNumber } from "./numbering";
 import { allocatePaymentToInvoice, autoAllocatePayment } from "./finance";
 import { logAudit } from "./audit";
@@ -20,7 +20,7 @@ export interface RecordPaymentParams {
 /** Spec §15/§16: standalone payment recording with allocation to invoice(s), independent of when
  *  the invoice was raised — paymentDate is always "today" unless explicitly backdated. */
 export async function recordPayment(params: RecordPaymentParams, actingUser: SessionUser) {
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     const paymentNumber = await nextDocumentNumber(tx, "PAYMENT");
     const payment = await tx.payment.create({
       data: {
@@ -59,7 +59,7 @@ export async function reversePayment(paymentId: string, reason: string, actingUs
   if (!canReversePayment(actingUser.role)) {
     throw new Error("You do not have permission to reverse payments.");
   }
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     const payment = await tx.payment.findUniqueOrThrow({
       where: { id: paymentId },
       include: { allocations: { include: { invoice: true } } },

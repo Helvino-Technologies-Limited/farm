@@ -1,5 +1,5 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db, withTransaction } from "@/lib/db";
 import { nextDocumentNumber } from "./numbering";
 import { calculateDocumentTotals } from "./finance";
 import { logAudit } from "./audit";
@@ -23,7 +23,7 @@ export interface CreateQuotationParams {
 }
 
 export async function createQuotation(params: CreateQuotationParams, actingUser: SessionUser) {
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     const totals = calculateDocumentTotals(params.items, params.discount ?? 0);
     const quotationNumber = await nextDocumentNumber(tx, "QUOTATION");
 
@@ -67,7 +67,7 @@ export async function setQuotationStatus(
   status: "SENT" | "ACCEPTED" | "REJECTED" | "EXPIRED",
   actingUser: SessionUser
 ) {
-  return db.$transaction(async (tx) => {
+  return withTransaction(async (tx) => {
     const quotation = await tx.quotation.findUniqueOrThrow({ where: { id: quotationId } });
     await tx.quotation.update({ where: { id: quotationId }, data: { status } });
     await logAudit(tx, {
