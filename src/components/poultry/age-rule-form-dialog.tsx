@@ -58,7 +58,11 @@ export function AgeRuleFormDialog({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Breed (optional)</Label>
-              <Select value={watch("breed") ?? ""} onValueChange={(v) => setValue("breed", v || undefined)}>
+              <Select
+                items={Object.fromEntries(breeds.map((b) => [b, b]))}
+                value={watch("breed") ?? ""}
+                onValueChange={(v) => setValue("breed", v || undefined)}
+              >
                 <SelectTrigger className="w-full"><SelectValue placeholder="Any breed" /></SelectTrigger>
                 <SelectContent>
                   {breeds.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}
@@ -67,7 +71,11 @@ export function AgeRuleFormDialog({
             </div>
             <div className="space-y-2">
               <Label>Batch (optional)</Label>
-              <Select value={watch("batchId") ?? ""} onValueChange={(v) => setValue("batchId", v || undefined)}>
+              <Select
+                items={Object.fromEntries(batches.map((b) => [b.id, b.batchNumber]))}
+                value={watch("batchId") ?? ""}
+                onValueChange={(v) => setValue("batchId", v || undefined)}
+              >
                 <SelectTrigger className="w-full"><SelectValue placeholder="Any batch" /></SelectTrigger>
                 <SelectContent>
                   {batches.map((b) => <SelectItem key={b.id} value={b.id}>{b.batchNumber}</SelectItem>)}

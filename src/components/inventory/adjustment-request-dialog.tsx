@@ -48,7 +48,11 @@ export function AdjustmentRequestDialog({ products }: { products: { id: string; 
           </p>
           <div className="space-y-2">
             <Label>Product</Label>
-            <Select value={productId} onValueChange={(v) => v && setProductId(v)}>
+            <Select
+              items={Object.fromEntries(products.map((p) => [p.id, p.name]))}
+              value={productId}
+              onValueChange={(v) => v && setProductId(v)}
+            >
               <SelectTrigger className="w-full"><SelectValue placeholder="Select product" /></SelectTrigger>
               <SelectContent>{products.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent>
             </Select>

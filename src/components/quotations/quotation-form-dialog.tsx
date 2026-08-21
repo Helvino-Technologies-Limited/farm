@@ -76,7 +76,11 @@ export function QuotationFormDialog({ products, customers }: { products: Product
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Customer</Label>
-              <Select value={customerId} onValueChange={(v) => setCustomerId(v ?? "")}>
+              <Select
+                items={Object.fromEntries(customers.map((c) => [c.id, c.name]))}
+                value={customerId}
+                onValueChange={(v) => setCustomerId(v ?? "")}
+              >
                 <SelectTrigger className="w-full"><SelectValue placeholder="Select customer" /></SelectTrigger>
                 <SelectContent>{customers.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
               </Select>
@@ -91,7 +95,11 @@ export function QuotationFormDialog({ products, customers }: { products: Product
             <div className="grid grid-cols-3 gap-2 items-end">
               <div className="space-y-1 col-span-1">
                 <Label className="text-xs">Product</Label>
-                <Select value={productId} onValueChange={(v) => v && setProductId(v)}>
+                <Select
+                  items={Object.fromEntries(products.map((p) => [p.id, p.name]))}
+                  value={productId}
+                  onValueChange={(v) => v && setProductId(v)}
+                >
                   <SelectTrigger className="w-full"><SelectValue placeholder="Product" /></SelectTrigger>
                   <SelectContent>{products.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent>
                 </Select>

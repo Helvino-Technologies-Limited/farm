@@ -47,7 +47,11 @@ export function MortalityFormDialog({ batches }: { batches: { id: string; batchN
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label>Batch</Label>
-            <Select value={watch("batchId")} onValueChange={(v) => v && setValue("batchId", v)}>
+            <Select
+              items={Object.fromEntries(batches.map((b) => [b.id, b.batchNumber]))}
+              value={watch("batchId")}
+              onValueChange={(v) => v && setValue("batchId", v)}
+            >
               <SelectTrigger className="w-full"><SelectValue placeholder="Select batch" /></SelectTrigger>
               <SelectContent>
                 {batches.map((b) => <SelectItem key={b.id} value={b.id}>{b.batchNumber}</SelectItem>)}

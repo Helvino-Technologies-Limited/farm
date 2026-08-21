@@ -204,7 +204,9 @@ export default async function Home() {
           </div>
         </div>
         <div className="mx-auto mt-8 flex max-w-6xl flex-wrap items-center justify-between gap-2 border-t px-6 pt-6 text-xs text-muted-foreground">
-          <span>Developed by Helvino Technologies LTD</span>
+          <a href="https://helvino.org" target="_blank" rel="noopener noreferrer" className="hover:text-foreground hover:underline">
+            Developed by Helvino Technologies LTD
+          </a>
           <Link href="/login" className="hover:text-foreground hover:underline">Staff Login</Link>
         </div>
       </footer>

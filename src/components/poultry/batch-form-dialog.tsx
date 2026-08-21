@@ -70,7 +70,11 @@ export function BatchFormDialog({ products }: { products: { id: string; name: st
           </div>
           <div className="space-y-2">
             <Label>Linked Product</Label>
-            <Select value={watch("productId")} onValueChange={(v) => v && setValue("productId", v)}>
+            <Select
+              items={Object.fromEntries(products.map((p) => [p.id, p.name]))}
+              value={watch("productId")}
+              onValueChange={(v) => v && setValue("productId", v)}
+            >
               <SelectTrigger className="w-full"><SelectValue placeholder="Select poultry product" /></SelectTrigger>
               <SelectContent>
                 {products.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}

@@ -95,7 +95,11 @@ export function ProductFormDialog({
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Category</Label>
-                  <Select value={watch("categoryId")} onValueChange={(v) => v && setValue("categoryId", v)}>
+                  <Select
+                    items={Object.fromEntries(categories.map((c) => [c.id, c.name]))}
+                    value={watch("categoryId")}
+                    onValueChange={(v) => v && setValue("categoryId", v)}
+                  >
                     <SelectTrigger className="w-full"><SelectValue placeholder="Select category" /></SelectTrigger>
                     <SelectContent>
                       {categories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
@@ -105,7 +109,11 @@ export function ProductFormDialog({
                 </div>
                 <div className="space-y-2">
                   <Label>Unit</Label>
-                  <Select value={watch("unitId")} onValueChange={(v) => v && setValue("unitId", v)}>
+                  <Select
+                    items={Object.fromEntries(units.map((u) => [u.id, `${u.name} (${u.abbreviation})`]))}
+                    value={watch("unitId")}
+                    onValueChange={(v) => v && setValue("unitId", v)}
+                  >
                     <SelectTrigger className="w-full"><SelectValue placeholder="Select unit" /></SelectTrigger>
                     <SelectContent>
                       {units.map((u) => <SelectItem key={u.id} value={u.id}>{u.name} ({u.abbreviation})</SelectItem>)}
