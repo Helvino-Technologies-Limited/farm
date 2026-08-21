@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { optionalNumber, optionalDate } from "./helpers";
 
 export const paymentSchema = z.object({
   customerId: z.string().min(1, "Customer is required"),
@@ -16,7 +17,7 @@ export const expenseSchema = z.object({
   categoryId: z.string().min(1, "Category is required"),
   amount: z.coerce.number().positive("Amount must be greater than zero"),
   description: z.string().optional(),
-  date: z.coerce.date().optional(),
+  date: optionalDate(),
   paymentMethod: z.enum(["CASH", "MPESA", "BANK", "CARD", "CHEQUE", "OTHER"]).optional(),
   cashSessionId: z.string().optional(),
 });
@@ -36,7 +37,7 @@ export type PoultryBatchInput = z.infer<typeof poultryBatchSchema>;
 
 export const mortalitySchema = z.object({
   batchId: z.string().min(1),
-  date: z.coerce.date().optional(),
+  date: optionalDate(),
   quantity: z.coerce.number().int().positive(),
   cause: z.string().min(1, "Cause is required"),
   remarks: z.string().optional(),
@@ -49,7 +50,7 @@ export const feedRecordSchema = z.object({
   feedType: z.string().min(1, "Feed type is required"),
   quantity: z.coerce.number().positive(),
   unit: z.string().min(1),
-  cost: z.coerce.number().min(0).optional(),
+  cost: optionalNumber(z.coerce.number().min(0)),
 });
 
 export type FeedRecordInput = z.infer<typeof feedRecordSchema>;
@@ -59,7 +60,7 @@ export const ageRuleSchema = z.object({
   breed: z.string().optional(),
   label: z.string().min(1, "Label is required, e.g. Week 1"),
   minAgeDays: z.coerce.number().int().min(0),
-  maxAgeDays: z.coerce.number().int().min(0).optional(),
+  maxAgeDays: optionalNumber(z.coerce.number().int().min(0)),
   price: z.coerce.number().min(0),
 });
 

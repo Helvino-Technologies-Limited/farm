@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { optionalDate } from "./helpers";
 
 export const portalRegisterSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -18,7 +19,7 @@ export const portalBookingSchema = z.object({
   productId: z.string().min(1),
   poultryBatchId: z.string().optional(),
   quantity: z.coerce.number().positive("Quantity must be greater than zero"),
-  requiredDate: z.coerce.date().optional(),
+  requiredDate: optionalDate(),
   deliveryMethod: z.enum(["COLLECTION", "DELIVERY"]).default("COLLECTION"),
   notes: z.string().optional(),
 });

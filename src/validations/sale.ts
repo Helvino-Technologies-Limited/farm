@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { optionalDate } from "./helpers";
 
 export const saleItemSchema = z.object({
   productId: z.string().min(1),
@@ -50,7 +51,7 @@ export const bookingItemSchema = z.object({
 export const bookingSchema = z.object({
   customerId: z.string().min(1, "Customer is required"),
   items: z.array(bookingItemSchema).min(1),
-  requiredDate: z.coerce.date().optional(),
+  requiredDate: optionalDate(),
   deliveryMethod: z.enum(["COLLECTION", "DELIVERY"]).default("COLLECTION"),
   depositAmount: z.coerce.number().min(0).default(0),
   notes: z.string().optional(),

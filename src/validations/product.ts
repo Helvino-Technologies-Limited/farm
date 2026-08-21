@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { optionalNumber, optionalDate } from "./helpers";
 
 export const productSchema = z.object({
   sku: z.string().min(2, "SKU is required"),
@@ -11,7 +12,7 @@ export const productSchema = z.object({
   sellingPrice: z.coerce.number().min(0),
   minimumStock: z.coerce.number().min(0).default(0),
   reorderLevel: z.coerce.number().min(0).default(0),
-  maximumStock: z.coerce.number().min(0).optional(),
+  maximumStock: optionalNumber(z.coerce.number().min(0)),
   trackInventory: z.coerce.boolean().default(true),
   isPoultry: z.coerce.boolean().default(false),
 });
@@ -22,11 +23,11 @@ export const priceRuleSchema = z.object({
   productId: z.string().min(1),
   type: z.enum(["FIXED", "AGE_BASED", "STAGE_BASED", "QUANTITY_BASED", "CUSTOMER_SPECIFIC", "PROMOTIONAL"]),
   customerId: z.string().optional(),
-  minQty: z.coerce.number().min(0).optional(),
-  maxQty: z.coerce.number().min(0).optional(),
+  minQty: optionalNumber(z.coerce.number().min(0)),
+  maxQty: optionalNumber(z.coerce.number().min(0)),
   price: z.coerce.number().min(0),
   effectiveFrom: z.coerce.date(),
-  effectiveTo: z.coerce.date().optional(),
+  effectiveTo: optionalDate(),
 });
 
 export type PriceRuleInput = z.infer<typeof priceRuleSchema>;

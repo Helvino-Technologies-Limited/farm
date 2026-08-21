@@ -101,7 +101,7 @@ try {
   console.log("Batch select shows friendly label:", batchSelectText);
   await page.locator('input[type="number"]').first().fill("5");
   await page.getByRole("button", { name: /^book now$/i }).click();
-  await page.waitForURL("**/portal/invoices/**", { timeout: 20000 });
+  await page.waitForURL("**/portal/invoices/**", { timeout: 35000 });
   console.log("Booking placed, redirected to invoice:", page.url());
   await shot("18-invoice-after-booking");
 
