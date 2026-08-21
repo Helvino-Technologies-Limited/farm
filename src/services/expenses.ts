@@ -10,6 +10,8 @@ export interface CreateExpenseParams {
   categoryId: string;
   amount: number;
   description?: string;
+  quantity?: number;
+  quantityUnit?: string;
   date?: Date;
   paymentMethod?: PaymentMethod;
   attachmentUrl?: string;
@@ -26,6 +28,8 @@ export async function createExpense(params: CreateExpenseParams, actingUser: Ses
         categoryId: params.categoryId,
         amount: params.amount,
         description: params.description,
+        quantity: params.quantity,
+        quantityUnit: params.quantityUnit,
         date: params.date ?? new Date(),
         paymentMethod: params.paymentMethod,
         attachmentUrl: params.attachmentUrl,

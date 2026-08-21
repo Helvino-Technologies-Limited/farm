@@ -125,6 +125,14 @@ enum StockAdjustmentStatus {
   REJECTED
 }
 
+enum PurchaseOrderStatus {
+  DRAFT
+  ORDERED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+}
+
 enum PoultryBatchStatus {
   ACTIVE
   CLOSED
@@ -182,6 +190,8 @@ model User {
   payments           Payment[]            @relation("PaymentReceivedBy")
   stockAdjRequested  StockAdjustment[]    @relation("StockAdjRequestedBy")
   stockAdjApproved   StockAdjustment[]    @relation("StockAdjApprovedBy")
+  suppliersCreated   Supplier[]           @relation("SupplierCreatedBy")
+  purchaseOrders     PurchaseOrder[]      @relation("PurchaseOrderCreatedBy")
   stockCounts        StockCount[]         @relation("StockCountCreatedBy")
   expensesRequested  Expense[]            @relation("ExpenseRequestedBy")
   expensesReviewed   Expense[]            @relation("ExpenseReviewedBy")
@@ -333,6 +343,7 @@ model Product {
   inventoryTransactions InventoryTransaction[]
   stockCountItems      StockCountItem[]
   stockAdjustments     StockAdjustment[]
+  purchaseOrderItems   PurchaseOrderItem[]
 
   @@index([categoryId])
   @@map("products")
@@ -726,6 +737,63 @@ model StockAdjustment {
 }
 
 // ============================================================
+// PROCUREMENT
+// ============================================================
+
+model Supplier {
+  id             String   @id @default(cuid())
+  supplierNumber String   @unique
+  name           String
+  phone          String?
+  email          String?
+  address        String?
+  status         String   @default("ACTIVE")
+  createdById    String
+  createdBy      User     @relation("SupplierCreatedBy", fields: [createdById], references: [id])
+  createdAt      DateTime @default(now())
+
+  purchaseOrders PurchaseOrder[]
+
+  @@index([name])
+  @@map("suppliers")
+}
+
+model PurchaseOrder {
+  id          String              @id @default(cuid())
+  poNumber    String              @unique
+  supplierId  String
+  supplier    Supplier            @relation(fields: [supplierId], references: [id])
+  orderDate   DateTime            @default(now())
+  expectedDate DateTime?
+  status      PurchaseOrderStatus @default(DRAFT)
+  total       Decimal             @db.Decimal(14, 2)
+  notes       String?
+  createdById String
+  createdBy   User                @relation("PurchaseOrderCreatedBy", fields: [createdById], references: [id])
+  createdAt   DateTime            @default(now())
+
+  items PurchaseOrderItem[]
+
+  @@index([status])
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id               String        @id @default(cuid())
+  purchaseOrderId  String
+  purchaseOrder    PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  productId        String
+  product          Product       @relation(fields: [productId], references: [id])
+  quantity         Decimal       @db.Decimal(12, 3)
+  unitCost         Decimal       @db.Decimal(14, 2)
+  total            Decimal       @db.Decimal(14, 2)
+  receivedQuantity Decimal       @default(0) @db.Decimal(12, 3)
+
+  @@index([productId])
+  @@map("purchase_order_items")
+}
+
+// ============================================================
 // FINANCE
 // ============================================================
 
@@ -746,6 +814,8 @@ model Expense {
   category         ExpenseCategory @relation(fields: [categoryId], references: [id])
   amount           Decimal       @db.Decimal(14, 2)
   description      String?
+  quantity         Decimal?      @db.Decimal(12, 3)
+  quantityUnit     String?
   date             DateTime      @default(now())
   paymentMethod    PaymentMethod?
   attachmentUrl    String?

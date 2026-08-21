@@ -63,7 +63,11 @@ export function PaymentFormDialog({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label>Customer</Label>
-            <Select value={watch("customerId")} onValueChange={(v) => v && setValue("customerId", v)}>
+            <Select
+              items={Object.fromEntries(customers.map((c) => [c.id, c.name]))}
+              value={watch("customerId")}
+              onValueChange={(v) => v && setValue("customerId", v)}
+            >
               <SelectTrigger className="w-full"><SelectValue placeholder="Select customer" /></SelectTrigger>
               <SelectContent>{customers.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
             </Select>
@@ -72,7 +76,11 @@ export function PaymentFormDialog({
           {invoices.length > 0 && (
             <div className="space-y-2">
               <Label>Allocate To Invoice (optional — oldest first if left blank)</Label>
-              <Select value={watch("invoiceId") ?? ""} onValueChange={(v) => setValue("invoiceId", v || undefined)}>
+              <Select
+                items={Object.fromEntries(invoices.map((inv) => [inv.id, `${inv.invoiceNumber} — ${formatCurrency(inv.balance)} due`]))}
+                value={watch("invoiceId") ?? ""}
+                onValueChange={(v) => setValue("invoiceId", v || undefined)}
+              >
                 <SelectTrigger className="w-full"><SelectValue placeholder="Auto-allocate" /></SelectTrigger>
                 <SelectContent>
                   {invoices.map((inv) => (
@@ -90,7 +98,11 @@ export function PaymentFormDialog({
             </div>
             <div className="space-y-2">
               <Label>Method</Label>
-              <Select value={watch("method")} onValueChange={(v) => v && setValue("method", v as FormShape["method"])}>
+              <Select
+                items={Object.fromEntries(METHODS.map((m) => [m, m]))}
+                value={watch("method")}
+                onValueChange={(v) => v && setValue("method", v as FormShape["method"])}
+              >
                 <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>{METHODS.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent>
               </Select>

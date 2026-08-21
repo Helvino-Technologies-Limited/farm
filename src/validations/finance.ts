@@ -17,6 +17,8 @@ export const expenseSchema = z.object({
   categoryId: z.string().min(1, "Category is required"),
   amount: z.coerce.number().positive("Amount must be greater than zero"),
   description: z.string().optional(),
+  quantity: optionalNumber(z.coerce.number().positive()),
+  quantityUnit: z.string().optional(),
   date: optionalDate(),
   paymentMethod: z.enum(["CASH", "MPESA", "BANK", "CARD", "CHEQUE", "OTHER"]).optional(),
   cashSessionId: z.string().optional(),

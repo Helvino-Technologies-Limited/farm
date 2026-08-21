@@ -34,6 +34,7 @@ export default async function ExpensesPage() {
             <TableRow>
               <TableHead>Expense #</TableHead>
               <TableHead>Category</TableHead>
+              <TableHead>Details</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Requested By</TableHead>
               <TableHead className="text-right">Amount</TableHead>
@@ -46,6 +47,12 @@ export default async function ExpensesPage() {
               <TableRow key={e.id}>
                 <TableCell className="font-mono text-xs">{e.expenseNumber}</TableCell>
                 <TableCell>{e.category.name}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {e.quantity ? `${Number(e.quantity)} ${e.quantityUnit ?? ""}`.trim() : ""}
+                  {e.quantity && e.description ? " — " : ""}
+                  {e.description ?? ""}
+                  {!e.quantity && !e.description && "—"}
+                </TableCell>
                 <TableCell>{formatDate(e.date)}</TableCell>
                 <TableCell>{e.requestedBy.name}</TableCell>
                 <TableCell className="text-right">{formatCurrency(Number(e.amount))}</TableCell>
@@ -56,7 +63,7 @@ export default async function ExpensesPage() {
               </TableRow>
             ))}
             {expenses.length === 0 && (
-              <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No expenses recorded yet.</TableCell></TableRow>
+              <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-8">No expenses recorded yet.</TableCell></TableRow>
             )}
           </TableBody>
         </Table>

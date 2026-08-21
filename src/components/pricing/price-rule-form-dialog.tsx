@@ -61,7 +61,11 @@ export function PriceRuleFormDialog({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label>Product</Label>
-            <Select value={watch("productId")} onValueChange={(v) => v && setValue("productId", v)}>
+            <Select
+              items={Object.fromEntries(products.map((p) => [p.id, `${p.name} (${p.sku})`]))}
+              value={watch("productId")}
+              onValueChange={(v) => v && setValue("productId", v)}
+            >
               <SelectTrigger className="w-full"><SelectValue placeholder="Select product" /></SelectTrigger>
               <SelectContent>
                 {products.map((p) => <SelectItem key={p.id} value={p.id}>{p.name} ({p.sku})</SelectItem>)}
@@ -85,7 +89,11 @@ export function PriceRuleFormDialog({
           {type === "CUSTOMER_SPECIFIC" && (
             <div className="space-y-2">
               <Label>Customer</Label>
-              <Select value={watch("customerId")} onValueChange={(v) => v && setValue("customerId", v)}>
+              <Select
+                items={Object.fromEntries(customers.map((c) => [c.id, c.name]))}
+                value={watch("customerId")}
+                onValueChange={(v) => v && setValue("customerId", v)}
+              >
                 <SelectTrigger className="w-full"><SelectValue placeholder="Select customer" /></SelectTrigger>
                 <SelectContent>
                   {customers.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}

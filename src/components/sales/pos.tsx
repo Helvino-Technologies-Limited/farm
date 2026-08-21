@@ -198,7 +198,11 @@ export function Pos({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Product</Label>
-              <Select value={addProductId} onValueChange={(v) => v && handleProductChange(v)}>
+              <Select
+                items={Object.fromEntries(products.map((p) => [p.id, `${p.name} · ${p.categoryName}`]))}
+                value={addProductId}
+                onValueChange={(v) => v && handleProductChange(v)}
+              >
                 <SelectTrigger className="w-full"><SelectValue placeholder="Select product" /></SelectTrigger>
                 <SelectContent>
                   {products.map((p) => (
@@ -210,7 +214,11 @@ export function Pos({
             {selectedProduct?.isPoultry && (
               <div className="space-y-2">
                 <Label>Batch</Label>
-                <Select value={addBatchId} onValueChange={(v) => v && handleBatchChange(v)}>
+                <Select
+                  items={Object.fromEntries(availableBatches.map((b) => [b.id, `${b.batchNumber} (${b.available} available)`]))}
+                  value={addBatchId}
+                  onValueChange={(v) => v && handleBatchChange(v)}
+                >
                   <SelectTrigger className="w-full"><SelectValue placeholder="Select batch" /></SelectTrigger>
                   <SelectContent>
                     {availableBatches.map((b) => (
@@ -259,7 +267,11 @@ export function Pos({
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label>Customer</Label>
-            <Select value={customerId} onValueChange={(v) => setCustomerId(v ?? "")}>
+            <Select
+              items={Object.fromEntries(customers.map((c) => [c.id, c.name]))}
+              value={customerId}
+              onValueChange={(v) => setCustomerId(v ?? "")}
+            >
               <SelectTrigger className="w-full"><SelectValue placeholder="Select customer" /></SelectTrigger>
               <SelectContent>
                 {customers.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}

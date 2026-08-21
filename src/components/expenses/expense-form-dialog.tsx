@@ -48,7 +48,11 @@ export function ExpenseFormDialog({ categories }: { categories: { id: string; na
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label>Category</Label>
-            <Select value={watch("categoryId")} onValueChange={(v) => v && setValue("categoryId", v)}>
+            <Select
+              items={Object.fromEntries(categories.map((c) => [c.id, c.name]))}
+              value={watch("categoryId")}
+              onValueChange={(v) => v && setValue("categoryId", v)}
+            >
               <SelectTrigger className="w-full"><SelectValue placeholder="Select category" /></SelectTrigger>
               <SelectContent>{categories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
             </Select>
@@ -62,12 +66,29 @@ export function ExpenseFormDialog({ categories }: { categories: { id: string; na
             </div>
             <div className="space-y-2">
               <Label>Payment Method</Label>
-              <Select value={watch("paymentMethod") ?? ""} onValueChange={(v) => setValue("paymentMethod", (v || undefined) as FormShape["paymentMethod"])}>
+              <Select
+                items={Object.fromEntries(METHODS.map((m) => [m, m]))}
+                value={watch("paymentMethod") ?? ""}
+                onValueChange={(v) => setValue("paymentMethod", (v || undefined) as FormShape["paymentMethod"])}
+              >
                 <SelectTrigger className="w-full"><SelectValue placeholder="Optional" /></SelectTrigger>
                 <SelectContent>{METHODS.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent>
               </Select>
             </div>
           </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="quantity">Quantity (optional)</Label>
+              <Input id="quantity" type="number" step="0.01" placeholder="e.g. 5" {...register("quantity")} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="quantityUnit">Unit (optional)</Label>
+              <Input id="quantityUnit" placeholder="e.g. people, bags, litres" {...register("quantityUnit")} />
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground -mt-2">
+            For labour, use quantity = number of people; for fuel/materials, use bags/litres/units etc.
+          </p>
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Input id="description" {...register("description")} />
