@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { setUserActiveAction, resetUserPasswordAction } from "@/app/(dashboard)/users/actions";
 import { DeleteRecordButton } from "@/components/admin/delete-record-button";
@@ -60,8 +60,7 @@ export function UserRowActions({
           <DialogHeader>
             <DialogTitle>Reset Password</DialogTitle>
           </DialogHeader>
-          <Input
-            type="text"
+          <PasswordInput
             placeholder="New password (min 8 characters)"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}

@@ -74,15 +74,14 @@ export function PublicHeader({
             ))}
           </nav>
           <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-            <InstallAppButton />
+            <InstallAppButton className="hidden sm:inline-flex" />
             <Button
               render={<Link href="/portal/register" />}
               nativeButton={false}
               size="sm"
-              className="bg-avepo-green text-white hover:bg-avepo-green-light"
+              className="hidden bg-avepo-green text-white hover:bg-avepo-green-light sm:inline-flex"
             >
-              <span className="sm:hidden">Join</span>
-              <span className="hidden sm:inline">Register</span>
+              Register
             </Button>
             <Button
               render={<Link href="/portal/login" />}
@@ -96,6 +95,25 @@ export function PublicHeader({
               Staff
             </Link>
           </div>
+        </div>
+        <div className="flex items-center gap-2 border-t border-avepo-green/15 px-3 py-2 sm:hidden">
+          <Button
+            render={<Link href="/portal/login" />}
+            nativeButton={false}
+            size="sm"
+            className="flex-1 border border-avepo-green bg-transparent text-avepo-green hover:bg-avepo-green hover:text-white"
+          >
+            Login
+          </Button>
+          <Button
+            render={<Link href="/portal/register" />}
+            nativeButton={false}
+            size="sm"
+            className="flex-1 bg-avepo-green text-white hover:bg-avepo-green-light"
+          >
+            Register
+          </Button>
+          <InstallAppButton className="shrink-0 bg-avepo-green text-white hover:bg-avepo-green-light" />
         </div>
       </div>
     </header>
