@@ -59,6 +59,127 @@ export async function calculateDailySales(client: Client, range: DateRange): Pro
   };
 }
 
+export interface ProductProfitRow {
+  productId: string;
+  name: string;
+  sku: string;
+  categoryName: string;
+  quantitySold: number;
+  revenue: number;
+  cogs: number;
+  profit: number;
+  marginPct: number;
+}
+
+export interface ExpenseByCategoryRow {
+  categoryId: string;
+  categoryName: string;
+  total: number;
+}
+
+export interface ProfitAndLossReport {
+  range: DateRange;
+  revenue: number;
+  cogs: number;
+  grossProfit: number;
+  operatingExpenses: number;
+  expensesByCategory: ExpenseByCategoryRow[];
+  netProfit: number;
+  netMarginPct: number;
+  byProduct: ProductProfitRow[];
+  outstandingReceivables: number;
+}
+
+function round2(n: number): number {
+  return Math.round(n * 100) / 100;
+}
+
+/** Full P&L: revenue and cost of goods sold come from completed sale items (using each product's
+ *  recorded cost price at the time of the report, not a historical cost snapshot — a fast-follow
+ *  would be to freeze unit cost onto SaleItem at sale time for perfect historical accuracy).
+ *  Operating expenses come from approved/posted Expense records in the same range. */
+export async function calculateProfitAndLoss(client: Client, range: DateRange): Promise<ProfitAndLossReport> {
+  const [saleItems, expenses, receivablesAgg] = await Promise.all([
+    client.saleItem.findMany({
+      where: { sale: { saleDate: { gte: range.from, lte: range.to }, status: "COMPLETED" } },
+      include: { product: { include: { category: true } } },
+    }),
+    client.expense.findMany({
+      where: { date: { gte: range.from, lte: range.to }, status: { in: ["APPROVED", "POSTED"] } },
+      include: { category: true },
+    }),
+    client.invoice.aggregate({
+      where: { status: { in: ["ISSUED", "PARTIALLY_PAID", "OVERDUE"] } },
+      _sum: { balance: true },
+    }),
+  ]);
+
+  const byProductMap = new Map<string, ProductProfitRow>();
+  let revenue = 0;
+  let cogs = 0;
+
+  for (const item of saleItems) {
+    const lineRevenue = Number(item.total);
+    const lineCogs = round2(Number(item.quantity) * Number(item.product.costPrice));
+    revenue += lineRevenue;
+    cogs += lineCogs;
+
+    const existing = byProductMap.get(item.productId);
+    if (existing) {
+      existing.quantitySold += Number(item.quantity);
+      existing.revenue = round2(existing.revenue + lineRevenue);
+      existing.cogs = round2(existing.cogs + lineCogs);
+    } else {
+      byProductMap.set(item.productId, {
+        productId: item.productId,
+        name: item.product.name,
+        sku: item.product.sku,
+        categoryName: item.product.category.name,
+        quantitySold: Number(item.quantity),
+        revenue: lineRevenue,
+        cogs: lineCogs,
+        profit: 0,
+        marginPct: 0,
+      });
+    }
+  }
+
+  const byProduct = Array.from(byProductMap.values())
+    .map((row) => {
+      const profit = round2(row.revenue - row.cogs);
+      return { ...row, profit, marginPct: row.revenue > 0 ? round2((profit / row.revenue) * 100) : 0 };
+    })
+    .sort((a, b) => b.revenue - a.revenue);
+
+  const expenseCategoryMap = new Map<string, ExpenseByCategoryRow>();
+  let operatingExpenses = 0;
+  for (const e of expenses) {
+    operatingExpenses += Number(e.amount);
+    const existing = expenseCategoryMap.get(e.categoryId);
+    if (existing) {
+      existing.total = round2(existing.total + Number(e.amount));
+    } else {
+      expenseCategoryMap.set(e.categoryId, { categoryId: e.categoryId, categoryName: e.category.name, total: Number(e.amount) });
+    }
+  }
+
+  const grossProfit = round2(revenue - cogs);
+  const netProfit = round2(grossProfit - operatingExpenses);
+
+  return {
+    range,
+    revenue: round2(revenue),
+    cogs: round2(cogs),
+    grossProfit,
+    operatingExpenses: round2(operatingExpenses),
+    expensesByCategory: Array.from(expenseCategoryMap.values()).sort((a, b) => b.total - a.total),
+    netProfit,
+    netMarginPct: revenue > 0 ? round2((netProfit / revenue) * 100) : 0,
+    byProduct,
+    outstandingReceivables: Number(receivablesAgg._sum.balance ?? 0),
+  };
+}
+
 export interface LowStockRow {
   productId: string;
   name: string;

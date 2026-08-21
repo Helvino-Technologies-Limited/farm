@@ -29,7 +29,7 @@ const READ: Record<Role, ModuleKey[]> = {
   MANAGER: [
     "dashboard", "customers", "products", "pricing", "poultry", "quotations",
     "bookings", "sales", "invoices", "payments", "credit", "inventory",
-    "expenses", "cash", "reports", "audit-logs",
+    "expenses", "cash", "reports", "audit-logs", "settings",
   ],
   SALES: ["dashboard", "customers", "products", "quotations", "bookings", "sales", "invoices", "credit"],
   CASHIER: ["dashboard", "payments", "invoices", "credit", "cash", "customers"],

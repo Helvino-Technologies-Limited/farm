@@ -35,7 +35,7 @@ export async function updateSystemSettingsAction(input: unknown) {
 }
 
 export async function saveFarmLogoUrlAction(url: string) {
-  const user = await requireRole("ADMIN");
+  const user = await requireRole("ADMIN", "MANAGER");
   if (!url.includes(".public.blob.vercel-storage.com")) throw new Error("Invalid upload URL.");
 
   const existing = await db.systemSetting.findUnique({ where: { id: 1 } });
@@ -53,6 +53,45 @@ export async function saveFarmLogoUrlAction(url: string) {
   }
 
   await logAudit(db, { user, action: "UPDATE", module: "settings", recordId: "system", newValue: { logoUpdated: true } });
+  revalidatePath("/settings");
+  revalidatePath("/");
+}
+
+export async function saveHeroVideoUrlAction(url: string) {
+  const user = await requireRole("ADMIN", "MANAGER");
+  if (!url.includes(".public.blob.vercel-storage.com")) throw new Error("Invalid upload URL.");
+
+  const existing = await db.systemSetting.findUnique({ where: { id: 1 } });
+  await db.systemSetting.upsert({
+    where: { id: 1 },
+    create: { id: 1, heroVideoUrl: url },
+    update: { heroVideoUrl: url },
+  });
+  if (existing?.heroVideoUrl?.includes(".public.blob.vercel-storage.com")) {
+    try {
+      await del(existing.heroVideoUrl);
+    } catch {
+      // best-effort cleanup
+    }
+  }
+
+  await logAudit(db, { user, action: "UPDATE", module: "settings", recordId: "system", newValue: { heroVideoUpdated: true } });
+  revalidatePath("/settings");
+  revalidatePath("/");
+}
+
+export async function removeHeroVideoAction() {
+  const user = await requireRole("ADMIN", "MANAGER");
+  const existing = await db.systemSetting.findUnique({ where: { id: 1 } });
+  await db.systemSetting.update({ where: { id: 1 }, data: { heroVideoUrl: null } });
+  if (existing?.heroVideoUrl?.includes(".public.blob.vercel-storage.com")) {
+    try {
+      await del(existing.heroVideoUrl);
+    } catch {
+      // best-effort cleanup
+    }
+  }
+  await logAudit(db, { user, action: "UPDATE", module: "settings", recordId: "system", newValue: { heroVideoRemoved: true } });
   revalidatePath("/settings");
   revalidatePath("/");
 }

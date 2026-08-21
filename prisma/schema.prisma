@@ -218,6 +218,8 @@ model AuditLog {
   newValue  Json?
   ipAddress String?
   device    String?
+  city      String?
+  country   String?
   createdAt DateTime    @default(now())
 
   @@index([module, recordId])
@@ -802,6 +804,7 @@ model SystemSetting {
   id                        Int      @id @default(1)
   farmName                  String   @default("Avepo Smart Farm")
   logoUrl                   String?  @db.Text
+  heroVideoUrl              String?  @db.Text
   address                   String?
   phone                     String?
   email                     String?

@@ -19,10 +19,15 @@ export async function logAudit(
 ): Promise<void> {
   let ip: string | undefined;
   let device: string | undefined;
+  let city: string | undefined;
+  let country: string | undefined;
   try {
     const h = await headers();
     ip = h.get("x-forwarded-for") ?? undefined;
     device = h.get("user-agent") ?? undefined;
+    // Populated automatically by Vercel's edge network in production — no external geo API needed.
+    city = h.get("x-vercel-ip-city") ? decodeURIComponent(h.get("x-vercel-ip-city")!) : undefined;
+    country = h.get("x-vercel-ip-country") ?? undefined;
   } catch {
     // headers() unavailable outside a request scope (e.g. seed script) — skip.
   }
@@ -38,6 +43,8 @@ export async function logAudit(
       newValue: params.newValue as Prisma.InputJsonValue | undefined,
       ipAddress: ip,
       device,
+      city,
+      country,
     },
   });
 }
