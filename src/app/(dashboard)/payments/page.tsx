@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireModuleAccess } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { PageHeader } from "@/components/layout/page-header";
@@ -13,7 +14,15 @@ export const dynamic = "force-dynamic";
 export default async function PaymentsPage() {
   const user = await requireModuleAccess("payments");
   const [payments, customers, openInvoices] = await Promise.all([
-    db.payment.findMany({ include: { customer: true, receivedBy: true }, orderBy: { paymentDate: "desc" }, take: 50 }),
+    db.payment.findMany({
+      include: {
+        customer: true,
+        receivedBy: true,
+        allocations: { include: { invoice: { include: { items: true } } } },
+      },
+      orderBy: { paymentDate: "desc" },
+      take: 50,
+    }),
     db.customer.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
     db.invoice.findMany({
       where: { status: { in: ["ISSUED", "PARTIALLY_PAID", "OVERDUE"] } },
@@ -40,6 +49,7 @@ export default async function PaymentsPage() {
             <TableRow>
               <TableHead>Payment #</TableHead>
               <TableHead>Customer</TableHead>
+              <TableHead>For</TableHead>
               <TableHead>Method</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Received By</TableHead>
@@ -52,7 +62,28 @@ export default async function PaymentsPage() {
             {payments.map((p) => (
               <TableRow key={p.id}>
                 <TableCell className="font-mono text-xs">{p.paymentNumber}</TableCell>
-                <TableCell>{p.customer.name}</TableCell>
+                <TableCell>
+                  <Link href={`/customers/${p.customerId}`} className="hover:underline">{p.customer.name}</Link>
+                </TableCell>
+                <TableCell className="max-w-xs">
+                  {p.allocations.length === 0 ? (
+                    <span className="text-xs text-muted-foreground">Unallocated (credit balance)</span>
+                  ) : (
+                    <div className="space-y-1">
+                      {p.allocations.map((a) => (
+                        <div key={a.id} className="text-xs">
+                          <Link href={`/customers/${p.customerId}`} className="font-mono text-primary hover:underline">
+                            {a.invoice.invoiceNumber}
+                          </Link>
+                          <span className="text-muted-foreground"> ({formatCurrency(Number(a.amount))}) — </span>
+                          <span className="text-muted-foreground">
+                            {a.invoice.items.map((i) => i.description).join(", ") || "—"}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </TableCell>
                 <TableCell><Badge variant="outline">{p.method}</Badge></TableCell>
                 <TableCell className="text-muted-foreground">{formatDateTime(p.paymentDate)}</TableCell>
                 <TableCell>{p.receivedBy.name}</TableCell>
@@ -66,7 +97,7 @@ export default async function PaymentsPage() {
               </TableRow>
             ))}
             {payments.length === 0 && (
-              <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-8">No payments recorded yet.</TableCell></TableRow>
+              <TableRow><TableCell colSpan={9} className="text-center text-muted-foreground py-8">No payments recorded yet.</TableCell></TableRow>
             )}
           </TableBody>
         </Table>

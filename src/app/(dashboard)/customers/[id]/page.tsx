@@ -32,8 +32,13 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
     calculateCustomerBalance(db, id),
     calculateDebtAgeing(db, id),
     buildCustomerStatement(id, startOfMonth(now), endOfDay(now)),
-    db.invoice.findMany({ where: { customerId: id }, orderBy: { invoiceDate: "desc" }, take: 10 }),
-    db.payment.findMany({ where: { customerId: id }, orderBy: { paymentDate: "desc" }, take: 10 }),
+    db.invoice.findMany({ where: { customerId: id }, include: { items: true }, orderBy: { invoiceDate: "desc" }, take: 10 }),
+    db.payment.findMany({
+      where: { customerId: id },
+      include: { allocations: { include: { invoice: true } } },
+      orderBy: { paymentDate: "desc" },
+      take: 10,
+    }),
   ]);
 
   const ageingTotals: Record<string, number> = {};
@@ -95,7 +100,12 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
               <TableBody>
                 {invoices.map((inv) => (
                   <TableRow key={inv.id}>
-                    <TableCell className="font-mono text-xs">{inv.invoiceNumber}</TableCell>
+                    <TableCell className="font-mono text-xs">
+                      {inv.invoiceNumber}
+                      <p className="mt-0.5 font-sans text-[11px] font-normal text-muted-foreground line-clamp-1">
+                        {inv.items.map((i) => i.description).join(", ") || "—"}
+                      </p>
+                    </TableCell>
                     <TableCell>{formatDate(inv.invoiceDate)}</TableCell>
                     <TableCell className="text-right">{formatCurrency(Number(inv.total))}</TableCell>
                     <TableCell className="text-right">
@@ -123,7 +133,14 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
               <TableBody>
                 {payments.map((p) => (
                   <TableRow key={p.id}>
-                    <TableCell className="font-mono text-xs">{p.paymentNumber}</TableCell>
+                    <TableCell className="font-mono text-xs">
+                      {p.paymentNumber}
+                      <p className="mt-0.5 font-sans text-[11px] font-normal text-muted-foreground line-clamp-1">
+                        {p.allocations.length > 0
+                          ? p.allocations.map((a) => a.invoice.invoiceNumber).join(", ")
+                          : "Unallocated"}
+                      </p>
+                    </TableCell>
                     <TableCell>{formatDate(p.paymentDate)}</TableCell>
                     <TableCell><Badge variant="outline">{p.method}</Badge></TableCell>
                     <TableCell className="text-right">{formatCurrency(Number(p.amount))}</TableCell>
