@@ -24,7 +24,6 @@ export async function createPriceRuleAction(input: unknown) {
   });
 
   revalidatePath("/pricing");
-  return rule;
 }
 
 export async function deactivatePriceRuleAction(ruleId: string) {

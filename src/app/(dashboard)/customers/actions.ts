@@ -10,5 +10,5 @@ export async function createCustomerAction(input: CreateCustomerParams) {
   const data = customerSchema.parse(input);
   const customer = await createCustomer(data, user);
   revalidatePath("/customers");
-  return customer;
+  return { id: customer.id, customerNumber: customer.customerNumber, name: customer.name };
 }

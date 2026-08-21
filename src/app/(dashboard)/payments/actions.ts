@@ -12,7 +12,7 @@ export async function recordPaymentAction(input: RecordPaymentParams) {
   revalidatePath("/payments");
   revalidatePath("/invoices");
   revalidatePath("/customers");
-  return payment;
+  return { id: payment.id, paymentNumber: payment.paymentNumber };
 }
 
 export async function reversePaymentAction(paymentId: string, reason: string) {

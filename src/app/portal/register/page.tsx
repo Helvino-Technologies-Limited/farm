@@ -1,17 +1,13 @@
-"use client";
-
-import { useActionState } from "react";
 import Link from "next/link";
-import { portalRegisterAction, type PortalFormState } from "../actions";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Leaf } from "lucide-react";
+import { PortalRegisterForm } from "@/components/portal/register-form";
 
-const initialState: PortalFormState = {};
-
-export default function PortalRegisterPage() {
-  const [state, formAction, pending] = useActionState(portalRegisterAction, initialState);
+export default async function PortalRegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const { next } = await searchParams;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30 p-6">
@@ -24,28 +20,10 @@ export default function PortalRegisterPage() {
           <h1 className="text-2xl font-semibold">Create Account</h1>
           <p className="text-sm text-muted-foreground">Register to book products and services online.</p>
         </div>
-        <form action={formAction} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
-            <Input id="name" name="name" required autoFocus />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" type="email" required />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
-            <Input id="phone" name="phone" required />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" name="password" type="password" required minLength={8} />
-          </div>
-          {state?.error && <p className="text-sm text-destructive" role="alert">{state.error}</p>}
-          <Button type="submit" className="w-full" disabled={pending}>{pending ? "Creating account..." : "Create Account"}</Button>
-        </form>
+        <PortalRegisterForm next={next} />
         <p className="text-center text-sm text-muted-foreground">
-          Already have an account? <Link href="/portal/login" className="underline underline-offset-4">Sign in</Link>
+          Already have an account?{" "}
+          <Link href={`/portal/login${next ? `?next=${encodeURIComponent(next)}` : ""}`} className="underline underline-offset-4">Sign in</Link>
         </p>
       </div>
     </div>

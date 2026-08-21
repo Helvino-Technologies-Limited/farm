@@ -10,7 +10,7 @@ export async function createQuotationAction(input: CreateQuotationParams) {
   const data = quotationSchema.parse(input);
   const quotation = await createQuotation(data, user);
   revalidatePath("/quotations");
-  return quotation;
+  return { id: quotation.id, quotationNumber: quotation.quotationNumber };
 }
 
 export async function setQuotationStatusAction(id: string, status: "SENT" | "ACCEPTED" | "REJECTED" | "EXPIRED") {
@@ -27,5 +27,5 @@ export async function convertQuotationToBookingAction(
   const booking = await convertQuotationToBooking(id, params, user);
   revalidatePath("/quotations");
   revalidatePath("/bookings");
-  return booking;
+  return { id: booking.id, bookingNumber: booking.bookingNumber };
 }

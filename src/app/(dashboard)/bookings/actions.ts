@@ -11,7 +11,7 @@ export async function createBookingAction(input: CreateBookingParams) {
   const data = bookingSchema.parse(input);
   const booking = await createBooking(data, user);
   revalidatePath("/bookings");
-  return booking;
+  return { id: booking.id, bookingNumber: booking.bookingNumber };
 }
 
 export async function updateBookingStatusAction(id: string, status: "CONFIRMED" | "READY" | "CANCELLED") {

@@ -10,7 +10,7 @@ export async function createExpenseAction(input: CreateExpenseParams) {
   const data = expenseSchema.parse(input);
   const expense = await createExpense(data, user);
   revalidatePath("/expenses");
-  return expense;
+  return { id: expense.id, expenseNumber: expense.expenseNumber };
 }
 
 export async function reviewExpenseAction(id: string, decision: "APPROVED" | "REJECTED", reason?: string) {

@@ -23,7 +23,7 @@ export async function createProductAction(input: unknown) {
   });
 
   revalidatePath("/products");
-  return product;
+  return { id: product.id, sku: product.sku, name: product.name };
 }
 
 export async function setProductActiveAction(productId: string, active: boolean) {

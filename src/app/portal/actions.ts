@@ -53,8 +53,9 @@ export async function portalRegisterAction(_prev: PortalFormState, formData: For
   }
 
   await createCustomerSession(customerId);
-  await logAudit(db, { user: { name: `${name} (Customer Portal)`, id: customerId }, action: "CREATE", module: "portal", recordId: customerId });
-  redirect("/portal");
+  await logAudit(db, { user: { name: `${name} (Customer Portal)` }, action: "CREATE", module: "portal", recordId: customerId });
+  const registerNext = formData.get("next");
+  redirect(typeof registerNext === "string" && registerNext.startsWith("/portal") ? registerNext : "/portal");
 }
 
 export async function portalLoginAction(_prev: PortalFormState, formData: FormData): Promise<PortalFormState> {
@@ -107,7 +108,7 @@ export async function portalCreateBookingAction(input: unknown) {
   );
 
   await logAudit(db, { user: portalAuditActor(customer), action: "CREATE", module: "portal-booking", recordId: booking.id });
-  return booking;
+  return { id: booking.id, bookingNumber: booking.bookingNumber };
 }
 
 export async function portalSubmitPaymentAction(input: unknown) {
@@ -133,7 +134,7 @@ export async function portalSubmitPaymentAction(input: unknown) {
   );
 
   await logAudit(db, { user: portalAuditActor(customer), action: "PAYMENT", module: "portal-payment", recordId: payment.id });
-  return payment;
+  return { id: payment.id, paymentNumber: payment.paymentNumber };
 }
 
 export async function getPortalInvoicePdfDataAction(invoiceId: string) {

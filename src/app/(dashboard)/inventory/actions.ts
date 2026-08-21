@@ -36,7 +36,7 @@ export async function requestStockAdjustmentAction(input: unknown) {
   const data = adjustmentSchema.parse(input);
   const adjustment = await requestStockAdjustment(data, user);
   revalidatePath("/inventory");
-  return adjustment;
+  return { id: adjustment.id, adjustmentNumber: adjustment.adjustmentNumber };
 }
 
 export async function decideStockAdjustmentAction(id: string, decision: "APPROVED" | "REJECTED") {

@@ -8,7 +8,7 @@ export async function openCashSessionAction(openingCash: number) {
   const user = await requireModuleWrite("cash");
   const session = await openCashSession(openingCash, user);
   revalidatePath("/cash");
-  return session;
+  return { id: session.id, sessionNumber: session.sessionNumber };
 }
 
 export async function submitCashSessionAction(sessionId: string, actualCash: number) {
