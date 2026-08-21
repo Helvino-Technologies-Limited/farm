@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SettingsForm } from "@/components/settings/settings-form";
+import { LogoUpload } from "@/components/settings/logo-upload";
 import { QuickAddCategory, QuickAddUnit } from "@/components/settings/quick-add-forms";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +20,11 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-6">
       <PageHeader title="System Settings" description="Farm details, categories, units and business rules." />
+
+      <Card>
+        <CardHeader><CardTitle>Farm Logo</CardTitle></CardHeader>
+        <CardContent><LogoUpload currentLogoUrl={settings?.logoUrl ?? null} /></CardContent>
+      </Card>
 
       <Card>
         <CardHeader><CardTitle>Farm Details</CardTitle></CardHeader>

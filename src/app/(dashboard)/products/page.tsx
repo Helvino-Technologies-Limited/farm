@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ProductFormDialog } from "@/components/products/product-form-dialog";
-import { ProductPhotoCell } from "@/components/products/product-photo-cell";
+import { ProductMediaCell } from "@/components/products/product-media-cell";
 import { PubliclyListedToggle } from "@/components/products/publicly-listed-toggle";
 import { formatCurrency, formatNumber } from "@/lib/format";
 import { canWrite } from "@/lib/permissions";
@@ -33,7 +33,7 @@ export default async function ProductsPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Photo</TableHead>
+              <TableHead>Media</TableHead>
               <TableHead>SKU</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Category</TableHead>
@@ -48,11 +48,11 @@ export default async function ProductsPage() {
               <TableRow key={p.id}>
                 <TableCell>
                   {canEdit ? (
-                    <ProductPhotoCell productId={p.id} imageUrl={p.imageUrl} />
-                  ) : p.imageUrl ? (
-                    <span className="text-xs text-muted-foreground">Has photo</span>
+                    <ProductMediaCell productId={p.id} imageUrl={p.imageUrl} videoUrl={p.videoUrl} />
                   ) : (
-                    <span className="text-xs text-muted-foreground">No photo</span>
+                    <span className="text-xs text-muted-foreground">
+                      {[p.imageUrl && "Photo", p.videoUrl && "Video"].filter(Boolean).join(" · ") || "No media"}
+                    </span>
                   )}
                 </TableCell>
                 <TableCell className="font-mono text-xs">{p.sku}</TableCell>

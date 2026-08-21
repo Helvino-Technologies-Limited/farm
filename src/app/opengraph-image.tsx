@@ -1,12 +1,17 @@
 import { ImageResponse } from "next/og";
+import fs from "node:fs";
+import path from "node:path";
 
 export const alt = "Avepo Smart Farm";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default async function OpengraphImage() {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+function logoDataUrl(): string {
+  const buf = fs.readFileSync(path.join(process.cwd(), "public", "brand", "avepo-logo.png"));
+  return `data:image/png;base64,${buf.toString("base64")}`;
+}
 
+export default async function OpengraphImage() {
   return new ImageResponse(
     (
       <div
@@ -34,7 +39,7 @@ export default async function OpengraphImage() {
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`${siteUrl}/brand/avepo-logo.png`} width={90} height={70} alt="Avepo" />
+            <img src={logoDataUrl()} width={90} height={70} alt="Avepo" />
           </div>
         </div>
         <div style={{ fontSize: 56, fontWeight: 700, lineHeight: 1.1, maxWidth: 900, display: "flex" }}>

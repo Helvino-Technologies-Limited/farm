@@ -42,6 +42,10 @@ export default async function BookProductPage({ params }: { params: Promise<{ pr
           {!product.isPoultry && <span className="text-sm text-muted-foreground font-normal"> / {product.unit.abbreviation}</span>}
         </p>
         {product.description && <p className="mt-4 text-sm text-muted-foreground">{product.description}</p>}
+        {product.videoUrl && (
+          // eslint-disable-next-line jsx-a11y/media-has-caption
+          <video controls className="mt-4 w-full rounded-lg" src={product.videoUrl} />
+        )}
       </div>
 
       <PortalBookingForm productId={product.id} isPoultry={product.isPoultry} batches={batches} unitLabel={product.unit.abbreviation} />

@@ -315,6 +315,7 @@ model Product {
   trackInventory Boolean  @default(true)
   isPoultry      Boolean  @default(false)
   imageUrl       String?  @db.Text
+  videoUrl       String?  @db.Text
   publiclyListed Boolean  @default(true)
   createdById    String
   createdBy      User     @relation("ProductCreatedBy", fields: [createdById], references: [id])

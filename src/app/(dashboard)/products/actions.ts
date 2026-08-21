@@ -5,6 +5,16 @@ import { requireModuleWrite } from "@/lib/auth";
 import { logAudit } from "@/services/audit";
 import { productSchema } from "@/validations/product";
 import { revalidatePath } from "next/cache";
+import { del } from "@vercel/blob";
+
+async function deleteIfBlobUrl(url: string | null | undefined): Promise<void> {
+  if (!url || !url.includes(".public.blob.vercel-storage.com")) return;
+  try {
+    await del(url);
+  } catch {
+    // best-effort cleanup — a failed delete shouldn't block the new upload from being saved
+  }
+}
 
 export async function createProductAction(input: unknown) {
   const user = await requireModuleWrite("products");
@@ -33,16 +43,40 @@ export async function setProductActiveAction(productId: string, active: boolean)
   revalidatePath("/products");
 }
 
-const MAX_IMAGE_BYTES = 3 * 1024 * 1024; // 3MB — base64 data URI stored directly in Postgres
-
-export async function updateProductImageAction(productId: string, imageDataUrl: string) {
+/** Called after the browser has already uploaded the file directly to Vercel Blob (see
+ * /api/upload) — this just persists the resulting URL against the product. */
+export async function saveProductImageUrlAction(productId: string, url: string) {
   const user = await requireModuleWrite("products");
-  if (!imageDataUrl.startsWith("data:image/")) throw new Error("Invalid image data.");
-  const approxBytes = (imageDataUrl.length * 3) / 4;
-  if (approxBytes > MAX_IMAGE_BYTES) throw new Error("Image is too large — please use a photo under 3MB.");
+  if (!url.includes(".public.blob.vercel-storage.com")) throw new Error("Invalid upload URL.");
 
-  await db.product.update({ where: { id: productId }, data: { imageUrl: imageDataUrl } });
+  const existing = await db.product.findUniqueOrThrow({ where: { id: productId }, select: { imageUrl: true } });
+  await db.product.update({ where: { id: productId }, data: { imageUrl: url } });
+  await deleteIfBlobUrl(existing.imageUrl);
+
   await logAudit(db, { user, action: "UPDATE", module: "products", recordId: productId, newValue: { imageUpdated: true } });
+  revalidatePath("/products");
+  revalidatePath("/");
+}
+
+export async function saveProductVideoUrlAction(productId: string, url: string) {
+  const user = await requireModuleWrite("products");
+  if (!url.includes(".public.blob.vercel-storage.com")) throw new Error("Invalid upload URL.");
+
+  const existing = await db.product.findUniqueOrThrow({ where: { id: productId }, select: { videoUrl: true } });
+  await db.product.update({ where: { id: productId }, data: { videoUrl: url } });
+  await deleteIfBlobUrl(existing.videoUrl);
+
+  await logAudit(db, { user, action: "UPDATE", module: "products", recordId: productId, newValue: { videoUpdated: true } });
+  revalidatePath("/products");
+  revalidatePath("/");
+}
+
+export async function removeProductVideoAction(productId: string) {
+  const user = await requireModuleWrite("products");
+  const existing = await db.product.findUniqueOrThrow({ where: { id: productId }, select: { videoUrl: true } });
+  await db.product.update({ where: { id: productId }, data: { videoUrl: null } });
+  await deleteIfBlobUrl(existing.videoUrl);
+  await logAudit(db, { user, action: "UPDATE", module: "products", recordId: productId, newValue: { videoRemoved: true } });
   revalidatePath("/products");
   revalidatePath("/");
 }
