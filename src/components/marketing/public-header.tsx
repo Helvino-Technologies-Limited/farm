@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { AvepoLogo } from "@/components/layout/avepo-logo";
 import { InstallAppButton } from "@/components/pwa/install-app-button";
 import { MarketingMobileMenu } from "@/components/marketing/marketing-mobile-menu";
+import { LoginDropdown } from "@/components/marketing/login-dropdown";
 import { MapPin, Phone, Mail } from "lucide-react";
 
 const NAV_LINKS = [
@@ -83,28 +84,11 @@ export function PublicHeader({
             >
               Register
             </Button>
-            <Button
-              render={<Link href="/portal/login" />}
-              nativeButton={false}
-              size="sm"
-              className="hidden border border-avepo-green bg-transparent text-avepo-green hover:bg-avepo-green hover:text-white sm:inline-flex"
-            >
-              Login
-            </Button>
-            <Link href="/login" className="hidden text-xs font-medium text-avepo-green/70 hover:text-avepo-green hover:underline lg:inline">
-              Staff
-            </Link>
+            <LoginDropdown className="hidden border border-avepo-green bg-transparent text-avepo-green hover:bg-avepo-green hover:text-white sm:inline-flex" />
           </div>
         </div>
         <div className="flex items-center gap-2 border-t border-avepo-green/15 px-3 py-2 sm:hidden">
-          <Button
-            render={<Link href="/portal/login" />}
-            nativeButton={false}
-            size="sm"
-            className="flex-1 border border-avepo-green bg-transparent text-avepo-green hover:bg-avepo-green hover:text-white"
-          >
-            Login
-          </Button>
+          <LoginDropdown className="flex-1 border border-avepo-green bg-transparent text-avepo-green hover:bg-avepo-green hover:text-white" />
           <Button
             render={<Link href="/portal/register" />}
             nativeButton={false}
