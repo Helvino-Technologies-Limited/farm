@@ -60,7 +60,8 @@ export function InstallAppButton({ className }: { className?: string }) {
         className={className ?? "bg-avepo-green text-white hover:bg-avepo-green-light"}
       >
         <Download className="h-4 w-4" />
-        <span>Install App</span>
+        <span className="hidden sm:inline">Install App</span>
+        <span className="sm:hidden">Install</span>
       </Button>
 
       <Dialog open={instructionsOpen} onOpenChange={setInstructionsOpen}>

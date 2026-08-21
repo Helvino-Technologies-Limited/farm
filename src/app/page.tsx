@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ProductBrowser, type BrowserProduct } from "@/components/marketing/product-browser";
 import { FarmingTips } from "@/components/marketing/farming-tips";
 import { InstallAppButton } from "@/components/pwa/install-app-button";
+import { FloatingWhatsApp } from "@/components/marketing/floating-whatsapp";
 import { AvepoLogo } from "@/components/layout/avepo-logo";
 import {
   Bird,
@@ -118,11 +119,12 @@ export default async function Home() {
           </div>
         )}
         <div className="border-b bg-avepo-yellow">
-          <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-            <div className="flex items-center gap-3">
-              <AvepoLogo size={40} src={settings?.logoUrl} />
-              <div className="leading-tight">
-                <p className="text-lg font-extrabold tracking-tight text-avepo-green sm:text-xl">
+          <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-3 sm:gap-4 sm:px-6">
+            <div className="flex min-w-0 flex-1 items-center gap-2 sm:flex-none sm:gap-3">
+              <AvepoLogo size={34} className="shrink-0 sm:hidden" src={settings?.logoUrl} />
+              <AvepoLogo size={40} className="hidden shrink-0 sm:block" src={settings?.logoUrl} />
+              <div className="min-w-0 leading-tight">
+                <p className="truncate text-sm font-extrabold tracking-tight text-avepo-green sm:text-lg md:text-xl">
                   {settings?.farmName ?? "Avepo Smart Farm"}
                 </p>
                 <p className="hidden text-[11px] font-medium uppercase tracking-wider text-avepo-green/70 sm:block">
@@ -135,7 +137,7 @@ export default async function Home() {
               <a href="#tips" className="hover:underline">Farming Tips</a>
               <a href="#contact" className="hover:underline">Contact</a>
             </nav>
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex shrink-0 items-center gap-1 sm:gap-2">
               <InstallAppButton />
               <Button
                 render={<Link href="/portal/login" />}
@@ -255,6 +257,7 @@ export default async function Home() {
           <Link href="/login" className="hover:text-foreground hover:underline">Staff Login</Link>
         </div>
       </footer>
+      <FloatingWhatsApp number={settings?.whatsappNumber} />
     </div>
   );
 }

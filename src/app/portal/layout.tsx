@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getCustomerSession } from "@/lib/customer-auth";
 import { Button } from "@/components/ui/button";
 import { AvepoLogo } from "@/components/layout/avepo-logo";
+import { FloatingWhatsApp } from "@/components/marketing/floating-whatsapp";
 import { getFarmBranding } from "@/lib/branding";
 import { portalLogoutAction } from "./actions";
 
@@ -33,6 +34,7 @@ export default async function PortalLayout({ children }: { children: React.React
         </div>
       </header>
       <main className="flex-1 mx-auto w-full max-w-5xl px-6 py-8">{children}</main>
+      <FloatingWhatsApp number={branding.whatsappNumber} />
     </div>
   );
 }
