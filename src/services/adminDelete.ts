@@ -149,9 +149,6 @@ export async function adminDeleteRecord(
         }
         case "expenses": {
           const rec = await tx.expense.findUniqueOrThrow({ where: { id } });
-          if (rec.status === "POSTED") {
-            throw new Error("Posted expenses cannot be deleted — they are part of the financial record.");
-          }
           label = rec.expenseNumber;
           snapshot = rec;
           await tx.expense.delete({ where: { id } });

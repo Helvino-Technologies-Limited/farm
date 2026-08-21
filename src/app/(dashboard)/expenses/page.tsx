@@ -61,7 +61,7 @@ export default async function ExpensesPage() {
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     {canApproveExpense(user.role) && e.status === "PENDING" && <ExpenseDecisionButtons id={e.id} />}
-                    {user.role === "ADMIN" && e.status !== "POSTED" && (
+                    {user.role === "ADMIN" && (
                       <DeleteRecordButton module="expenses" id={e.id} label={e.expenseNumber} />
                     )}
                   </div>
