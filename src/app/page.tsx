@@ -94,23 +94,68 @@ export default async function Home() {
     <div className="flex flex-col">
       {/* eslint-disable-next-line react/no-danger */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <AvepoLogo size={36} src={settings?.logoUrl} />
-          <nav className="hidden gap-6 text-sm font-medium text-muted-foreground md:flex">
-            <a href="#catalog" className="hover:text-foreground">Products & Services</a>
-            <a href="#tips" className="hover:text-foreground">Farming Tips</a>
-            <a href="#contact" className="hover:text-foreground">Contact</a>
-          </nav>
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <InstallAppButton />
-            <Button render={<Link href="/portal/login" />} nativeButton={false} variant="outline" size="sm">
-              <span className="sm:hidden">Login</span>
-              <span className="hidden sm:inline">Customer Login</span>
-            </Button>
-            <Button render={<Link href="/login" />} nativeButton={false} variant="ghost" size="sm">
-              Staff
-            </Button>
+      <header className="sticky top-0 z-40 shadow-sm">
+        {(settings?.phone || settings?.location || settings?.email) && (
+          <div className="hidden bg-avepo-green text-white sm:block">
+            <div className="mx-auto flex h-9 max-w-6xl items-center gap-6 px-6 text-xs">
+              {settings?.phone && (
+                <span className="flex items-center gap-1.5">
+                  <Phone className="h-3.5 w-3.5 text-avepo-yellow" /> {settings.phone}
+                </span>
+              )}
+              {settings?.email && (
+                <span className="flex items-center gap-1.5">
+                  <Mail className="h-3.5 w-3.5 text-avepo-yellow" /> {settings.email}
+                </span>
+              )}
+              {settings?.location && (
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="h-3.5 w-3.5 text-avepo-yellow" /> {settings.location}
+                </span>
+              )}
+              <span className="ml-auto font-medium text-avepo-yellow-light">Order online · Pay by M-Pesa or bank</span>
+            </div>
+          </div>
+        )}
+        <div className="border-b bg-avepo-yellow">
+          <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+            <div className="flex items-center gap-3">
+              <AvepoLogo size={40} src={settings?.logoUrl} />
+              <div className="leading-tight">
+                <p className="text-lg font-extrabold tracking-tight text-avepo-green sm:text-xl">
+                  {settings?.farmName ?? "Avepo Smart Farm"}
+                </p>
+                <p className="hidden text-[11px] font-medium uppercase tracking-wider text-avepo-green/70 sm:block">
+                  Farm Operations · Sales · Delivery
+                </p>
+              </div>
+            </div>
+            <nav className="hidden gap-6 text-sm font-semibold text-avepo-green md:flex">
+              <a href="#catalog" className="hover:underline">Products &amp; Services</a>
+              <a href="#tips" className="hover:underline">Farming Tips</a>
+              <a href="#contact" className="hover:underline">Contact</a>
+            </nav>
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <InstallAppButton />
+              <Button
+                render={<Link href="/portal/login" />}
+                nativeButton={false}
+                size="sm"
+                className="border border-avepo-green bg-transparent text-avepo-green hover:bg-avepo-green hover:text-white"
+              >
+                <span className="sm:hidden">Login</span>
+                <span className="hidden sm:inline">Customer Login</span>
+              </Button>
+              <Button
+                render={<Link href="/login" />}
+                nativeButton={false}
+                size="sm"
+                variant="ghost"
+                className="text-avepo-green hover:bg-avepo-green/10"
+              >
+                Staff
+              </Button>
+            </div>
           </div>
         </div>
       </header>

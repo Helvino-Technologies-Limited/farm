@@ -56,3 +56,9 @@ export async function getFarmLogoUrl(): Promise<string | null> {
   const settings = await db.systemSetting.findUnique({ where: { id: 1 }, select: { logoUrl: true } });
   return settings?.logoUrl ?? null;
 }
+
+/** Logo URL + display name, for headers that need both. */
+export async function getFarmBranding(): Promise<{ logoUrl: string | null; farmName: string }> {
+  const settings = await db.systemSetting.findUnique({ where: { id: 1 }, select: { logoUrl: true, farmName: true } });
+  return { logoUrl: settings?.logoUrl ?? null, farmName: settings?.farmName ?? "Avepo Smart Farm" };
+}
