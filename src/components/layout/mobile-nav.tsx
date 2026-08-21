@@ -39,7 +39,7 @@ export function MobileNav({
         <SheetTitle className="sr-only">Navigation</SheetTitle>
         <SheetHeader className="bg-avepo-green p-0 text-white">
           <div className="flex items-center gap-2 px-4 pt-4">
-            <AvepoLogo size={28} className="rounded bg-white/95 p-1" src={logoUrl} />
+            <AvepoLogo size={28} src={logoUrl} />
           </div>
           <div className="flex items-center gap-3 px-4 py-4">
             <Avatar className="h-11 w-11">

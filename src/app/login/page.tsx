@@ -11,7 +11,7 @@ export default async function LoginPage() {
   return (
     <div className="flex min-h-screen">
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-gradient-to-br from-avepo-green via-avepo-green-light to-avepo-green p-12 text-white">
-        <AvepoLogo size={40} className="rounded bg-white/95 p-1.5" src={logoUrl} />
+        <AvepoLogo size={40} src={logoUrl} />
         <div>
           <h1 className="text-4xl font-bold leading-tight mb-4">
             Smart Farm Management, from field to finance.
