@@ -17,12 +17,11 @@ export default async function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#ffffff",
-          borderRadius: 6,
+          background: "#000000",
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        {logo && <img src={logo.dataUrl} width={28} height={28} style={{ objectFit: "contain" }} alt="" />}
+        {logo && <img src={logo.dataUrl} width={32} height={32} style={{ objectFit: "contain" }} alt="" />}
       </div>
     ),
     { ...size }

@@ -8,7 +8,6 @@ export async function GET(_req: Request, { params }: { params: Promise<{ size: s
   const { size: sizeParam } = await params;
   const size = sizeParam === "512" ? 512 : 192;
   const logo = await getFarmLogo();
-  const logoSize = Math.round(size * 0.72);
 
   const img = new ImageResponse(
     (
@@ -19,11 +18,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ size: s
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#ffffff",
+          background: "#000000",
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        {logo && <img src={logo.dataUrl} width={logoSize} height={logoSize} style={{ objectFit: "contain" }} alt="" />}
+        {logo && <img src={logo.dataUrl} width={size} height={size} style={{ objectFit: "contain" }} alt="" />}
       </div>
     ),
     { width: size, height: size }

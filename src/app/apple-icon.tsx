@@ -17,11 +17,11 @@ export default async function AppleIcon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#ffffff",
+          background: "#000000",
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        {logo && <img src={logo.dataUrl} width={140} height={140} style={{ objectFit: "contain" }} alt="" />}
+        {logo && <img src={logo.dataUrl} width={180} height={180} style={{ objectFit: "contain" }} alt="" />}
       </div>
     ),
     { ...size }
