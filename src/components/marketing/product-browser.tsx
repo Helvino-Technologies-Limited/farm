@@ -9,6 +9,8 @@ import { formatCurrency } from "@/lib/format";
 import { Search } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+export type StockStatus = "AVAILABLE" | "LIMITED" | "UNAVAILABLE";
+
 export interface BrowserProduct {
   id: string;
   name: string;
@@ -19,7 +21,14 @@ export interface BrowserProduct {
   isPoultry: boolean;
   centre: string;
   centreLabel: string;
+  stockStatus: StockStatus;
 }
+
+const STATUS_STYLE: Record<StockStatus, { label: string; className: string }> = {
+  AVAILABLE: { label: "Available", className: "bg-green-600 text-white" },
+  LIMITED: { label: "Limited Availability", className: "bg-amber-500 text-white" },
+  UNAVAILABLE: { label: "Currently Unavailable", className: "bg-muted text-muted-foreground" },
+};
 
 export function ProductBrowser({
   products,
@@ -112,7 +121,7 @@ export function ProductBrowser({
                   {items.map((p) => (
                     <Link
                       key={p.id}
-                      href={`/portal/book/${p.id}`}
+                      href={`/shop/${p.id}`}
                       className="group w-64 shrink-0 snap-start overflow-hidden rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md"
                     >
                       <div className={`relative h-40 w-full ${p.imageUrl ? "" : gradient}`}>
@@ -127,7 +136,12 @@ export function ProductBrowser({
                         )}
                       </div>
                       <div className="p-4">
-                        <h4 className="font-semibold group-hover:underline">{p.name}</h4>
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="font-semibold group-hover:underline">{p.name}</h4>
+                          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_STYLE[p.stockStatus].className}`}>
+                            {STATUS_STYLE[p.stockStatus].label}
+                          </span>
+                        </div>
                         {p.description && (
                           <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{p.description}</p>
                         )}

@@ -25,7 +25,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         const user = await getSession();
         const kind =
           clientPayload === "video" ? "video" :
-          clientPayload === "logo" || clientPayload === "hero-video" ? "branding" :
+          clientPayload === "logo" || clientPayload === "hero-video" || clientPayload === "gallery" ? "branding" :
           "image";
 
         const allowed =

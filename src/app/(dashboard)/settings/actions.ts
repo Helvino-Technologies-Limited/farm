@@ -26,6 +26,16 @@ const settingsSchema = z.object({
   creditSaleRequiresApproval: z.coerce.boolean(),
   poultryBasePrice: z.coerce.number().min(0),
   poultryWeeklyIncrement: z.coerce.number().min(0),
+  tagline: z.string().optional(),
+  heroTitle: z.string().optional(),
+  heroDescription: z.string().optional(),
+  heroPrimaryLabel: z.string().optional(),
+  heroPrimaryUrl: z.string().optional(),
+  heroSecondaryLabel: z.string().optional(),
+  heroSecondaryUrl: z.string().optional(),
+  aboutBody: z.string().optional(),
+  mission: z.string().optional(),
+  vision: z.string().optional(),
 });
 
 export async function updateSystemSettingsAction(input: unknown) {
@@ -41,6 +51,7 @@ export async function updateSystemSettingsAction(input: unknown) {
   await logAudit(db, { user, action: "UPDATE", module: "settings", recordId: "system", newValue: data });
   revalidatePath("/settings");
   revalidatePath("/");
+  revalidatePath("/about");
   return { farmName: updated.farmName };
 }
 
@@ -124,4 +135,53 @@ export async function createUnitAction(input: { name: string; abbreviation: stri
   revalidatePath("/settings");
   revalidatePath("/products");
   return unit;
+}
+
+export async function createWebsiteFeatureAction(input: { title: string; description?: string; icon?: string }) {
+  const user = await requireRole("ADMIN");
+  const { createWebsiteFeature } = await import("@/services/website");
+  const feature = await createWebsiteFeature(input, user);
+  revalidatePath("/settings");
+  revalidatePath("/");
+  return feature;
+}
+
+export async function createWebsiteServiceAction(input: { title: string; description: string; icon?: string }) {
+  const user = await requireRole("ADMIN");
+  const { createWebsiteService } = await import("@/services/website");
+  const service = await createWebsiteService(input, user);
+  revalidatePath("/settings");
+  revalidatePath("/");
+  revalidatePath("/services");
+  return service;
+}
+
+export async function createWebsiteFaqAction(input: { question: string; answer: string }) {
+  const user = await requireRole("ADMIN");
+  const { createWebsiteFaq } = await import("@/services/website");
+  const faq = await createWebsiteFaq(input, user);
+  revalidatePath("/settings");
+  revalidatePath("/");
+  revalidatePath("/faq");
+  return faq;
+}
+
+export async function createWebsiteTestimonialAction(input: { customerName: string; role?: string; quote: string; rating?: number }) {
+  const user = await requireRole("ADMIN");
+  const { createWebsiteTestimonial } = await import("@/services/website");
+  const testimonial = await createWebsiteTestimonial(input, user);
+  revalidatePath("/settings");
+  revalidatePath("/");
+  return testimonial;
+}
+
+export async function createGalleryImageAction(input: { imageUrl: string; caption?: string; category?: string; featured?: boolean }) {
+  if (!input.imageUrl.includes(".public.blob.vercel-storage.com")) throw new Error("Invalid upload URL.");
+  const user = await requireRole("ADMIN", "MANAGER");
+  const { createGalleryImage } = await import("@/services/website");
+  const image = await createGalleryImage(input, user);
+  revalidatePath("/settings");
+  revalidatePath("/");
+  revalidatePath("/gallery");
+  return image;
 }

@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { updateSystemSettingsAction } from "@/app/(dashboard)/settings/actions";
 import type { SystemSetting } from "@prisma/client";
 
@@ -30,11 +31,24 @@ export function SettingsForm({ settings }: { settings: SystemSetting | null }) {
     creditSaleRequiresApproval: settings?.creditSaleRequiresApproval ?? true,
     poultryBasePrice: Number(settings?.poultryBasePrice ?? 120),
     poultryWeeklyIncrement: Number(settings?.poultryWeeklyIncrement ?? 30),
+    tagline: settings?.tagline ?? "",
+    heroTitle: settings?.heroTitle ?? "",
+    heroDescription: settings?.heroDescription ?? "",
+    heroPrimaryLabel: settings?.heroPrimaryLabel ?? "",
+    heroPrimaryUrl: settings?.heroPrimaryUrl ?? "",
+    heroSecondaryLabel: settings?.heroSecondaryLabel ?? "",
+    heroSecondaryUrl: settings?.heroSecondaryUrl ?? "",
+    aboutBody: settings?.aboutBody ?? "",
+    mission: settings?.mission ?? "",
+    vision: settings?.vision ?? "",
   });
   const [submitting, setSubmitting] = useState(false);
 
   function field(key: keyof typeof form) {
-    return { value: form[key] as string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, [key]: e.target.value })) };
+    return {
+      value: form[key] as string,
+      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm((f) => ({ ...f, [key]: e.target.value })),
+    };
   }
 
   async function onSubmit() {
@@ -142,6 +156,57 @@ export function SettingsForm({ settings }: { settings: SystemSetting | null }) {
           />
           Credit sales require approval oversight
         </label>
+      </div>
+
+      <div className="space-y-4 border-t pt-4">
+        <h3 className="text-sm font-medium text-muted-foreground">Website — Hero &amp; About</h3>
+        <p className="text-xs text-muted-foreground -mt-2">Shown on the public homepage. Leave blank to use sensible defaults.</p>
+        <div className="space-y-2">
+          <Label htmlFor="settings-tagline">Tagline</Label>
+          <Input id="settings-tagline" placeholder="Quality Farm Products. Reliable Supply. Trusted Agricultural Solutions." {...field("tagline")} />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="settings-hero-title">Hero Title</Label>
+          <Input id="settings-hero-title" {...field("heroTitle")} />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="settings-hero-desc">Hero Description</Label>
+          <Textarea id="settings-hero-desc" rows={3} {...field("heroDescription")} />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="settings-hero-primary-label">Primary Button Label</Label>
+            <Input id="settings-hero-primary-label" placeholder="Browse Products" {...field("heroPrimaryLabel")} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="settings-hero-primary-url">Primary Button Link</Label>
+            <Input id="settings-hero-primary-url" placeholder="/shop" {...field("heroPrimaryUrl")} />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="settings-hero-secondary-label">Secondary Button Label</Label>
+            <Input id="settings-hero-secondary-label" placeholder="Book Now" {...field("heroSecondaryLabel")} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="settings-hero-secondary-url">Secondary Button Link</Label>
+            <Input id="settings-hero-secondary-url" placeholder="/portal/register" {...field("heroSecondaryUrl")} />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="settings-about">About Avepo Smart Farm</Label>
+          <Textarea id="settings-about" rows={4} {...field("aboutBody")} />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="settings-mission">Mission</Label>
+            <Textarea id="settings-mission" rows={2} {...field("mission")} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="settings-vision">Vision</Label>
+            <Textarea id="settings-vision" rows={2} {...field("vision")} />
+          </div>
+        </div>
       </div>
 
       <div className="space-y-4 border-t pt-4">

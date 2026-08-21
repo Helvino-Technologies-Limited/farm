@@ -8,16 +8,28 @@ import { LogoUpload } from "@/components/settings/logo-upload";
 import { HeroVideoUpload } from "@/components/settings/hero-video-upload";
 import { QuickAddCategory, QuickAddUnit } from "@/components/settings/quick-add-forms";
 import { DeleteRecordButton } from "@/components/admin/delete-record-button";
+import {
+  WebsiteFeaturesManager,
+  WebsiteServicesManager,
+  WebsiteFaqManager,
+  WebsiteTestimonialsManager,
+} from "@/components/settings/website-content-manager";
+import { GalleryManager } from "@/components/settings/gallery-manager";
 
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
   const user = await requireModuleAccess("settings");
   const isAdmin = user.role === "ADMIN";
-  const [settings, categories, units] = await Promise.all([
+  const [settings, categories, units, features, services, faqs, testimonials, galleryImages] = await Promise.all([
     db.systemSetting.findUnique({ where: { id: 1 } }),
     db.productCategory.findMany({ orderBy: { name: "asc" } }),
     db.unit.findMany({ orderBy: { name: "asc" } }),
+    db.websiteFeature.findMany({ orderBy: { sortOrder: "asc" } }),
+    db.websiteServiceEntry.findMany({ orderBy: { sortOrder: "asc" } }),
+    db.websiteFaq.findMany({ orderBy: { sortOrder: "asc" } }),
+    db.websiteTestimonial.findMany({ orderBy: { sortOrder: "asc" } }),
+    db.galleryImage.findMany({ orderBy: { sortOrder: "asc" } }),
   ]);
 
   return (
@@ -79,6 +91,35 @@ export default async function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {isAdmin && (
+        <>
+          <Card>
+            <CardHeader><CardTitle>Website — Why Choose Us</CardTitle></CardHeader>
+            <CardContent><WebsiteFeaturesManager features={features} /></CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle>Website — Services</CardTitle></CardHeader>
+            <CardContent><WebsiteServicesManager services={services} /></CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle>Website — FAQ</CardTitle></CardHeader>
+            <CardContent><WebsiteFaqManager faqs={faqs} /></CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle>Website — Testimonials</CardTitle></CardHeader>
+            <CardContent><WebsiteTestimonialsManager testimonials={testimonials} /></CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle>Website — Gallery</CardTitle></CardHeader>
+            <CardContent><GalleryManager images={galleryImages} /></CardContent>
+          </Card>
+        </>
+      )}
     </div>
   );
 }

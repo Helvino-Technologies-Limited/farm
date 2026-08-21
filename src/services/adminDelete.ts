@@ -23,6 +23,11 @@ export const DELETABLE_MODULES = [
   "bookings",
   "purchase-orders",
   "expenses",
+  "website-features",
+  "website-services",
+  "website-faqs",
+  "website-testimonials",
+  "gallery-images",
 ] as const;
 
 export type DeletableModule = (typeof DELETABLE_MODULES)[number];
@@ -150,6 +155,41 @@ export async function adminDeleteRecord(
           label = rec.expenseNumber;
           snapshot = rec;
           await tx.expense.delete({ where: { id } });
+          break;
+        }
+        case "website-features": {
+          const rec = await tx.websiteFeature.findUniqueOrThrow({ where: { id } });
+          label = rec.title;
+          snapshot = rec;
+          await tx.websiteFeature.delete({ where: { id } });
+          break;
+        }
+        case "website-services": {
+          const rec = await tx.websiteServiceEntry.findUniqueOrThrow({ where: { id } });
+          label = rec.title;
+          snapshot = rec;
+          await tx.websiteServiceEntry.delete({ where: { id } });
+          break;
+        }
+        case "website-faqs": {
+          const rec = await tx.websiteFaq.findUniqueOrThrow({ where: { id } });
+          label = rec.question;
+          snapshot = rec;
+          await tx.websiteFaq.delete({ where: { id } });
+          break;
+        }
+        case "website-testimonials": {
+          const rec = await tx.websiteTestimonial.findUniqueOrThrow({ where: { id } });
+          label = rec.customerName;
+          snapshot = rec;
+          await tx.websiteTestimonial.delete({ where: { id } });
+          break;
+        }
+        case "gallery-images": {
+          const rec = await tx.galleryImage.findUniqueOrThrow({ where: { id } });
+          label = rec.caption ?? "Gallery image";
+          snapshot = rec;
+          await tx.galleryImage.delete({ where: { id } });
           break;
         }
       }

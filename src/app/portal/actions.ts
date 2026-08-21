@@ -19,6 +19,7 @@ import { calculatePoultryAge, calculatePoultryPrice } from "@/services/poultry";
 import { portalRegisterSchema, portalLoginSchema, portalBookingSchema, portalPaymentSchema } from "@/validations/portal";
 import { withTransaction } from "@/lib/db";
 import { buildInvoicePdfData } from "@/services/documentData";
+import { notifyCustomer } from "@/services/notifications";
 
 export interface PortalFormState {
   error?: string;
@@ -54,6 +55,12 @@ export async function portalRegisterAction(_prev: PortalFormState, formData: For
 
   await createCustomerSession(customerId);
   await logAudit(db, { user: { name: `${name} (Customer Portal)` }, action: "CREATE", module: "portal", recordId: customerId });
+  await notifyCustomer(db, {
+    customerId,
+    title: "Welcome to Avepo Smart Farm",
+    message: "Your account is ready. Browse products and services and book online any time.",
+    type: "REGISTRATION",
+  });
   const registerNext = formData.get("next");
   redirect(typeof registerNext === "string" && registerNext.startsWith("/portal") ? registerNext : "/portal");
 }
@@ -108,6 +115,12 @@ export async function portalCreateBookingAction(input: unknown) {
   );
 
   await logAudit(db, { user: portalAuditActor(customer), action: "CREATE", module: "portal-booking", recordId: booking.id });
+  await notifyCustomer(db, {
+    customerId: customer.id,
+    title: "Booking submitted",
+    message: `Booking ${booking.bookingNumber} has been received and is pending confirmation.`,
+    type: "BOOKING",
+  });
   return { id: booking.id, bookingNumber: booking.bookingNumber };
 }
 
@@ -134,6 +147,16 @@ export async function portalSubmitPaymentAction(input: unknown) {
   );
 
   await logAudit(db, { user: portalAuditActor(customer), action: "PAYMENT", module: "portal-payment", recordId: payment.id });
+  const updatedInvoice = await db.invoice.findUnique({ where: { id: data.invoiceId }, select: { balance: true, invoiceNumber: true } });
+  const fullyPaid = updatedInvoice ? Number(updatedInvoice.balance) <= 0 : false;
+  await notifyCustomer(db, {
+    customerId: customer.id,
+    title: fullyPaid ? "Payment received — invoice settled" : "Partial payment received",
+    message: fullyPaid
+      ? `Payment ${payment.paymentNumber} of ${data.amount} was received. Invoice ${updatedInvoice?.invoiceNumber ?? ""} is now fully paid.`
+      : `Payment ${payment.paymentNumber} of ${data.amount} was received. Remaining balance: ${updatedInvoice?.balance ?? "—"}.`,
+    type: "PAYMENT",
+  });
   return { id: payment.id, paymentNumber: payment.paymentNumber };
 }
 

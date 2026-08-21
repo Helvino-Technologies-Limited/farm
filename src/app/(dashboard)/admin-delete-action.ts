@@ -6,10 +6,10 @@ import { revalidatePath } from "next/cache";
 
 const REVALIDATE_PATHS: Record<DeletableModule, string[]> = {
   customers: ["/customers"],
-  products: ["/products", "/"],
+  products: ["/products", "/", "/shop"],
   suppliers: ["/purchases"],
   users: ["/users"],
-  "product-categories": ["/settings", "/products"],
+  "product-categories": ["/settings", "/products", "/shop"],
   units: ["/settings", "/products"],
   "expense-categories": ["/settings", "/expenses"],
   "poultry-batches": ["/poultry"],
@@ -18,6 +18,11 @@ const REVALIDATE_PATHS: Record<DeletableModule, string[]> = {
   bookings: ["/bookings"],
   "purchase-orders": ["/purchases"],
   expenses: ["/expenses"],
+  "website-features": ["/settings", "/"],
+  "website-services": ["/settings", "/", "/services"],
+  "website-faqs": ["/settings", "/", "/faq"],
+  "website-testimonials": ["/settings", "/"],
+  "gallery-images": ["/settings", "/", "/gallery"],
 };
 
 export async function adminDeleteRecordAction(moduleKey: DeletableModule, id: string) {
