@@ -27,6 +27,7 @@ export async function recordFeedingAction(input: unknown) {
   const data = feedRecordSchema.parse(input);
   await recordFeeding(data, user);
   revalidatePath("/poultry");
+  revalidatePath("/inventory");
 }
 
 export async function createAgePriceRuleAction(input: unknown) {

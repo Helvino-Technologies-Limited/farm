@@ -7,9 +7,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { setUserActiveAction, resetUserPasswordAction } from "@/app/(dashboard)/users/actions";
+import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { KeyRound } from "lucide-react";
 
-export function UserRowActions({ userId, active }: { userId: string; active: boolean }) {
+export function UserRowActions({
+  userId,
+  active,
+  name,
+  canDelete,
+}: {
+  userId: string;
+  active: boolean;
+  name: string;
+  canDelete: boolean;
+}) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
@@ -65,6 +76,7 @@ export function UserRowActions({ userId, active }: { userId: string; active: boo
       <Button variant={active ? "outline" : "default"} size="sm" onClick={toggleActive} disabled={pending}>
         {active ? "Deactivate" : "Activate"}
       </Button>
+      {canDelete && <DeleteRecordButton module="users" id={userId} label={name} />}
     </div>
   );
 }

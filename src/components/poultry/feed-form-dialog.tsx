@@ -16,8 +16,15 @@ import { recordFeedingAction } from "@/app/(dashboard)/poultry/actions";
 import { feedRecordSchema, type FeedRecordInput } from "@/validations/finance";
 
 type FormShape = z.input<typeof feedRecordSchema>;
+type FeedProduct = { id: string; name: string; unitAbbreviation: string; stock: number };
 
-export function FeedFormDialog({ batches }: { batches: { id: string; batchNumber: string }[] }) {
+export function FeedFormDialog({
+  batches,
+  feedProducts,
+}: {
+  batches: { id: string; batchNumber: string }[];
+  feedProducts: FeedProduct[];
+}) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const {
@@ -25,10 +32,12 @@ export function FeedFormDialog({ batches }: { batches: { id: string; batchNumber
     formState: { errors, isSubmitting },
   } = useForm<FormShape, unknown, FeedRecordInput>({ resolver: zodResolver(feedRecordSchema) });
 
+  const selectedProduct = feedProducts.find((p) => p.id === watch("productId"));
+
   async function onSubmit(values: FeedRecordInput) {
     try {
       await recordFeedingAction(values);
-      toast.success("Feed record saved.");
+      toast.success("Feed record saved and deducted from inventory.");
       reset();
       setOpen(false);
       router.refresh();
@@ -60,18 +69,35 @@ export function FeedFormDialog({ batches }: { batches: { id: string; batchNumber
             {errors.batchId && <p className="text-sm text-destructive">{errors.batchId.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="feedType">Feed Type</Label>
-            <Input id="feedType" placeholder="e.g. Chick mash, Layer mash" {...register("feedType")} />
-            {errors.feedType && <p className="text-sm text-destructive">{errors.feedType.message}</p>}
+            <Label>Feed (deducted from inventory)</Label>
+            <Select
+              items={Object.fromEntries(feedProducts.map((p) => [p.id, `${p.name} (${p.stock} ${p.unitAbbreviation} available)`]))}
+              value={watch("productId")}
+              onValueChange={(v) => {
+                if (!v) return;
+                setValue("productId", v);
+                const product = feedProducts.find((p) => p.id === v);
+                if (product) setValue("unit", product.unitAbbreviation);
+              }}
+            >
+              <SelectTrigger className="w-full"><SelectValue placeholder="Select feed product" /></SelectTrigger>
+              <SelectContent>
+                {feedProducts.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>{p.name} ({p.stock} {p.unitAbbreviation} available)</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.productId && <p className="text-sm text-destructive">{errors.productId.message}</p>}
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="quantity">Quantity</Label>
-              <Input id="quantity" type="number" step="0.01" {...register("quantity")} />
+              <Input id="quantity" type="number" step="0.01" max={selectedProduct?.stock} {...register("quantity")} />
+              {errors.quantity && <p className="text-sm text-destructive">{errors.quantity.message}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="unit">Unit</Label>
-              <Input id="unit" placeholder="kg" {...register("unit")} />
+              <Input id="unit" readOnly {...register("unit")} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="cost">Cost (KES)</Label>
@@ -79,7 +105,7 @@ export function FeedFormDialog({ batches }: { batches: { id: string; batchNumber
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={isSubmitting || batches.length === 0}>
+            <Button type="submit" disabled={isSubmitting || batches.length === 0 || feedProducts.length === 0}>
               {isSubmitting ? "Saving..." : "Save"}
             </Button>
           </DialogFooter>

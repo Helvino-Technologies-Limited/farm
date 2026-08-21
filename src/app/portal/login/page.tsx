@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AvepoLogo } from "@/components/layout/avepo-logo";
+import { getFarmLogoUrl } from "@/lib/branding";
 import { PortalLoginForm } from "@/components/portal/login-form";
 
 export default async function PortalLoginPage({
@@ -7,13 +8,13 @@ export default async function PortalLoginPage({
 }: {
   searchParams: Promise<{ next?: string }>;
 }) {
-  const { next } = await searchParams;
+  const [{ next }, logoUrl] = await Promise.all([searchParams, getFarmLogoUrl()]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30 p-6">
       <div className="w-full max-w-sm space-y-6 rounded-xl border bg-card p-8 shadow-sm">
         <div className="flex items-center justify-center">
-          <AvepoLogo size={40} />
+          <AvepoLogo size={40} src={logoUrl} />
         </div>
         <div className="space-y-1 text-center">
           <h1 className="text-2xl font-semibold">Customer Login</h1>

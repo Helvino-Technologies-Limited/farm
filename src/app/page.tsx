@@ -96,7 +96,7 @@ export default async function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <AvepoLogo size={36} />
+          <AvepoLogo size={36} src={settings?.logoUrl} />
           <nav className="hidden gap-6 text-sm font-medium text-muted-foreground md:flex">
             <a href="#catalog" className="hover:text-foreground">Products & Services</a>
             <a href="#tips" className="hover:text-foreground">Farming Tips</a>
@@ -186,7 +186,7 @@ export default async function Home() {
       <footer id="contact" className="border-t bg-background py-12">
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <AvepoLogo size={28} />
+            <AvepoLogo size={28} src={settings?.logoUrl} />
             <p className="mt-2 max-w-sm text-sm text-muted-foreground">
               Book fresh poultry, produce and farm services online — pay by M-Pesa or bank.
             </p>

@@ -19,10 +19,18 @@ function roleLabel(role: string): string {
   return role.charAt(0) + role.slice(1).toLowerCase();
 }
 
-export function Topbar({ user, modules }: { user: SessionUser; modules: ModuleKey[] }) {
+export function Topbar({
+  user,
+  modules,
+  logoUrl,
+}: {
+  user: SessionUser;
+  modules: ModuleKey[];
+  logoUrl?: string | null;
+}) {
   return (
     <header className="flex h-16 items-center justify-between border-b bg-background px-4 sm:px-6">
-      <MobileNav modules={modules} user={{ name: user.name, role: user.role }} />
+      <MobileNav modules={modules} user={{ name: user.name, role: user.role }} logoUrl={logoUrl} />
       <div className="flex items-center gap-3 sm:gap-4 ml-auto">
         <div className="text-right hidden sm:block">
           <p className="text-sm font-medium leading-none">{user.name}</p>

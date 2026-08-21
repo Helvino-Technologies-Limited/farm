@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { CustomerFormDialog } from "@/components/customers/customer-form-dialog";
+import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { formatCurrency } from "@/lib/format";
 import { canWrite } from "@/lib/permissions";
 
@@ -33,6 +34,7 @@ export default async function CustomersPage() {
               <TableHead>Type</TableHead>
               <TableHead className="text-right">Credit Limit</TableHead>
               <TableHead className="text-right">Balance</TableHead>
+              {user.role === "ADMIN" && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -52,6 +54,11 @@ export default async function CustomersPage() {
                     {formatCurrency(balances[i])}
                   </span>
                 </TableCell>
+                {user.role === "ADMIN" && (
+                  <TableCell className="text-right">
+                    <DeleteRecordButton module="customers" id={c.id} label={c.name} />
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>

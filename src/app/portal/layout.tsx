@@ -2,17 +2,18 @@ import Link from "next/link";
 import { getCustomerSession } from "@/lib/customer-auth";
 import { Button } from "@/components/ui/button";
 import { AvepoLogo } from "@/components/layout/avepo-logo";
+import { getFarmLogoUrl } from "@/lib/branding";
 import { portalLogoutAction } from "./actions";
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
-  const customer = await getCustomerSession();
+  const [customer, logoUrl] = await Promise.all([getCustomerSession(), getFarmLogoUrl()]);
 
   return (
     <div className="min-h-screen flex flex-col bg-muted/20">
       <header className="border-b bg-background">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
           <Link href="/">
-            <AvepoLogo size={32} />
+            <AvepoLogo size={32} src={logoUrl} />
           </Link>
           {customer ? (
             <div className="flex items-center gap-4">

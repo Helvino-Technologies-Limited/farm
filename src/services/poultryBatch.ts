@@ -1,7 +1,7 @@
 import "server-only";
 import { db, withTransaction } from "@/lib/db";
 import { nextDocumentNumber } from "./numbering";
-import { recordInventoryTransaction } from "./inventory";
+import { recordInventoryTransaction, assertSufficientStock } from "./inventory";
 import { logAudit } from "./audit";
 import type { SessionUser } from "@/lib/auth";
 
@@ -91,18 +91,47 @@ export async function recordMortality(
 }
 
 export async function recordFeeding(
-  params: { batchId: string; feedType: string; quantity: number; unit: string; cost?: number; date?: Date },
+  params: { batchId: string; productId: string; quantity: number; unit: string; cost?: number; date?: Date },
   actingUser: SessionUser
 ) {
-  return db.poultryFeedRecord.create({
-    data: {
-      batchId: params.batchId,
-      feedType: params.feedType,
-      quantity: params.quantity,
-      unit: params.unit,
-      cost: params.cost,
-      date: params.date ?? new Date(),
+  return withTransaction(async (tx) => {
+    const [batch, product] = await Promise.all([
+      tx.poultryBatch.findUniqueOrThrow({ where: { id: params.batchId } }),
+      tx.product.findUniqueOrThrow({ where: { id: params.productId } }),
+    ]);
+
+    await assertSufficientStock(tx, params.productId, params.quantity);
+
+    const record = await tx.poultryFeedRecord.create({
+      data: {
+        batchId: params.batchId,
+        productId: params.productId,
+        quantity: params.quantity,
+        unit: params.unit,
+        cost: params.cost,
+        date: params.date ?? new Date(),
+        recordedById: actingUser.id,
+      },
+    });
+
+    await recordInventoryTransaction(tx, {
+      productId: params.productId,
+      type: "ISSUE",
+      quantity: -params.quantity,
+      reference: batch.batchNumber,
+      referenceId: batch.id,
+      notes: `Fed to batch ${batch.batchNumber}`,
       recordedById: actingUser.id,
-    },
+    });
+
+    await logAudit(tx, {
+      user: actingUser,
+      action: "CREATE",
+      module: "poultry",
+      recordId: record.id,
+      newValue: { batchId: params.batchId, productId: params.productId, productName: product.name, quantity: params.quantity, unit: params.unit },
+    });
+
+    return record;
   });
 }

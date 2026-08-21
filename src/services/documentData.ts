@@ -1,30 +1,21 @@
 import "server-only";
-import fs from "node:fs";
-import path from "node:path";
 import { db } from "@/lib/db";
 import type { DocumentPdfData } from "@/lib/pdf/generate-document-pdf";
 import { formatDate } from "@/lib/format";
-
-let cachedDefaultLogo: string | undefined;
-function defaultLogoDataUrl(): string | undefined {
-  if (cachedDefaultLogo !== undefined) return cachedDefaultLogo;
-  try {
-    const buf = fs.readFileSync(path.join(process.cwd(), "public", "brand", "avepo-logo.png"));
-    cachedDefaultLogo = `data:image/png;base64,${buf.toString("base64")}`;
-  } catch {
-    cachedDefaultLogo = undefined;
-  }
-  return cachedDefaultLogo;
-}
+import { getFarmLogo } from "@/lib/branding";
 
 async function getFarmHeader() {
-  const settings = await db.systemSetting.findUnique({ where: { id: 1 } });
+  const [settings, logo] = await Promise.all([
+    db.systemSetting.findUnique({ where: { id: 1 } }),
+    getFarmLogo(),
+  ]);
   return {
     farmName: settings?.farmName ?? "Avepo Smart Farm",
     farmAddress: settings?.address ?? undefined,
     farmPhone: settings?.phone ?? undefined,
     farmEmail: settings?.email ?? undefined,
-    logoDataUrl: settings?.logoUrl ?? defaultLogoDataUrl(),
+    logoDataUrl: logo?.dataUrl,
+    logoFormat: logo?.format ?? "PNG",
   };
 }
 

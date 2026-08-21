@@ -10,8 +10,19 @@ export function calculatePoultryAge(hatchDate: Date, asOf: Date = new Date()): n
   return Math.max(0, Math.floor(ms / (1000 * 60 * 60 * 24)));
 }
 
-/** Resolves the price for a batch at a given age, preferring batch-specific rules, then
- *  breed-specific rules, then global default rules. Throws if no rule covers the age. */
+/** Base price (age 0) + KES per completed week of age, both configurable in Settings. */
+export function calculatePoultryFormulaPrice(
+  ageDays: number,
+  basePrice: number,
+  weeklyIncrement: number
+): number {
+  const weeksElapsed = Math.floor(ageDays / 7);
+  return basePrice + weeksElapsed * weeklyIncrement;
+}
+
+/** Resolves the price for a batch at a given age. Prefers an explicit PoultryAgePriceRule
+ *  (batch-specific > breed-specific > global), for stages that need a manual override; if none
+ *  covers the age, falls back to the base-price + weekly-increment formula from Settings. */
 export async function calculatePoultryPrice(
   client: Client,
   batch: Pick<PoultryBatch, "id" | "breed">,
@@ -38,12 +49,16 @@ export async function calculatePoultryPrice(
     .sort((a, b) => b.specificity - a.specificity || b.rule.minAgeDays - a.rule.minAgeDays);
 
   const best = scored[0];
-  if (!best) {
-    throw new Error(
-      `No poultry price rule covers age ${ageDays} days for batch ${batch.id} (breed ${batch.breed}).`
-    );
+  if (best) {
+    return { price: Number(best.rule.price), label: best.rule.label };
   }
-  return { price: Number(best.rule.price), label: best.rule.label };
+
+  const settings = await client.systemSetting.findUnique({ where: { id: 1 } });
+  const basePrice = Number(settings?.poultryBasePrice ?? 120);
+  const weeklyIncrement = Number(settings?.poultryWeeklyIncrement ?? 30);
+  const price = calculatePoultryFormulaPrice(ageDays, basePrice, weeklyIncrement);
+  const weekNumber = Math.floor(ageDays / 7);
+  return { price, label: weekNumber === 0 ? "Day 1 (formula)" : `Week ${weekNumber} (formula)` };
 }
 
 export interface PoultryBatchStock {

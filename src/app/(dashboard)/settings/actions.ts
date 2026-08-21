@@ -24,6 +24,8 @@ const settingsSchema = z.object({
   currency: z.string().min(1),
   defaultDiscountLimit: z.coerce.number().min(0).max(100),
   creditSaleRequiresApproval: z.coerce.boolean(),
+  poultryBasePrice: z.coerce.number().min(0),
+  poultryWeeklyIncrement: z.coerce.number().min(0),
 });
 
 export async function updateSystemSettingsAction(input: unknown) {

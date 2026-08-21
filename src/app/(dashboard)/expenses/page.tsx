@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { ExpenseFormDialog } from "@/components/expenses/expense-form-dialog";
 import { ExpenseDecisionButtons } from "@/components/expenses/expense-decision-buttons";
+import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { canWrite, canApproveExpense } from "@/lib/permissions";
 
@@ -58,7 +59,12 @@ export default async function ExpensesPage() {
                 <TableCell className="text-right">{formatCurrency(Number(e.amount))}</TableCell>
                 <TableCell><Badge variant={STATUS_VARIANT[e.status]} className={e.status === "POSTED" ? "bg-green-600" : ""}>{e.status.replace("_", " ")}</Badge></TableCell>
                 <TableCell className="text-right">
-                  {canApproveExpense(user.role) && e.status === "PENDING" && <ExpenseDecisionButtons id={e.id} />}
+                  <div className="flex justify-end gap-2">
+                    {canApproveExpense(user.role) && e.status === "PENDING" && <ExpenseDecisionButtons id={e.id} />}
+                    {user.role === "ADMIN" && e.status !== "POSTED" && (
+                      <DeleteRecordButton module="expenses" id={e.id} label={e.expenseNumber} />
+                    )}
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

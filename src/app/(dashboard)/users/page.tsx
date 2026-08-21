@@ -10,7 +10,7 @@ import { formatDate } from "@/lib/format";
 export const dynamic = "force-dynamic";
 
 export default async function UsersPage() {
-  await requireRole("ADMIN");
+  const me = await requireRole("ADMIN");
   const users = await db.user.findMany({ orderBy: { createdAt: "asc" } });
 
   return (
@@ -49,7 +49,7 @@ export default async function UsersPage() {
                 </TableCell>
                 <TableCell className="text-muted-foreground">{formatDate(u.createdAt)}</TableCell>
                 <TableCell>
-                  <UserRowActions userId={u.id} active={u.active} />
+                  <UserRowActions userId={u.id} active={u.active} name={u.name} canDelete={u.id !== me.id} />
                 </TableCell>
               </TableRow>
             ))}

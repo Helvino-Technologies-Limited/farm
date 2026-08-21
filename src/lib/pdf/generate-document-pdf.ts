@@ -20,6 +20,7 @@ export interface DocumentPdfData {
   farmPhone?: string;
   farmEmail?: string;
   logoDataUrl?: string;
+  logoFormat?: "PNG" | "JPEG" | "WEBP";
   customerName: string;
   customerPhone?: string;
   customerAddress?: string;
@@ -56,7 +57,7 @@ export function buildDocumentPdf(data: DocumentPdfData): jsPDF {
 
   if (data.logoDataUrl) {
     try {
-      doc.addImage(data.logoDataUrl, "PNG", 14, y, 28, 21.75);
+      doc.addImage(data.logoDataUrl, data.logoFormat ?? "PNG", 14, y, 28, 21.75);
     } catch {
       // ignore malformed image data — header text still renders
     }

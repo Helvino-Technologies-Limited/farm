@@ -147,6 +147,7 @@ enum CashSessionStatus {
 enum AuditAction {
   CREATE
   UPDATE
+  DELETE
   APPROVE
   REJECT
   VOID
@@ -344,6 +345,7 @@ model Product {
   stockCountItems      StockCountItem[]
   stockAdjustments     StockAdjustment[]
   purchaseOrderItems   PurchaseOrderItem[]
+  feedRecords          PoultryFeedRecord[]
 
   @@index([categoryId])
   @@map("products")
@@ -436,7 +438,8 @@ model PoultryFeedRecord {
   id           String       @id @default(cuid())
   batchId      String
   batch        PoultryBatch @relation(fields: [batchId], references: [id])
-  feedType     String
+  productId    String
+  product      Product      @relation(fields: [productId], references: [id])
   quantity     Decimal      @db.Decimal(12, 3)
   unit         String
   cost         Decimal?     @db.Decimal(14, 2)
@@ -446,6 +449,7 @@ model PoultryFeedRecord {
   createdAt    DateTime     @default(now())
 
   @@index([batchId])
+  @@index([productId])
   @@map("poultry_feed_records")
 }
 
@@ -890,6 +894,8 @@ model SystemSetting {
   currency                  String   @default("KES")
   defaultDiscountLimit      Decimal  @default(0) @db.Decimal(5, 2)
   creditSaleRequiresApproval Boolean @default(true)
+  poultryBasePrice          Decimal  @default(120) @db.Decimal(10, 2)
+  poultryWeeklyIncrement    Decimal  @default(30) @db.Decimal(10, 2)
   updatedAt                 DateTime @updatedAt
 
   @@map("system_settings")

@@ -8,6 +8,7 @@ import { SupplierFormDialog } from "@/components/purchases/supplier-form-dialog"
 import { PurchaseOrderFormDialog } from "@/components/purchases/purchase-order-form-dialog";
 import { ReceivePoDialog } from "@/components/purchases/receive-po-dialog";
 import { CancelPoButton } from "@/components/purchases/cancel-po-button";
+import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { canWrite } from "@/lib/permissions";
 
@@ -71,19 +72,24 @@ export default async function PurchasesPage() {
                   <TableCell className="text-right">{formatCurrency(Number(po.total))}</TableCell>
                   <TableCell><Badge variant={STATUS_VARIANT[po.status]}>{po.status.replace("_", " ")}</Badge></TableCell>
                   <TableCell className="text-right">
-                    {canEdit && po.status !== "RECEIVED" && po.status !== "CANCELLED" && (
-                      <div className="flex justify-end gap-2">
-                        <ReceivePoDialog
-                          poId={po.id}
-                          poNumber={po.poNumber}
-                          items={po.items.map((i) => ({
-                            id: i.id, productName: i.product.name,
-                            quantity: Number(i.quantity), receivedQuantity: Number(i.receivedQuantity),
-                          }))}
-                        />
-                        {po.items.every((i) => Number(i.receivedQuantity) === 0) && <CancelPoButton poId={po.id} />}
-                      </div>
-                    )}
+                    <div className="flex justify-end gap-2">
+                      {canEdit && po.status !== "RECEIVED" && po.status !== "CANCELLED" && (
+                        <>
+                          <ReceivePoDialog
+                            poId={po.id}
+                            poNumber={po.poNumber}
+                            items={po.items.map((i) => ({
+                              id: i.id, productName: i.product.name,
+                              quantity: Number(i.quantity), receivedQuantity: Number(i.receivedQuantity),
+                            }))}
+                          />
+                          {po.items.every((i) => Number(i.receivedQuantity) === 0) && <CancelPoButton poId={po.id} />}
+                        </>
+                      )}
+                      {user.role === "ADMIN" && (po.status === "DRAFT" || po.status === "CANCELLED") && (
+                        <DeleteRecordButton module="purchase-orders" id={po.id} label={po.poNumber} />
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -106,6 +112,7 @@ export default async function PurchasesPage() {
                 <TableHead>Phone</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Status</TableHead>
+                {user.role === "ADMIN" && <TableHead className="text-right">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -116,10 +123,15 @@ export default async function PurchasesPage() {
                   <TableCell>{s.phone ?? "—"}</TableCell>
                   <TableCell>{s.email ?? "—"}</TableCell>
                   <TableCell><Badge className={s.status === "ACTIVE" ? "bg-green-600" : ""} variant={s.status === "ACTIVE" ? "default" : "secondary"}>{s.status}</Badge></TableCell>
+                  {user.role === "ADMIN" && (
+                    <TableCell className="text-right">
+                      <DeleteRecordButton module="suppliers" id={s.id} label={s.name} />
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
               {suppliers.length === 0 && (
-                <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No suppliers yet.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No suppliers yet.</TableCell></TableRow>
               )}
             </TableBody>
           </Table>

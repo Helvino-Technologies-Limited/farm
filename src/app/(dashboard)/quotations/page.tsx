@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { QuotationFormDialog } from "@/components/quotations/quotation-form-dialog";
 import { QuotationRowActions } from "@/components/quotations/quotation-row-actions";
+import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { canWrite } from "@/lib/permissions";
 
@@ -53,7 +54,12 @@ export default async function QuotationsPage() {
                 <TableCell>
                   <Badge variant={STATUS_COLORS[q.status] as "default" | "secondary" | "destructive" | "outline"}>{q.status}</Badge>
                 </TableCell>
-                <TableCell>{canWrite(user.role, "quotations") && <QuotationRowActions id={q.id} status={q.status} />}</TableCell>
+                <TableCell>
+                  <div className="flex justify-end gap-2">
+                    {canWrite(user.role, "quotations") && <QuotationRowActions id={q.id} status={q.status} />}
+                    {user.role === "ADMIN" && <DeleteRecordButton module="quotations" id={q.id} label={q.quotationNumber} />}
+                  </div>
+                </TableCell>
               </TableRow>
             ))}
             {quotations.length === 0 && (

@@ -49,7 +49,7 @@ export type MortalityInput = z.infer<typeof mortalitySchema>;
 
 export const feedRecordSchema = z.object({
   batchId: z.string().min(1),
-  feedType: z.string().min(1, "Feed type is required"),
+  productId: z.string().min(1, "Feed product is required"),
   quantity: z.coerce.number().positive(),
   unit: z.string().min(1),
   cost: optionalNumber(z.coerce.number().min(0)),

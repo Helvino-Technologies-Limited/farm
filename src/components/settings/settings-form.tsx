@@ -28,6 +28,8 @@ export function SettingsForm({ settings }: { settings: SystemSetting | null }) {
     currency: settings?.currency ?? "KES",
     defaultDiscountLimit: Number(settings?.defaultDiscountLimit ?? 10),
     creditSaleRequiresApproval: settings?.creditSaleRequiresApproval ?? true,
+    poultryBasePrice: Number(settings?.poultryBasePrice ?? 120),
+    poultryWeeklyIncrement: Number(settings?.poultryWeeklyIncrement ?? 30),
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -140,6 +142,36 @@ export function SettingsForm({ settings }: { settings: SystemSetting | null }) {
           />
           Credit sales require approval oversight
         </label>
+      </div>
+
+      <div className="space-y-4 border-t pt-4">
+        <h3 className="text-sm font-medium text-muted-foreground">Poultry Age-Based Pricing</h3>
+        <p className="text-xs text-muted-foreground -mt-2">
+          Used automatically for any age not covered by a specific pricing rule under Poultry.
+          Price = Base Price + (Weekly Increment × completed weeks of age).
+        </p>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="settings-poultry-base">Base Price (Day 1, KES)</Label>
+            <Input
+              id="settings-poultry-base"
+              type="number"
+              step="0.01"
+              value={form.poultryBasePrice}
+              onChange={(e) => setForm((f) => ({ ...f, poultryBasePrice: Number(e.target.value) }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="settings-poultry-increment">Weekly Increment (KES)</Label>
+            <Input
+              id="settings-poultry-increment"
+              type="number"
+              step="0.01"
+              value={form.poultryWeeklyIncrement}
+              onChange={(e) => setForm((f) => ({ ...f, poultryWeeklyIncrement: Number(e.target.value) }))}
+            />
+          </div>
+        </div>
       </div>
 
       <Button onClick={onSubmit} disabled={submitting}>{submitting ? "Saving..." : "Save Settings"}</Button>

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ProductFormDialog } from "@/components/products/product-form-dialog";
 import { ProductMediaCell } from "@/components/products/product-media-cell";
 import { PubliclyListedToggle } from "@/components/products/publicly-listed-toggle";
+import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { formatCurrency, formatNumber } from "@/lib/format";
 import { canWrite } from "@/lib/permissions";
 
@@ -41,6 +42,7 @@ export default async function ProductsPage() {
               <TableHead className="text-right">Stock</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Catalog</TableHead>
+              {user.role === "ADMIN" && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -80,10 +82,15 @@ export default async function ProductsPage() {
                     <Badge variant={p.publiclyListed ? "default" : "secondary"}>{p.publiclyListed ? "Listed" : "Hidden"}</Badge>
                   )}
                 </TableCell>
+                {user.role === "ADMIN" && (
+                  <TableCell className="text-right">
+                    <DeleteRecordButton module="products" id={p.id} label={p.name} />
+                  </TableCell>
+                )}
               </TableRow>
             ))}
             {products.length === 0 && (
-              <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-8">No products yet. Add your first product to get started.</TableCell></TableRow>
+              <TableRow><TableCell colSpan={9} className="text-center text-muted-foreground py-8">No products yet. Add your first product to get started.</TableCell></TableRow>
             )}
           </TableBody>
         </Table>

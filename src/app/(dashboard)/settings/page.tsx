@@ -7,6 +7,7 @@ import { SettingsForm } from "@/components/settings/settings-form";
 import { LogoUpload } from "@/components/settings/logo-upload";
 import { HeroVideoUpload } from "@/components/settings/hero-video-upload";
 import { QuickAddCategory, QuickAddUnit } from "@/components/settings/quick-add-forms";
+import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 
 export const dynamic = "force-dynamic";
 
@@ -52,7 +53,14 @@ export default async function SettingsPage() {
         <CardContent className="space-y-4">
           {isAdmin && <QuickAddCategory />}
           <div className="flex flex-wrap gap-2">
-            {categories.map((c) => <Badge key={c.id} variant="secondary">{c.name} ({c.code})</Badge>)}
+            {categories.map((c) => (
+              <span key={c.id} className="inline-flex items-center gap-1 rounded-full">
+                <Badge variant="secondary">{c.name} ({c.code})</Badge>
+                {isAdmin && (
+                  <DeleteRecordButton module="product-categories" id={c.id} label={c.name} className="h-6 w-6" />
+                )}
+              </span>
+            ))}
           </div>
         </CardContent>
       </Card>
@@ -62,7 +70,12 @@ export default async function SettingsPage() {
         <CardContent className="space-y-4">
           {isAdmin && <QuickAddUnit />}
           <div className="flex flex-wrap gap-2">
-            {units.map((u) => <Badge key={u.id} variant="secondary">{u.name} ({u.abbreviation})</Badge>)}
+            {units.map((u) => (
+              <span key={u.id} className="inline-flex items-center gap-1 rounded-full">
+                <Badge variant="secondary">{u.name} ({u.abbreviation})</Badge>
+                {isAdmin && <DeleteRecordButton module="units" id={u.id} label={u.name} className="h-6 w-6" />}
+              </span>
+            ))}
           </div>
         </CardContent>
       </Card>

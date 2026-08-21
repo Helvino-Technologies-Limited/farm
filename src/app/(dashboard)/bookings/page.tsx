@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { BookingFormDialog } from "@/components/bookings/booking-form-dialog";
 import { BookingRowActions } from "@/components/bookings/booking-row-actions";
+import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { canWrite } from "@/lib/permissions";
 
@@ -61,7 +62,14 @@ export default async function BookingsPage() {
                 <TableCell className="text-right">{formatCurrency(Number(b.totalAmount))}</TableCell>
                 <TableCell className="text-right">{formatCurrency(Number(b.depositAmount))}</TableCell>
                 <TableCell><Badge variant={STATUS_VARIANT[b.status]}>{b.status.replace("_", " ")}</Badge></TableCell>
-                <TableCell>{canWrite(user.role, "bookings") && <BookingRowActions id={b.id} status={b.status} totalAmount={Number(b.totalAmount)} />}</TableCell>
+                <TableCell>
+                  <div className="flex justify-end gap-2">
+                    {canWrite(user.role, "bookings") && <BookingRowActions id={b.id} status={b.status} totalAmount={Number(b.totalAmount)} />}
+                    {user.role === "ADMIN" && (b.status === "PENDING" || b.status === "CANCELLED") && (
+                      <DeleteRecordButton module="bookings" id={b.id} label={b.bookingNumber} />
+                    )}
+                  </div>
+                </TableCell>
               </TableRow>
             ))}
             {bookings.length === 0 && (
