@@ -71,7 +71,11 @@ export function PriceRuleFormDialog({
           </div>
           <div className="space-y-2">
             <Label>Rule Type</Label>
-            <Select value={type} onValueChange={(v) => v && setValue("type", v as FormShape["type"])}>
+            <Select
+              items={Object.fromEntries(TYPES.map((t) => [t, t.replace("_", " ")]))}
+              value={type}
+              onValueChange={(v) => v && setValue("type", v as FormShape["type"])}
+            >
               <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {TYPES.map((t) => <SelectItem key={t} value={t}>{t.replace("_", " ")}</SelectItem>)}

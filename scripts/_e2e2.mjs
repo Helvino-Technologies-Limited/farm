@@ -54,7 +54,7 @@ try {
   await page.getByLabel("Hatch Date").fill("2026-08-01");
   await page.getByLabel("Initial Quantity").fill("50");
   await page.getByText("Select poultry product").click();
-  await page.getByRole("option", { name: "__TEST__ Portal Kienyeji" }).click();
+  await page.getByRole("option", { name: "__TEST__ Portal Kienyeji" }).first().click();
   await page.getByRole("button", { name: /create batch/i }).click();
   await page.waitForTimeout(1500);
   await shot("13-batch-created");
@@ -86,24 +86,19 @@ try {
   console.log("Redirected to login with next param:", page.url());
 
   await page.getByRole("link", { name: /create an account/i }).click();
-  await page.waitForURL("**/portal/register");
+  await page.waitForURL("**/portal/register**");
   await page.getByLabel("Full Name").fill("Test Portal Customer");
   await page.getByLabel("Email").fill(testEmail);
   await page.getByLabel("Phone").fill("0711000000");
   await page.getByLabel("Password").fill("TestPass123");
   await page.getByRole("button", { name: /create account/i }).click();
-  await page.waitForURL("**/portal", { timeout: 25000 });
-  console.log("Registered + logged in, at:", page.url());
-  await shot("16-portal-dashboard-empty");
-
-  await page.goto("http://localhost:3000/", { waitUntil: "networkidle" });
-  const card2 = page.locator("div", { hasText: "__TEST__ Portal Kienyeji" }).last();
-  await card2.getByRole("button", { name: /book now/i }).click();
-  await page.waitForURL("**/portal/book/**", { timeout: 15000 });
+  await page.waitForURL("**/portal/book/**", { timeout: 25000 });
+  console.log("Registered + logged in, redirected straight back to booking page:", page.url());
   await shot("17-book-page");
 
-  await page.getByText("Select batch").click();
-  await page.getByRole("option").first().click();
+  // A batch is pre-selected by default; just confirm the label resolved correctly (not a raw id).
+  const batchSelectText = await page.locator("text=/AVP-PLT-/").first().innerText().catch(() => "");
+  console.log("Batch select shows friendly label:", batchSelectText);
   await page.locator('input[type="number"]').first().fill("5");
   await page.getByRole("button", { name: /^book now$/i }).click();
   await page.waitForURL("**/portal/invoices/**", { timeout: 20000 });

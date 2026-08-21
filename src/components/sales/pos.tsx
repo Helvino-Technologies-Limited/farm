@@ -266,7 +266,11 @@ export function Pos({
           </div>
           <div className="space-y-2">
             <Label>Payment Method</Label>
-            <Select value={paymentMethod} onValueChange={(v) => setPaymentMethod(v as typeof paymentMethod)}>
+            <Select
+              items={Object.fromEntries(PAYMENT_METHODS.map((m) => [m, m]))}
+              value={paymentMethod}
+              onValueChange={(v) => setPaymentMethod(v as typeof paymentMethod)}
+            >
               <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {PAYMENT_METHODS.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}

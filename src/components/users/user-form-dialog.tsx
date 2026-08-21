@@ -85,7 +85,11 @@ export function UserFormDialog() {
           </div>
           <div className="space-y-2">
             <Label>Role</Label>
-            <Select value={watch("role")} onValueChange={(v) => setValue("role", v as FormValues["role"])}>
+            <Select
+              items={Object.fromEntries(ROLES.map((r) => [r, r.charAt(0) + r.slice(1).toLowerCase()]))}
+              value={watch("role")}
+              onValueChange={(v) => setValue("role", v as FormValues["role"])}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>

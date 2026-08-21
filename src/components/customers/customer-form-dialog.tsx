@@ -75,7 +75,11 @@ export function CustomerFormDialog() {
             </div>
             <div className="space-y-2">
               <Label>Customer Type</Label>
-              <Select value={watch("customerType")} onValueChange={(v) => setValue("customerType", v as FormShape["customerType"])}>
+              <Select
+                items={Object.fromEntries(TYPES.map((t) => [t, t.charAt(0) + t.slice(1).toLowerCase()]))}
+                value={watch("customerType")}
+                onValueChange={(v) => setValue("customerType", v as FormShape["customerType"])}
+              >
                 <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {TYPES.map((t) => <SelectItem key={t} value={t}>{t.charAt(0) + t.slice(1).toLowerCase()}</SelectItem>)}

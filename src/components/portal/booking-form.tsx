@@ -56,7 +56,11 @@ export function PortalBookingForm({
       {isPoultry && (
         <div className="space-y-2">
           <Label>Batch</Label>
-          <Select value={batchId} onValueChange={(v) => v && setBatchId(v)}>
+          <Select
+            items={Object.fromEntries(batches.map((b) => [b.id, `${b.batchNumber} (${b.available} available)`]))}
+            value={batchId}
+            onValueChange={(v) => v && setBatchId(v)}
+          >
             <SelectTrigger className="w-full"><SelectValue placeholder="Select batch" /></SelectTrigger>
             <SelectContent>
               {batches.map((b) => <SelectItem key={b.id} value={b.id}>{b.batchNumber} ({b.available} available)</SelectItem>)}
@@ -76,7 +80,11 @@ export function PortalBookingForm({
       </div>
       <div className="space-y-2">
         <Label>Delivery Method</Label>
-        <Select value={deliveryMethod} onValueChange={(v) => v && setDeliveryMethod(v as typeof deliveryMethod)}>
+        <Select
+          items={{ COLLECTION: "Collection from farm", DELIVERY: "Delivery" }}
+          value={deliveryMethod}
+          onValueChange={(v) => v && setDeliveryMethod(v as typeof deliveryMethod)}
+        >
           <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="COLLECTION">Collection from farm</SelectItem>

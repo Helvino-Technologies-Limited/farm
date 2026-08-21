@@ -96,7 +96,11 @@ export function BookingFormDialog({ products, batches, customers }: { products: 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Delivery Method</Label>
-              <Select value={deliveryMethod} onValueChange={(v) => v && setDeliveryMethod(v as "COLLECTION" | "DELIVERY")}>
+              <Select
+                items={{ COLLECTION: "Collection", DELIVERY: "Delivery" }}
+                value={deliveryMethod}
+                onValueChange={(v) => v && setDeliveryMethod(v as "COLLECTION" | "DELIVERY")}
+              >
                 <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                 <SelectContent><SelectItem value="COLLECTION">Collection</SelectItem><SelectItem value="DELIVERY">Delivery</SelectItem></SelectContent>
               </Select>

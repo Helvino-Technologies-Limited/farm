@@ -42,7 +42,11 @@ export function QuickAddCategory() {
       <div className="space-y-1"><Label className="text-xs">Code</Label><Input value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} /></div>
       <div className="space-y-1">
         <Label className="text-xs">Sales Centre</Label>
-        <Select value={salesCentre} onValueChange={(v) => v && setSalesCentre(v)}>
+        <Select
+          items={Object.fromEntries(SALES_CENTRES.map((s) => [s, s.replace("_", " ")]))}
+          value={salesCentre}
+          onValueChange={(v) => v && setSalesCentre(v)}
+        >
           <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
           <SelectContent>{SALES_CENTRES.map((s) => <SelectItem key={s} value={s}>{s.replace("_", " ")}</SelectItem>)}</SelectContent>
         </Select>

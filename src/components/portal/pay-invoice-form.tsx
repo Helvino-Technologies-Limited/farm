@@ -47,7 +47,11 @@ export function PayInvoiceForm({ invoiceId, balance }: { invoiceId: string; bala
         </div>
         <div className="space-y-2">
           <Label>Method</Label>
-          <Select value={method} onValueChange={(v) => v && setMethod(v as typeof method)}>
+          <Select
+            items={Object.fromEntries(METHODS.map((m) => [m, m]))}
+            value={method}
+            onValueChange={(v) => v && setMethod(v as typeof method)}
+          >
             <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
             <SelectContent>{METHODS.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent>
           </Select>
