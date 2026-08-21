@@ -48,11 +48,11 @@ const WRITE: Record<Role, ModuleKey[]> = {
   ADMIN: [...MODULES],
   MANAGER: [
     "customers", "products", "pricing", "poultry", "quotations", "bookings",
-    "sales", "invoices", "payments", "inventory", "purchases", "expenses", "cash",
+    "sales", "invoices", "payments", "credit", "inventory", "purchases", "expenses", "cash",
   ],
   SALES: ["customers", "quotations", "bookings", "sales", "invoices"],
   CASHIER: ["payments", "cash"],
-  ACCOUNTANT: ["payments", "expenses", "cash"],
+  ACCOUNTANT: ["payments", "expenses", "cash", "credit"],
   PRODUCTION: ["poultry", "inventory"],
   POULTRY: ["poultry"],
   STOREKEEPER: ["inventory", "purchases"],

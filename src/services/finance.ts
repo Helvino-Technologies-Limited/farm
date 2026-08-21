@@ -1,5 +1,8 @@
 import "server-only";
-import { db } from "@/lib/db";
+import { db, withTransaction } from "@/lib/db";
+import { nextDocumentNumber } from "./numbering";
+import { logAudit } from "./audit";
+import type { SessionUser } from "@/lib/auth";
 import type { Prisma, InvoiceStatus } from "@prisma/client";
 
 type Client = typeof db | Prisma.TransactionClient;
@@ -89,6 +92,47 @@ export async function calculateCustomerBalance(client: Client, customerId: strin
     _sum: { balance: true },
   });
   return round2(Number(agg._sum.balance ?? 0));
+}
+
+/** Records a pre-existing/manual debt for a customer (e.g. onboarding a customer who already
+ *  owes the farm from before this system was in use) as a standalone invoice with no line
+ *  items tied to inventory — so it flows through the same ageing/credit tracking as any other
+ *  unpaid invoice. Not subject to the credit-limit check since it's recording a historical fact,
+ *  not extending new credit. */
+export async function recordManualDebt(
+  params: { customerId: string; amount: number; description: string; dueDate?: Date },
+  actingUser: SessionUser
+) {
+  return withTransaction(async (tx) => {
+    const invoiceNumber = await nextDocumentNumber(tx, "INVOICE");
+    const invoice = await tx.invoice.create({
+      data: {
+        invoiceNumber,
+        customerId: params.customerId,
+        dueDate: params.dueDate,
+        subtotal: params.amount,
+        discount: 0,
+        total: params.amount,
+        amountPaid: 0,
+        balance: params.amount,
+        status: "ISSUED",
+        createdById: actingUser.id,
+        items: {
+          create: [{ description: params.description, quantity: 1, unitPrice: params.amount, discount: 0, total: params.amount }],
+        },
+      },
+    });
+
+    await logAudit(tx, {
+      user: actingUser,
+      action: "CREATE",
+      module: "credit",
+      recordId: invoice.id,
+      newValue: { invoiceNumber, customerId: params.customerId, amount: params.amount, description: params.description },
+    });
+
+    return invoice;
+  });
 }
 
 export type AgeingBucket = "current" | "1-7" | "8-30" | "31-60" | "61-90" | "90+";

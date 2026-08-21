@@ -22,6 +22,32 @@ export async function notifyCustomer(
   });
 }
 
+/** Best-effort: creates a staff notification the first time each given overdue invoice is seen,
+ *  so the voice-alert bell surfaces "call the customer" reminders. Safe to call on every Credit
+ *  page load — skips invoices already notified (deduped by module+recordId). */
+export async function notifyOverdueInvoices(
+  client: Client,
+  invoices: { id: string; invoiceNumber: string; balance: number; customer: { name: string; phone: string } }[]
+): Promise<void> {
+  if (invoices.length === 0) return;
+  const alreadyNotified = await client.staffNotification.findMany({
+    where: { module: "credit-overdue", recordId: { in: invoices.map((i) => i.id) } },
+    select: { recordId: true },
+  });
+  const notifiedIds = new Set(alreadyNotified.map((n) => n.recordId));
+  const toNotify = invoices.filter((i) => !notifiedIds.has(i.id));
+
+  for (const inv of toNotify) {
+    await notifyStaff(client, {
+      title: "Payment overdue — call customer",
+      message: `${inv.customer.name} (${inv.customer.phone}) owes ${inv.balance.toLocaleString()} on invoice ${inv.invoiceNumber}, now overdue.`,
+      type: "PAYMENT",
+      module: "credit-overdue",
+      recordId: inv.id,
+    });
+  }
+}
+
 /** Creates a farm-wide staff notification (visible to Admin/Manager) for events that need
  *  attention: a new online booking, a payment received, a new customer enquiry, etc. */
 export async function notifyStaff(
