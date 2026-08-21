@@ -92,6 +92,23 @@ export async function requireRole(...roles: Role[]): Promise<SessionUser> {
   return user;
 }
 
+export async function requireModuleAccess(module: import("@/lib/permissions").ModuleKey): Promise<SessionUser> {
+  const { canRead } = await import("@/lib/permissions");
+  const user = await requireUser();
+  if (!canRead(user.role, module)) redirect("/dashboard?error=forbidden");
+  return user;
+}
+
+/** For server actions that create/update records — throws (rather than redirecting) so the
+ *  calling client component can show an error toast instead of navigating away. */
+export async function requireModuleWrite(module: import("@/lib/permissions").ModuleKey): Promise<SessionUser> {
+  const { canWrite } = await import("@/lib/permissions");
+  const user = await getSession();
+  if (!user) throw new Error("You must be signed in.");
+  if (!canWrite(user.role, module)) throw new Error("You do not have permission to do this.");
+  return user;
+}
+
 /** Returns true if the account is currently locked out from failed login attempts. */
 export function isLockedOut(user: Pick<User, "lockedUntil">): boolean {
   return !!user.lockedUntil && user.lockedUntil > new Date();
