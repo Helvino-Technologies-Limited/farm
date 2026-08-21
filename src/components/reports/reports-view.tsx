@@ -93,12 +93,12 @@ export function ReportsView({ initial, farmName }: { initial: DailySalesSummary;
         <CardHeader><CardTitle>Filters</CardTitle></CardHeader>
         <CardContent className="flex flex-wrap items-end gap-4">
           <div className="space-y-2">
-            <Label>From</Label>
-            <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+            <Label htmlFor="report-from">From</Label>
+            <Input id="report-from" type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label>To</Label>
-            <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+            <Label htmlFor="report-to">To</Label>
+            <Input id="report-to" type="date" value={to} onChange={(e) => setTo(e.target.value)} />
           </div>
           <Button onClick={refresh} disabled={pending}>{pending ? "Loading..." : "Apply"}</Button>
           <div className="flex-1" />

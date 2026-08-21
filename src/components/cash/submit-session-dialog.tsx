@@ -38,8 +38,8 @@ export function SubmitSessionDialog({ sessionId, expectedCash }: { sessionId: st
         <DialogHeader><DialogTitle>Submit Cash Session</DialogTitle></DialogHeader>
         <p className="text-sm text-muted-foreground">Expected cash: <span className="font-medium text-foreground">{formatCurrency(expectedCash)}</span></p>
         <div className="space-y-2">
-          <Label>Actual Cash Counted</Label>
-          <Input type="number" step="0.01" value={actualCash} onChange={(e) => setActualCash(e.target.value === "" ? "" : Number(e.target.value))} />
+          <Label htmlFor="actual-cash">Actual Cash Counted</Label>
+          <Input id="actual-cash" type="number" step="0.01" value={actualCash} onChange={(e) => setActualCash(e.target.value === "" ? "" : Number(e.target.value))} />
         </div>
         <DialogFooter>
           <Button onClick={onSubmit} disabled={submitting}>{submitting ? "Submitting..." : "Submit"}</Button>

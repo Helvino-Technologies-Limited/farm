@@ -39,37 +39,37 @@ export function SettingsForm({ settings }: { settings: SystemSetting | null }) {
   return (
     <div className="space-y-4 max-w-xl">
       <div className="space-y-2">
-        <Label>Farm Name</Label>
-        <Input value={form.farmName} onChange={(e) => setForm((f) => ({ ...f, farmName: e.target.value }))} />
+        <Label htmlFor="settings-farm-name">Farm Name</Label>
+        <Input id="settings-farm-name" value={form.farmName} onChange={(e) => setForm((f) => ({ ...f, farmName: e.target.value }))} />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label>Phone</Label>
-          <Input value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} />
+          <Label htmlFor="settings-phone">Phone</Label>
+          <Input id="settings-phone" value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} />
         </div>
         <div className="space-y-2">
-          <Label>Email</Label>
-          <Input value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} />
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Location</Label>
-          <Input value={form.location} onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))} />
-        </div>
-        <div className="space-y-2">
-          <Label>Address</Label>
-          <Input value={form.address} onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))} />
+          <Label htmlFor="settings-email">Email</Label>
+          <Input id="settings-email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label>Currency</Label>
-          <Input value={form.currency} onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))} />
+          <Label htmlFor="settings-location">Location</Label>
+          <Input id="settings-location" value={form.location} onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))} />
         </div>
         <div className="space-y-2">
-          <Label>Default Discount Limit (%)</Label>
-          <Input type="number" value={form.defaultDiscountLimit} onChange={(e) => setForm((f) => ({ ...f, defaultDiscountLimit: Number(e.target.value) }))} />
+          <Label htmlFor="settings-address">Address</Label>
+          <Input id="settings-address" value={form.address} onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))} />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="settings-currency">Currency</Label>
+          <Input id="settings-currency" value={form.currency} onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))} />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="settings-discount-limit">Default Discount Limit (%)</Label>
+          <Input id="settings-discount-limit" type="number" value={form.defaultDiscountLimit} onChange={(e) => setForm((f) => ({ ...f, defaultDiscountLimit: Number(e.target.value) }))} />
         </div>
       </div>
       <label className="flex items-center gap-2 text-sm">

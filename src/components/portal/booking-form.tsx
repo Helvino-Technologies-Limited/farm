@@ -70,12 +70,12 @@ export function PortalBookingForm({
       )}
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label>Quantity ({unitLabel})</Label>
-          <Input type="number" min={1} value={quantity} onChange={(e) => setQuantity(Number(e.target.value) || 0)} />
+          <Label htmlFor="booking-quantity">Quantity ({unitLabel})</Label>
+          <Input id="booking-quantity" type="number" min={1} value={quantity} onChange={(e) => setQuantity(Number(e.target.value) || 0)} />
         </div>
         <div className="space-y-2">
-          <Label>Required Date</Label>
-          <Input type="date" value={requiredDate} onChange={(e) => setRequiredDate(e.target.value)} />
+          <Label htmlFor="booking-required-date">Required Date</Label>
+          <Input id="booking-required-date" type="date" value={requiredDate} onChange={(e) => setRequiredDate(e.target.value)} />
         </div>
       </div>
       <div className="space-y-2">

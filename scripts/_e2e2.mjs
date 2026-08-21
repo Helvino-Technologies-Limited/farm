@@ -106,10 +106,12 @@ try {
   await shot("18-invoice-after-booking");
 
   console.log("=== Submit a payment ===");
-  await page.getByLabel("Amount").fill("1000");
-  await page.getByLabel(/M-Pesa Code|Reference/i).fill("TEST123XYZ");
-  await page.getByRole("button", { name: /submit payment/i }).click();
-  await page.waitForTimeout(2000);
+  await page.waitForLoadState("networkidle");
+  const paymentCard = page.locator("div", { hasText: "Make a Payment" }).last();
+  await paymentCard.getByLabel("Amount", { exact: true }).fill("1000");
+  await paymentCard.getByLabel(/M-Pesa Code|Reference/i).fill("TEST123XYZ");
+  await paymentCard.getByRole("button", { name: /submit payment/i }).click();
+  await page.waitForTimeout(3000);
   await shot("19-after-payment");
 
   const balanceText = await page.locator("text=Balance").first().innerText().catch(() => "");

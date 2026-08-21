@@ -82,8 +82,8 @@ export function QuotationFormDialog({ products, customers }: { products: Product
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Valid Until</Label>
-              <Input type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} />
+              <Label htmlFor="quotation-valid-until">Valid Until</Label>
+              <Input id="quotation-valid-until" type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} />
             </div>
           </div>
 
@@ -97,12 +97,12 @@ export function QuotationFormDialog({ products, customers }: { products: Product
                 </Select>
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Qty</Label>
-                <Input type="number" value={qty} onChange={(e) => setQty(Number(e.target.value))} />
+                <Label htmlFor="quotation-qty" className="text-xs">Qty</Label>
+                <Input id="quotation-qty" type="number" value={qty} onChange={(e) => setQty(Number(e.target.value))} />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Price</Label>
-                <Input type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value === "" ? "" : Number(e.target.value))} />
+                <Label htmlFor="quotation-price" className="text-xs">Price</Label>
+                <Input id="quotation-price" type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value === "" ? "" : Number(e.target.value))} />
               </div>
             </div>
             <Button type="button" variant="outline" size="sm" onClick={addLine}><Plus className="h-3 w-3" /> Add Item</Button>
@@ -124,8 +124,8 @@ export function QuotationFormDialog({ products, customers }: { products: Product
           </div>
 
           <div className="space-y-2">
-            <Label>Terms</Label>
-            <Input value={terms} onChange={(e) => setTerms(e.target.value)} placeholder="Optional terms & conditions" />
+            <Label htmlFor="quotation-terms">Terms</Label>
+            <Input id="quotation-terms" value={terms} onChange={(e) => setTerms(e.target.value)} placeholder="Optional terms & conditions" />
           </div>
         </div>
         <DialogFooter>

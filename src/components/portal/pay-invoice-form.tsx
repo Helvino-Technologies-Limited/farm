@@ -42,8 +42,8 @@ export function PayInvoiceForm({ invoiceId, balance }: { invoiceId: string; bala
       <p className="text-sm text-muted-foreground">Balance due: <span className="font-medium text-foreground">{formatCurrency(balance)}</span></p>
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-2">
-          <Label>Amount</Label>
-          <Input type="number" step="0.01" max={balance} value={amount} onChange={(e) => setAmount(Number(e.target.value) || 0)} />
+          <Label htmlFor="pay-amount">Amount</Label>
+          <Input id="pay-amount" type="number" step="0.01" max={balance} value={amount} onChange={(e) => setAmount(Number(e.target.value) || 0)} />
         </div>
         <div className="space-y-2">
           <Label>Method</Label>
@@ -57,8 +57,8 @@ export function PayInvoiceForm({ invoiceId, balance }: { invoiceId: string; bala
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>{method === "MPESA" ? "M-Pesa Code" : "Reference"}</Label>
-          <Input value={reference} onChange={(e) => setReference(e.target.value)} placeholder={method === "MPESA" ? "e.g. QK7X8Y9Z" : "Reference"} />
+          <Label htmlFor="pay-reference">{method === "MPESA" ? "M-Pesa Code" : "Reference"}</Label>
+          <Input id="pay-reference" value={reference} onChange={(e) => setReference(e.target.value)} placeholder={method === "MPESA" ? "e.g. QK7X8Y9Z" : "Reference"} />
         </div>
       </div>
       <Button onClick={onSubmit} disabled={submitting}>{submitting ? "Submitting..." : "Submit Payment"}</Button>

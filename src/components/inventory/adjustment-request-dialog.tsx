@@ -54,12 +54,12 @@ export function AdjustmentRequestDialog({ products }: { products: { id: string; 
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Quantity (+/-)</Label>
-            <Input type="number" step="0.001" value={quantity} onChange={(e) => setQuantity(e.target.value === "" ? "" : Number(e.target.value))} />
+            <Label htmlFor="adj-quantity">Quantity (+/-)</Label>
+            <Input id="adj-quantity" type="number" step="0.001" value={quantity} onChange={(e) => setQuantity(e.target.value === "" ? "" : Number(e.target.value))} />
           </div>
           <div className="space-y-2">
-            <Label>Reason</Label>
-            <Input value={reason} onChange={(e) => setReason(e.target.value)} />
+            <Label htmlFor="adj-reason">Reason</Label>
+            <Input id="adj-reason" value={reason} onChange={(e) => setReason(e.target.value)} />
           </div>
         </div>
         <DialogFooter>

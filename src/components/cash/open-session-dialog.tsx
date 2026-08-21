@@ -40,8 +40,8 @@ export function OpenSessionDialog() {
       <DialogContent>
         <DialogHeader><DialogTitle>Open Cash Session</DialogTitle></DialogHeader>
         <div className="space-y-2">
-          <Label>Opening Cash (KES)</Label>
-          <Input type="number" step="0.01" value={openingCash} onChange={(e) => setOpeningCash(e.target.value === "" ? "" : Number(e.target.value))} />
+          <Label htmlFor="opening-cash">Opening Cash (KES)</Label>
+          <Input id="opening-cash" type="number" step="0.01" value={openingCash} onChange={(e) => setOpeningCash(e.target.value === "" ? "" : Number(e.target.value))} />
         </div>
         <DialogFooter>
           <Button onClick={onSubmit} disabled={submitting}>{submitting ? "Opening..." : "Open Session"}</Button>

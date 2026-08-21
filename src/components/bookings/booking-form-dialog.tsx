@@ -89,8 +89,8 @@ export function BookingFormDialog({ products, batches, customers }: { products: 
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Required Date</Label>
-              <Input type="date" value={requiredDate} onChange={(e) => setRequiredDate(e.target.value)} />
+              <Label htmlFor="staff-booking-required-date">Required Date</Label>
+              <Input id="staff-booking-required-date" type="date" value={requiredDate} onChange={(e) => setRequiredDate(e.target.value)} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -106,8 +106,8 @@ export function BookingFormDialog({ products, batches, customers }: { products: 
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Deposit Amount</Label>
-              <Input type="number" step="0.01" value={depositAmount} onChange={(e) => setDepositAmount(Number(e.target.value) || 0)} />
+              <Label htmlFor="staff-booking-deposit">Deposit Amount</Label>
+              <Input id="staff-booking-deposit" type="number" step="0.01" value={depositAmount} onChange={(e) => setDepositAmount(Number(e.target.value) || 0)} />
             </div>
           </div>
 
@@ -130,12 +130,12 @@ export function BookingFormDialog({ products, batches, customers }: { products: 
                 </div>
               )}
               <div className="space-y-1">
-                <Label className="text-xs">Qty</Label>
-                <Input type="number" value={qty} onChange={(e) => setQty(Number(e.target.value))} />
+                <Label htmlFor="staff-booking-qty" className="text-xs">Qty</Label>
+                <Input id="staff-booking-qty" type="number" value={qty} onChange={(e) => setQty(Number(e.target.value))} />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Price</Label>
-                <Input type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value === "" ? "" : Number(e.target.value))} />
+                <Label htmlFor="staff-booking-price" className="text-xs">Price</Label>
+                <Input id="staff-booking-price" type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value === "" ? "" : Number(e.target.value))} />
               </div>
             </div>
             <Button type="button" variant="outline" size="sm" onClick={addLine}><Plus className="h-3 w-3" /> Add Item</Button>

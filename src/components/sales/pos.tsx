@@ -223,8 +223,9 @@ export function Pos({
           </div>
           <div className="grid grid-cols-3 gap-4 items-end">
             <div className="space-y-2">
-              <Label>Quantity</Label>
+              <Label htmlFor="pos-quantity">Quantity</Label>
               <Input
+                id="pos-quantity"
                 type="number"
                 value={addQty}
                 onChange={(e) => {
@@ -235,8 +236,9 @@ export function Pos({
               />
             </div>
             <div className="space-y-2">
-              <Label>Unit Price {loadingPrice && <span className="text-xs text-muted-foreground">(loading...)</span>}</Label>
+              <Label htmlFor="pos-unit-price">Unit Price {loadingPrice && <span className="text-xs text-muted-foreground">(loading...)</span>}</Label>
               <Input
+                id="pos-unit-price"
                 type="number"
                 step="0.01"
                 value={addPrice}
@@ -279,13 +281,13 @@ export function Pos({
           </div>
           {paymentMethod !== "CASH" && (
             <div className="space-y-2">
-              <Label>Transaction Reference</Label>
-              <Input value={transactionReference} onChange={(e) => setTransactionReference(e.target.value)} placeholder="e.g. M-Pesa code" />
+              <Label htmlFor="pos-transaction-reference">Transaction Reference</Label>
+              <Input id="pos-transaction-reference" value={transactionReference} onChange={(e) => setTransactionReference(e.target.value)} placeholder="e.g. M-Pesa code" />
             </div>
           )}
           <div className="space-y-2">
-            <Label>Overall Discount</Label>
-            <Input type="number" step="0.01" value={saleDiscount} onChange={(e) => setSaleDiscount(Number(e.target.value) || 0)} disabled={!canOverridePrice} />
+            <Label htmlFor="pos-discount">Overall Discount</Label>
+            <Input id="pos-discount" type="number" step="0.01" value={saleDiscount} onChange={(e) => setSaleDiscount(Number(e.target.value) || 0)} disabled={!canOverridePrice} />
           </div>
           <div className="space-y-1 border-t pt-3 text-sm">
             <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatCurrency(subtotal)}</span></div>
@@ -293,8 +295,9 @@ export function Pos({
             <div className="flex justify-between font-semibold text-base"><span>Total</span><span>{formatCurrency(total)}</span></div>
           </div>
           <div className="space-y-2">
-            <Label>Amount Paid</Label>
+            <Label htmlFor="pos-amount-paid">Amount Paid</Label>
             <Input
+              id="pos-amount-paid"
               type="number"
               step="0.01"
               placeholder={total.toFixed(2)}

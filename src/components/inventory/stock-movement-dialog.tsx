@@ -56,24 +56,28 @@ export function StockMovementDialog({ products }: { products: { id: string; name
           </div>
           <div className="space-y-2">
             <Label>Movement Type</Label>
-            <Select value={type} onValueChange={(v) => v && setType(v as typeof type)}>
+            <Select
+              items={Object.fromEntries(TYPES.map((t) => [t, t]))}
+              value={type}
+              onValueChange={(v) => v && setType(v as typeof type)}
+            >
               <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>{TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
             </Select>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Quantity</Label>
-              <Input type="number" step="0.001" value={quantity} onChange={(e) => setQuantity(e.target.value === "" ? "" : Number(e.target.value))} />
+              <Label htmlFor="movement-quantity">Quantity</Label>
+              <Input id="movement-quantity" type="number" step="0.001" value={quantity} onChange={(e) => setQuantity(e.target.value === "" ? "" : Number(e.target.value))} />
             </div>
             <div className="space-y-2">
-              <Label>Unit Cost (optional)</Label>
-              <Input type="number" step="0.01" value={unitCost} onChange={(e) => setUnitCost(e.target.value === "" ? "" : Number(e.target.value))} />
+              <Label htmlFor="movement-unit-cost">Unit Cost (optional)</Label>
+              <Input id="movement-unit-cost" type="number" step="0.01" value={unitCost} onChange={(e) => setUnitCost(e.target.value === "" ? "" : Number(e.target.value))} />
             </div>
           </div>
           <div className="space-y-2">
-            <Label>Notes</Label>
-            <Input value={notes} onChange={(e) => setNotes(e.target.value)} />
+            <Label htmlFor="movement-notes">Notes</Label>
+            <Input id="movement-notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
           </div>
         </div>
         <DialogFooter>
