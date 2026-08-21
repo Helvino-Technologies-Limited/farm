@@ -11,6 +11,7 @@ export async function createBookingAction(input: CreateBookingParams) {
   const data = bookingSchema.parse(input);
   const booking = await createBooking(data, user);
   revalidatePath("/bookings");
+  revalidatePath("/invoices");
   return { id: booking.id, bookingNumber: booking.bookingNumber };
 }
 

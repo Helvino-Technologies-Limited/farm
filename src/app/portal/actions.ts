@@ -19,7 +19,7 @@ import { calculatePoultryAge, calculatePoultryPrice } from "@/services/poultry";
 import { portalRegisterSchema, portalLoginSchema, portalBookingSchema, portalPaymentSchema } from "@/validations/portal";
 import { withTransaction } from "@/lib/db";
 import { buildInvoicePdfData } from "@/services/documentData";
-import { notifyCustomer } from "@/services/notifications";
+import { notifyCustomer, notifyStaff } from "@/services/notifications";
 
 export interface PortalFormState {
   error?: string;
@@ -121,6 +121,13 @@ export async function portalCreateBookingAction(input: unknown) {
     message: `Booking ${booking.bookingNumber} has been received and is pending confirmation.`,
     type: "BOOKING",
   });
+  await notifyStaff(db, {
+    title: "New online booking",
+    message: `${customer.name} booked ${booking.bookingNumber} via the customer portal.`,
+    type: "BOOKING",
+    module: "bookings",
+    recordId: booking.id,
+  });
   return { id: booking.id, bookingNumber: booking.bookingNumber };
 }
 
@@ -156,6 +163,13 @@ export async function portalSubmitPaymentAction(input: unknown) {
       ? `Payment ${payment.paymentNumber} of ${data.amount} was received. Invoice ${updatedInvoice?.invoiceNumber ?? ""} is now fully paid.`
       : `Payment ${payment.paymentNumber} of ${data.amount} was received. Remaining balance: ${updatedInvoice?.balance ?? "—"}.`,
     type: "PAYMENT",
+  });
+  await notifyStaff(db, {
+    title: "Payment received via portal",
+    message: `${customer.name} paid ${data.amount} against invoice ${updatedInvoice?.invoiceNumber ?? ""}.`,
+    type: "PAYMENT",
+    module: "payments",
+    recordId: payment.id,
   });
   return { id: payment.id, paymentNumber: payment.paymentNumber };
 }

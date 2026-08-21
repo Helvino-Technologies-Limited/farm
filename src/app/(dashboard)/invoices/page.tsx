@@ -1,11 +1,13 @@
 import { requireModuleAccess } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { calculatePoultryBatchStock } from "@/services/poultry";
 import { PageHeader } from "@/components/layout/page-header";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { CancelInvoiceDialog } from "@/components/invoices/cancel-invoice-dialog";
+import { BookingFormDialog } from "@/components/bookings/booking-form-dialog";
 import { formatCurrency, formatDate } from "@/lib/format";
-import { canCancelInvoice } from "@/lib/permissions";
+import { canCancelInvoice, canWrite } from "@/lib/permissions";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -16,11 +18,30 @@ const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive" | "
 
 export default async function InvoicesPage() {
   const user = await requireModuleAccess("invoices");
-  const invoices = await db.invoice.findMany({ include: { customer: true }, orderBy: { invoiceDate: "desc" } });
+  const [invoices, products, batches, customers] = await Promise.all([
+    db.invoice.findMany({ include: { customer: true }, orderBy: { invoiceDate: "desc" } }),
+    db.product.findMany({ where: { active: true }, select: { id: true, name: true, sellingPrice: true, isPoultry: true }, orderBy: { name: "asc" } }),
+    db.poultryBatch.findMany({ where: { status: "ACTIVE" } }),
+    db.customer.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
+  ]);
+  const batchStocks = await Promise.all(batches.map((b) => calculatePoultryBatchStock(db, b.id)));
 
   return (
     <div>
-      <PageHeader title="Invoices" description="Invoices raised from sales and bookings." />
+      <PageHeader
+        title="Invoices"
+        description="Invoices raised from sales and bookings."
+        action={canWrite(user.role, "invoices") ? (
+          <BookingFormDialog
+            products={products.map((p) => ({ id: p.id, name: p.name, sellingPrice: Number(p.sellingPrice), isPoultry: p.isPoultry }))}
+            batches={batches.map((b, i) => ({ id: b.id, batchNumber: b.batchNumber, productId: b.productId, available: batchStocks[i].available }))}
+            customers={customers}
+            triggerLabel="New Invoice"
+            dialogTitle="New Invoice"
+            successPrefix="Booking"
+          />
+        ) : undefined}
+      />
       <div className="rounded-lg border bg-card">
         <Table>
           <TableHeader>

@@ -1,6 +1,7 @@
 import "server-only";
 import { db } from "@/lib/db";
 import { logAudit } from "./audit";
+import { notifyStaff } from "./notifications";
 import type { SessionUser } from "@/lib/auth";
 
 export async function createWebsiteFeature(
@@ -56,5 +57,13 @@ export async function createGalleryImage(
 }
 
 export async function submitContactMessage(data: { name: string; phone?: string; email?: string; subject?: string; message: string }) {
-  return db.contactMessage.create({ data });
+  const contactMessage = await db.contactMessage.create({ data });
+  await notifyStaff(db, {
+    title: "New contact enquiry",
+    message: `${data.name}: ${data.subject || data.message.slice(0, 80)}`,
+    type: "SYSTEM",
+    module: "contact",
+    recordId: contactMessage.id,
+  });
+  return contactMessage;
 }

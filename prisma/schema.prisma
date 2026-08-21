@@ -289,6 +289,20 @@ model CustomerNotification {
   @@map("customer_notifications")
 }
 
+model StaffNotification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      String
+  module    String?
+  recordId  String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("staff_notifications")
+}
+
 model CustomerSession {
   id         String   @id @default(cuid())
   token      String   @unique

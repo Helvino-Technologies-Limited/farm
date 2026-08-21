@@ -5,6 +5,7 @@ import { LogOut } from "lucide-react";
 import type { SessionUser } from "@/lib/auth";
 import type { ModuleKey } from "@/lib/permissions";
 import { MobileNav } from "./mobile-nav";
+import { StaffNotificationBell } from "./staff-notification-bell";
 
 function initials(name: string): string {
   return name
@@ -32,6 +33,7 @@ export function Topbar({
     <header className="flex h-16 items-center justify-between border-b bg-background px-4 sm:px-6">
       <MobileNav modules={modules} user={{ name: user.name, role: user.role }} logoUrl={logoUrl} />
       <div className="flex items-center gap-3 sm:gap-4 ml-auto">
+        <StaffNotificationBell />
         <div className="text-right hidden sm:block">
           <p className="text-sm font-medium leading-none">{user.name}</p>
           <p className="text-xs text-muted-foreground">{roleLabel(user.role)}</p>

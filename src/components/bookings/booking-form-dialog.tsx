@@ -18,7 +18,21 @@ interface BatchOption { id: string; batchNumber: string; productId: string; avai
 interface CustomerOption { id: string; name: string }
 interface Line { key: string; productId: string; productName: string; poultryBatchId?: string; batchLabel?: string; quantity: number; unitPrice: number }
 
-export function BookingFormDialog({ products, batches, customers }: { products: ProductOption[]; batches: BatchOption[]; customers: CustomerOption[] }) {
+export function BookingFormDialog({
+  products,
+  batches,
+  customers,
+  triggerLabel = "New Booking",
+  dialogTitle = "New Booking",
+  successPrefix = "Booking",
+}: {
+  products: ProductOption[];
+  batches: BatchOption[];
+  customers: CustomerOption[];
+  triggerLabel?: string;
+  dialogTitle?: string;
+  successPrefix?: string;
+}) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const [customerId, setCustomerId] = useState("");
@@ -61,7 +75,7 @@ export function BookingFormDialog({ products, batches, customers }: { products: 
         depositAmount,
         items: lines.map((l) => ({ productId: l.productId, poultryBatchId: l.poultryBatchId, quantity: l.quantity, unitPrice: l.unitPrice })),
       });
-      toast.success(`Booking ${booking.bookingNumber} created — stock reserved.`);
+      toast.success(`${successPrefix} ${booking.bookingNumber} created and invoice issued.`);
       setLines([]); setCustomerId(""); setRequiredDate(""); setDepositAmount(0);
       setOpen(false);
       router.refresh();
@@ -75,10 +89,10 @@ export function BookingFormDialog({ products, batches, customers }: { products: 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={<Button />}>
-        <Plus className="h-4 w-4" /> New Booking
+        <Plus className="h-4 w-4" /> {triggerLabel}
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader><DialogTitle>New Booking</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{dialogTitle}</DialogTitle></DialogHeader>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">

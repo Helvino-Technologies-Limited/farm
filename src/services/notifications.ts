@@ -21,3 +21,20 @@ export async function notifyCustomer(
     },
   });
 }
+
+/** Creates a farm-wide staff notification (visible to Admin/Manager) for events that need
+ *  attention: a new online booking, a payment received, a new customer enquiry, etc. */
+export async function notifyStaff(
+  client: Client,
+  params: { title: string; message: string; type: NotificationType; module?: string; recordId?: string }
+): Promise<void> {
+  await client.staffNotification.create({
+    data: {
+      title: params.title,
+      message: params.message,
+      type: params.type,
+      module: params.module,
+      recordId: params.recordId,
+    },
+  });
+}
