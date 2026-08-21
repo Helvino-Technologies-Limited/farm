@@ -32,8 +32,20 @@ export const DELETABLE_MODULES = [
 
 export type DeletableModule = (typeof DELETABLE_MODULES)[number];
 
+function isForeignKeyViolation(e: unknown): boolean {
+  if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2003") return true;
+  // Postgres RESTRICT constraints raise SQLSTATE 23001 (restrict_violation), which Prisma does
+  // NOT map to a known P-code — it surfaces as a PrismaClientUnknownRequestError instead. Every
+  // FK on this schema that protects real business records uses the RESTRICT default, so this is
+  // actually the common case here, not the rare one.
+  if (e instanceof Prisma.PrismaClientUnknownRequestError) {
+    return /foreign key|violates .*constraint|restrict_violation/i.test(e.message);
+  }
+  return false;
+}
+
 function friendlyFkError(e: unknown, entityLabel: string): never {
-  if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2003") {
+  if (isForeignKeyViolation(e)) {
     throw new Error(
       `Cannot delete this ${entityLabel} — it is referenced by other records (sales, invoices, history, etc). Remove or reassign those first.`
     );
