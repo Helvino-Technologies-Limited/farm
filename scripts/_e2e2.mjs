@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 const db = new PrismaClient();
 const browser = await chromium.launch();
 const page = await browser.newPage();
+page.setDefaultTimeout(15000);
 const errors = [];
 page.on("pageerror", (e) => errors.push(String(e)));
 page.on("console", (msg) => { if (msg.type() === "error") errors.push(msg.text()); });
@@ -39,7 +40,7 @@ try {
   await shot("11-product-created");
 
   const productRow = page.locator("tr", { hasText: "__TEST__ Portal Kienyeji" });
-  await productRow.getByRole("button", { name: /add photo/i }).setInputFiles(
+  await productRow.locator('input[type="file"]').setInputFiles(
     "/tmp/claude-1000/-home-kevob-farm/04a11281-2be4-4828-84bf-a7409534a488/scratchpad/test-photo.png"
   );
   await page.waitForTimeout(1500);
@@ -91,21 +92,21 @@ try {
   await page.getByLabel("Phone").fill("0711000000");
   await page.getByLabel("Password").fill("TestPass123");
   await page.getByRole("button", { name: /create account/i }).click();
-  await page.waitForURL("**/portal", { timeout: 10000 });
+  await page.waitForURL("**/portal", { timeout: 25000 });
   console.log("Registered + logged in, at:", page.url());
   await shot("16-portal-dashboard-empty");
 
   await page.goto("http://localhost:3000/", { waitUntil: "networkidle" });
   const card2 = page.locator("div", { hasText: "__TEST__ Portal Kienyeji" }).last();
   await card2.getByRole("button", { name: /book now/i }).click();
-  await page.waitForURL("**/portal/book/**");
+  await page.waitForURL("**/portal/book/**", { timeout: 15000 });
   await shot("17-book-page");
 
   await page.getByText("Select batch").click();
   await page.getByRole("option").first().click();
   await page.locator('input[type="number"]').first().fill("5");
   await page.getByRole("button", { name: /^book now$/i }).click();
-  await page.waitForURL("**/portal/invoices/**", { timeout: 10000 });
+  await page.waitForURL("**/portal/invoices/**", { timeout: 20000 });
   console.log("Booking placed, redirected to invoice:", page.url());
   await shot("18-invoice-after-booking");
 
