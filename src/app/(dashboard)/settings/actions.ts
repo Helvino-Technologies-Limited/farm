@@ -101,6 +101,30 @@ export async function saveHeroVideoUrlAction(url: string) {
   revalidatePath("/");
 }
 
+export async function saveHeroVideoLinkAction(url: string) {
+  const user = await requireRole("ADMIN", "MANAGER");
+  const { isYouTubeUrl } = await import("@/lib/youtube");
+  if (!isYouTubeUrl(url)) throw new Error("Enter a valid YouTube video link.");
+
+  const existing = await db.systemSetting.findUnique({ where: { id: 1 } });
+  await db.systemSetting.upsert({
+    where: { id: 1 },
+    create: { id: 1, heroVideoUrl: url },
+    update: { heroVideoUrl: url },
+  });
+  if (existing?.heroVideoUrl?.includes(".public.blob.vercel-storage.com")) {
+    try {
+      await del(existing.heroVideoUrl);
+    } catch {
+      // best-effort cleanup
+    }
+  }
+
+  await logAudit(db, { user, action: "UPDATE", module: "settings", recordId: "system", newValue: { heroVideoUpdated: true, source: "youtube" } });
+  revalidatePath("/settings");
+  revalidatePath("/");
+}
+
 export async function removeHeroVideoAction() {
   const user = await requireRole("ADMIN", "MANAGER");
   const existing = await db.systemSetting.findUnique({ where: { id: 1 } });

@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ProductBrowser, type BrowserProduct } from "@/components/marketing/product-browser";
 import { FarmingTips } from "@/components/marketing/farming-tips";
+import { HeroBackgroundVideo } from "@/components/marketing/hero-background-video";
 import {
   Bird, Sprout, Apple, Milk, Wheat, Droplets, GraduationCap, Carrot, Waves, Package,
   MapPin, Phone, ShieldCheck, Truck, Users, Sparkles, ArrowRight,
@@ -117,9 +118,7 @@ export default async function Home() {
 
       {/* HERO */}
       <section className="relative overflow-hidden bg-avepo-green text-white">
-        {settings?.heroVideoUrl && (
-          <video autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-cover opacity-40" src={settings.heroVideoUrl} />
-        )}
+        {settings?.heroVideoUrl && <HeroBackgroundVideo url={settings.heroVideoUrl} />}
         {!settings?.heroVideoUrl && (
           <div className="absolute inset-0 bg-gradient-to-br from-avepo-green via-avepo-green-light to-avepo-green" />
         )}
