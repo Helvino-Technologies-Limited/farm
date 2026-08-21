@@ -1,0 +1,171 @@
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
+
+export interface PdfLineItem {
+  description: string;
+  quantity: number;
+  unit?: string;
+  unitPrice: number;
+  discount?: number;
+  total: number;
+}
+
+export interface DocumentPdfData {
+  type: "INVOICE" | "RECEIPT" | "QUOTATION";
+  documentNumber: string;
+  date: string;
+  dueDate?: string;
+  farmName: string;
+  farmAddress?: string;
+  farmPhone?: string;
+  farmEmail?: string;
+  logoDataUrl?: string;
+  customerName: string;
+  customerPhone?: string;
+  customerAddress?: string;
+  items: PdfLineItem[];
+  subtotal: number;
+  discount: number;
+  total: number;
+  amountPaid: number;
+  balance: number;
+  paymentMethod?: string;
+  notes?: string;
+}
+
+function money(n: number): string {
+  return `KES ${n.toLocaleString("en-KE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+export function buildDocumentPdf(data: DocumentPdfData): jsPDF {
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+
+  // Watermark
+  doc.saveGraphicsState();
+  doc.setTextColor(230, 230, 230);
+  doc.setFontSize(60);
+  doc.text("AVEPO SMART FARM", pageWidth / 2, pageHeight / 2, {
+    align: "center",
+    angle: 35,
+  });
+  doc.restoreGraphicsState();
+
+  let y = 15;
+
+  if (data.logoDataUrl) {
+    try {
+      doc.addImage(data.logoDataUrl, "PNG", 14, y, 22, 22);
+    } catch {
+      // ignore malformed image data — header text still renders
+    }
+  }
+
+  doc.setTextColor(20, 20, 20);
+  doc.setFontSize(16);
+  doc.setFont("helvetica", "bold");
+  doc.text(data.farmName, data.logoDataUrl ? 40 : 14, y + 8);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(90, 90, 90);
+  const contactLines = [data.farmAddress, [data.farmPhone, data.farmEmail].filter(Boolean).join("  ·  ")].filter(Boolean);
+  contactLines.forEach((line, i) => doc.text(line as string, data.logoDataUrl ? 40 : 14, y + 14 + i * 4.5));
+
+  doc.setFontSize(18);
+  doc.setTextColor(21, 128, 61);
+  doc.setFont("helvetica", "bold");
+  doc.text(data.type === "INVOICE" ? "INVOICE" : data.type === "QUOTATION" ? "QUOTATION" : "RECEIPT", pageWidth - 14, y + 8, { align: "right" });
+  doc.setFontSize(10);
+  doc.setTextColor(60, 60, 60);
+  doc.setFont("helvetica", "normal");
+  doc.text(`No: ${data.documentNumber}`, pageWidth - 14, y + 15, { align: "right" });
+  doc.text(`Date: ${data.date}`, pageWidth - 14, y + 20, { align: "right" });
+  if (data.dueDate) doc.text(`Due: ${data.dueDate}`, pageWidth - 14, y + 25, { align: "right" });
+
+  y += 34;
+  doc.setDrawColor(220, 220, 220);
+  doc.line(14, y, pageWidth - 14, y);
+  y += 8;
+
+  doc.setFontSize(9);
+  doc.setTextColor(120, 120, 120);
+  doc.text("BILL TO", 14, y);
+  doc.setFontSize(11);
+  doc.setTextColor(20, 20, 20);
+  doc.setFont("helvetica", "bold");
+  doc.text(data.customerName, 14, y + 6);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9.5);
+  doc.setTextColor(70, 70, 70);
+  let cy = y + 11;
+  if (data.customerPhone) { doc.text(data.customerPhone, 14, cy); cy += 4.5; }
+  if (data.customerAddress) { doc.text(data.customerAddress, 14, cy); cy += 4.5; }
+
+  y += 24;
+
+  autoTable(doc, {
+    startY: y,
+    head: [["Description", "Qty", "Unit Price", "Discount", "Total"]],
+    body: data.items.map((i) => [
+      i.description,
+      `${i.quantity}${i.unit ? " " + i.unit : ""}`,
+      money(i.unitPrice),
+      i.discount ? money(i.discount) : "-",
+      money(i.total),
+    ]),
+    headStyles: { fillColor: [21, 128, 61] },
+    styles: { fontSize: 9.5 },
+    columnStyles: { 1: { halign: "right" }, 2: { halign: "right" }, 3: { halign: "right" }, 4: { halign: "right" } },
+  });
+
+  const afterTable = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
+
+  const totalsX = pageWidth - 14;
+  let ty = afterTable;
+  const totalsRows: [string, number][] = [
+    ["Subtotal", data.subtotal],
+    ["Discount", -data.discount],
+    ["Total", data.total],
+    ["Amount Paid", data.amountPaid],
+    ["Balance Due", data.balance],
+  ];
+  doc.setFontSize(10);
+  for (const [label, value] of totalsRows) {
+    const isTotal = label === "Total" || label === "Balance Due";
+    doc.setFont("helvetica", isTotal ? "bold" : "normal");
+    doc.setTextColor(isTotal ? 20 : 90, isTotal ? 20 : 90, isTotal ? 20 : 90);
+    doc.text(label, totalsX - 45, ty);
+    doc.text(money(value), totalsX, ty, { align: "right" });
+    ty += 6;
+  }
+
+  if (data.paymentMethod) {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9.5);
+    doc.setTextColor(90, 90, 90);
+    doc.text(`Payment Method: ${data.paymentMethod}`, 14, ty);
+    ty += 6;
+  }
+
+  if (data.notes) {
+    doc.setFontSize(9);
+    doc.setTextColor(120, 120, 120);
+    doc.text("Notes:", 14, ty + 4);
+    doc.text(doc.splitTextToSize(data.notes, pageWidth - 28), 14, ty + 9);
+  }
+
+  doc.setFontSize(8);
+  doc.setTextColor(150, 150, 150);
+  doc.text("Generated by Avepo Smart Farm Management System · Developed by Helvino Technologies LTD", pageWidth / 2, pageHeight - 10, { align: "center" });
+
+  return doc;
+}
+
+export function downloadDocumentPdf(data: DocumentPdfData, filename: string): void {
+  buildDocumentPdf(data).save(filename);
+}
+
+export function documentPdfBlob(data: DocumentPdfData): Blob {
+  return buildDocumentPdf(data).output("blob");
+}

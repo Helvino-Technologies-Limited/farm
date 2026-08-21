@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ServiceWorkerRegister } from "@/components/pwa/sw-register";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,10 +15,45 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const SITE_NAME = "Avepo Smart Farm";
+const DESCRIPTION =
+  "Order poultry, seedlings, crops, dairy and farm services online from Avepo Smart Farm in Kenya — book, pay by M-Pesa, and get your receipt. Full farm operations, sales and finance management for staff.";
+
 export const metadata: Metadata = {
-  title: "Avepo Smart Farm Management System",
-  description: "Comprehensive farm operations, sales and finance management for Avepo Smart Farm.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} — Order Farm Products & Services Online`,
+    template: `%s · ${SITE_NAME}`,
+  },
+  description: DESCRIPTION,
+  keywords: [
+    "Avepo Smart Farm", "farm products Kenya", "buy chicken online Kenya", "poultry Kenya",
+    "seedlings Kenya", "farm management system", "drip irrigation Kenya", "M-Pesa farm produce",
+    "Kienyeji chicken", "farm booking online",
+  ],
+  authors: [{ name: "Helvino Technologies LTD" }],
   manifest: "/manifest.json",
+  applicationName: SITE_NAME,
+  appleWebApp: { capable: true, statusBarStyle: "default", title: SITE_NAME },
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — Order Farm Products & Services Online`,
+    description: DESCRIPTION,
+    url: "/",
+    locale: "en_KE",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — Order Farm Products & Services Online`,
+    description: DESCRIPTION,
+  },
+  robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#15803d",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -30,6 +66,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <TooltipProvider>
           {children}
           <Toaster richColors position="top-right" />
+          <ServiceWorkerRegister />
         </TooltipProvider>
       </body>
     </html>

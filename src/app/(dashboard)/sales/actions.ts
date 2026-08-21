@@ -1,13 +1,19 @@
 "use server";
 
-import { requireModuleWrite } from "@/lib/auth";
+import { requireModuleWrite, requireModuleAccess } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { createSale, voidSale, type CreateSaleParams } from "@/services/sales";
 import { resolveProductPrice } from "@/services/pricing";
 import { calculatePoultryAge, calculatePoultryPrice } from "@/services/poultry";
 import { saleSchema } from "@/validations/sale";
 import { canOverridePrice } from "@/lib/permissions";
+import { buildSaleReceiptPdfData } from "@/services/documentData";
 import { revalidatePath } from "next/cache";
+
+export async function getSalePdfDataAction(saleId: string) {
+  await requireModuleAccess("sales");
+  return buildSaleReceiptPdfData(saleId);
+}
 
 export async function recordSaleAction(input: CreateSaleParams) {
   const user = await requireModuleWrite("sales");

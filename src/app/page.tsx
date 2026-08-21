@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { OperationCard } from "@/components/marketing/operation-card";
+import { ProductCard } from "@/components/marketing/product-card";
+import { InstallAppButton } from "@/components/pwa/install-app-button";
 import {
   Leaf,
   Bird,
@@ -11,6 +12,7 @@ import {
   Droplets,
   GraduationCap,
   Carrot,
+  Waves,
   ShoppingCart,
   CalendarCheck,
   CreditCard,
@@ -20,69 +22,28 @@ import {
   MapPin,
   Phone,
   Mail,
+  Package,
 } from "lucide-react";
 import { db } from "@/lib/db";
+import type { SalesCentre } from "@prisma/client";
+import type { LucideIcon } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-const OPERATIONS = [
-  {
-    filename: "poultry.jpg",
-    label: "Poultry",
-    description: "Age-based batch management from day-old chicks through to mature stock.",
-    icon: Bird,
-    gradient: "bg-gradient-to-br from-amber-500 to-orange-600",
-  },
-  {
-    filename: "crops-vegetables.jpg",
-    label: "Crops & Field Vegetables",
-    description: "Maize, beans, groundnuts, sukuma wiki, spinach and more.",
-    icon: Carrot,
-    gradient: "bg-gradient-to-br from-green-600 to-emerald-700",
-  },
-  {
-    filename: "fruits.jpg",
-    label: "Fruits",
-    description: "Watermelon and seasonal fruit production tracked from planting to sale.",
-    icon: Apple,
-    gradient: "bg-gradient-to-br from-red-500 to-rose-600",
-  },
-  {
-    filename: "seedlings.jpg",
-    label: "Seedlings",
-    description: "Tomato, cabbage, onion and sukuma seedling nurseries.",
-    icon: Sprout,
-    gradient: "bg-gradient-to-br from-lime-600 to-green-700",
-  },
-  {
-    filename: "dairy.jpg",
-    label: "Dairy",
-    description: "Daily milk production, herd records and dairy revenue tracking.",
-    icon: Milk,
-    gradient: "bg-gradient-to-br from-sky-500 to-blue-600",
-  },
-  {
-    filename: "feeds-animals.jpg",
-    label: "Feeds & Animals",
-    description: "Azolla, hay and feed stock alongside rabbits, dogs and other animals.",
-    icon: Wheat,
-    gradient: "bg-gradient-to-br from-yellow-600 to-amber-700",
-  },
-  {
-    filename: "drip-irrigation.jpg",
-    label: "Drip Installation",
-    description: "End-to-end drip irrigation projects, from quotation to completion.",
-    icon: Droplets,
-    gradient: "bg-gradient-to-br from-cyan-600 to-teal-700",
-  },
-  {
-    filename: "training-advisory.jpg",
-    label: "Training & Advisory",
-    description: "Farmer training programs and agronomic advisory services.",
-    icon: GraduationCap,
-    gradient: "bg-gradient-to-br from-purple-600 to-indigo-700",
-  },
-];
+const CENTRE_STYLE: Record<SalesCentre, { icon: LucideIcon; gradient: string; label: string }> = {
+  SEEDLINGS: { icon: Sprout, gradient: "bg-gradient-to-br from-lime-600 to-green-700", label: "Seedlings" },
+  FIELD_VEGETABLES: { icon: Carrot, gradient: "bg-gradient-to-br from-green-600 to-emerald-700", label: "Field Vegetables" },
+  CROPS: { icon: Wheat, gradient: "bg-gradient-to-br from-amber-600 to-yellow-700", label: "Crops" },
+  FRUITS: { icon: Apple, gradient: "bg-gradient-to-br from-red-500 to-rose-600", label: "Fruits" },
+  POULTRY: { icon: Bird, gradient: "bg-gradient-to-br from-amber-500 to-orange-600", label: "Poultry" },
+  DAIRY: { icon: Milk, gradient: "bg-gradient-to-br from-sky-500 to-blue-600", label: "Dairy" },
+  FEEDS: { icon: Wheat, gradient: "bg-gradient-to-br from-yellow-600 to-amber-700", label: "Feeds" },
+  ANIMAL_PRODUCTION: { icon: Package, gradient: "bg-gradient-to-br from-stone-600 to-neutral-700", label: "Animals" },
+  DRIP_INSTALLATION: { icon: Droplets, gradient: "bg-gradient-to-br from-cyan-600 to-teal-700", label: "Drip Installation" },
+  WATER: { icon: Waves, gradient: "bg-gradient-to-br from-blue-500 to-cyan-600", label: "Water" },
+  TRAINING_ADVISORY: { icon: GraduationCap, gradient: "bg-gradient-to-br from-purple-600 to-indigo-700", label: "Training & Advisory" },
+  OTHER: { icon: Package, gradient: "bg-gradient-to-br from-slate-600 to-gray-700", label: "Other" },
+};
 
 const CAPABILITIES = [
   { icon: ShoppingCart, label: "Sales & POS", description: "Point-of-sale across every sales centre with receipts on the spot." },
@@ -94,66 +55,141 @@ const CAPABILITIES = [
 ];
 
 export default async function Home() {
-  const settings = await db.systemSetting.findUnique({ where: { id: 1 } }).catch(() => null);
+  const [settings, products] = await Promise.all([
+    db.systemSetting.findUnique({ where: { id: 1 } }),
+    db.product.findMany({
+      where: { active: true, publiclyListed: true },
+      include: { category: true, unit: true },
+      orderBy: { name: "asc" },
+    }),
+  ]);
+
+  const grouped = new Map<string, typeof products>();
+  for (const p of products) {
+    const key = p.category.salesCentre;
+    if (!grouped.has(key)) grouped.set(key, []);
+    grouped.get(key)!.push(p);
+  }
+
+  const farmName = settings?.farmName ?? "Avepo Smart Farm";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: farmName,
+    url: siteUrl,
+    ...(settings?.phone ? { telephone: settings.phone } : {}),
+    ...(settings?.email ? { email: settings.email } : {}),
+    ...(settings?.location ? { address: { "@type": "PostalAddress", addressLocality: settings.location, addressCountry: "KE" } } : {}),
+    makesOffer: products.slice(0, 30).map((p) => ({
+      "@type": "Offer",
+      itemOffered: { "@type": "Product", name: p.name, category: p.category.name },
+      ...(p.isPoultry ? {} : { price: Number(p.sellingPrice), priceCurrency: "KES" }),
+      availability: "https://schema.org/InStock",
+      url: `${siteUrl}/portal/book/${p.id}`,
+    })),
+  };
 
   return (
     <div className="flex flex-col">
+      {/* eslint-disable-next-line react/no-danger */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-2">
             <Leaf className="h-6 w-6 text-green-700" />
-            <span className="font-semibold">{settings?.farmName ?? "Avepo Smart Farm"}</span>
+            <span className="font-semibold">{farmName}</span>
           </div>
           <nav className="hidden gap-6 text-sm font-medium text-muted-foreground md:flex">
-            <a href="#operations" className="hover:text-foreground">Operations</a>
+            <a href="#catalog" className="hover:text-foreground">Products & Services</a>
             <a href="#capabilities" className="hover:text-foreground">Capabilities</a>
             <a href="#contact" className="hover:text-foreground">Contact</a>
           </nav>
-          <Button render={<Link href="/login" />} nativeButton={false}>Staff Login</Button>
+          <div className="flex items-center gap-2">
+            <InstallAppButton />
+            <Button render={<Link href="/portal/login" />} nativeButton={false} variant="outline" size="sm">
+              Customer Login
+            </Button>
+            <Button render={<Link href="/login" />} nativeButton={false} variant="ghost" size="sm" className="hidden sm:inline-flex">
+              Staff
+            </Button>
+          </div>
         </div>
       </header>
 
       <section className="relative overflow-hidden bg-gradient-to-br from-green-900 via-green-800 to-emerald-700 text-white">
         <div className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
           <p className="mb-3 text-sm font-medium uppercase tracking-wider text-green-200">
-            {settings?.location ?? "Kenya"} · Smart Farm Management
+            {settings?.location ?? "Kenya"} · Order Online
           </p>
           <h1 className="max-w-2xl text-4xl font-bold leading-tight sm:text-5xl">
-            Managing every part of {settings?.farmName ?? "Avepo Smart Farm"}, in one system.
+            Fresh from {farmName} — book poultry, produce and farm services online.
           </h1>
           <p className="mt-6 max-w-xl text-lg text-green-100">
-            From poultry and seedlings to sales, credit, inventory and finance — Avepo Smart Farm
-            runs its entire operation on a single, real-time platform built for the way the farm
-            actually works.
+            Browse what&rsquo;s available, book what you need, and pay by M-Pesa or bank — track
+            your order and download your receipt, all from one account.
           </p>
-          <div className="mt-8 flex gap-4">
-            <Button render={<Link href="/login" />} nativeButton={false} size="lg" variant="secondary">Staff Login</Button>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <Button render={<a href="#catalog" />} nativeButton={false} size="lg" variant="secondary">
+              Browse Products & Services
+            </Button>
             <Button
-              render={<a href="#operations" />}
+              render={<Link href="/portal/register" />}
               nativeButton={false}
               size="lg"
               variant="outline"
               className="border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white"
             >
-              Explore Our Operations
+              Create an Account
             </Button>
           </div>
         </div>
       </section>
 
-      <section id="operations" className="mx-auto max-w-6xl px-6 py-20">
+      <section id="catalog" className="mx-auto max-w-6xl px-6 py-20">
         <div className="mb-10 max-w-2xl">
-          <h2 className="text-3xl font-semibold">Our Operations</h2>
+          <h2 className="text-3xl font-semibold">Products & Services</h2>
           <p className="mt-2 text-muted-foreground">
-            Avepo Smart Farm spans production, livestock and farm services — each tracked in full
-            in the management system below.
+            Everything available to order right now — sign in or create a free account to book.
           </p>
         </div>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {OPERATIONS.map((op) => (
-            <OperationCard key={op.filename} {...op} />
-          ))}
-        </div>
+
+        {products.length === 0 ? (
+          <div className="rounded-xl border border-dashed p-12 text-center text-muted-foreground">
+            No products are listed for booking yet. Check back soon.
+          </div>
+        ) : (
+          <div className="space-y-14">
+            {Array.from(grouped.entries()).map(([centre, items]) => {
+              const style = CENTRE_STYLE[centre as SalesCentre];
+              return (
+                <div key={centre}>
+                  <h3 className="mb-5 flex items-center gap-2 text-xl font-semibold">
+                    <style.icon className="h-5 w-5 text-green-700" />
+                    {style.label}
+                  </h3>
+                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                    {items.map((p) => (
+                      <ProductCard
+                        key={p.id}
+                        id={p.id}
+                        name={p.name}
+                        description={p.description}
+                        imageUrl={p.imageUrl}
+                        price={Number(p.sellingPrice)}
+                        unitAbbr={p.unit.abbreviation}
+                        isPoultry={p.isPoultry}
+                        gradient={style.gradient}
+                        icon={style.icon}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       <section id="capabilities" className="bg-muted/40 py-20">
@@ -185,10 +221,10 @@ export default async function Home() {
           <div>
             <div className="flex items-center gap-2">
               <Leaf className="h-5 w-5 text-green-700" />
-              <span className="font-semibold">{settings?.farmName ?? "Avepo Smart Farm"}</span>
+              <span className="font-semibold">{farmName}</span>
             </div>
             <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-              Smart farm management system for staff and management use.
+              Order online, or sign in as staff to manage the full farm operation.
             </p>
           </div>
           <div className="space-y-2 text-sm text-muted-foreground">
@@ -203,8 +239,9 @@ export default async function Home() {
             )}
           </div>
         </div>
-        <div className="mx-auto mt-8 max-w-6xl border-t px-6 pt-6 text-xs text-muted-foreground">
-          Developed by Helvino Technologies LTD
+        <div className="mx-auto mt-8 max-w-6xl border-t px-6 pt-6 text-xs text-muted-foreground flex items-center justify-between flex-wrap gap-2">
+          <span>Developed by Helvino Technologies LTD</span>
+          <Link href="/login" className="hover:underline">Staff Login</Link>
         </div>
       </footer>
     </div>

@@ -71,7 +71,17 @@ export async function createSale(params: CreateSaleParams, actingUser: SessionUs
       params.items.map((i) => ({ quantity: i.quantity, unitPrice: i.unitPrice, discount: i.discount })),
       params.discount ?? 0
     );
-    const amountPaid = Math.min(params.amountPaid, totals.total);
+
+    // If this sale is fulfilling a booking, that booking already has its own invoice (created at
+    // booking time per spec §14) which may already carry earlier deposit/portal payments — reuse
+    // it instead of creating a duplicate, and only bill the *new* payment made right now.
+    const existingBookingInvoice = params.bookingId
+      ? await tx.invoice.findFirst({ where: { bookingId: params.bookingId } })
+      : null;
+    const alreadyPaid = existingBookingInvoice ? Number(existingBookingInvoice.amountPaid) : 0;
+    const remainingBeforeNow = Math.max(0, Math.round((totals.total - alreadyPaid) * 100) / 100);
+    const newPaymentNow = Math.min(params.amountPaid, remainingBeforeNow);
+    const amountPaid = Math.round((alreadyPaid + newPaymentNow) * 100) / 100;
     const balance = Math.round((totals.total - amountPaid) * 100) / 100;
 
     if (balance > 0) {
@@ -132,7 +142,10 @@ export async function createSale(params: CreateSaleParams, actingUser: SessionUs
     }
 
     let invoiceId: string | undefined;
-    if (balance > 0 || params.bookingId || params.quotationId) {
+    if (existingBookingInvoice) {
+      await tx.invoice.update({ where: { id: existingBookingInvoice.id }, data: { saleId: sale.id } });
+      invoiceId = existingBookingInvoice.id;
+    } else if (balance > 0 || params.quotationId) {
       const invoiceNumber = await nextDocumentNumber(tx, "INVOICE");
       const invoice = await tx.invoice.create({
         data: {
@@ -163,13 +176,13 @@ export async function createSale(params: CreateSaleParams, actingUser: SessionUs
     }
 
     let paymentId: string | undefined;
-    if (amountPaid > 0) {
+    if (newPaymentNow > 0) {
       const paymentNumber = await nextDocumentNumber(tx, "PAYMENT");
       const payment = await tx.payment.create({
         data: {
           paymentNumber,
           customerId: params.customerId,
-          amount: amountPaid,
+          amount: newPaymentNow,
           method: params.paymentMethod ?? "CASH",
           transactionReference: params.transactionReference,
           receivedById: actingUser.id,
@@ -178,7 +191,7 @@ export async function createSale(params: CreateSaleParams, actingUser: SessionUs
       });
       paymentId = payment.id;
       if (invoiceId) {
-        await allocatePaymentToInvoice(tx, { paymentId: payment.id, invoiceId, amount: amountPaid });
+        await allocatePaymentToInvoice(tx, { paymentId: payment.id, invoiceId, amount: newPaymentNow });
       }
     }
 

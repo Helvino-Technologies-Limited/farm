@@ -2,14 +2,14 @@ import "server-only";
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
 import type { AuditAction, Prisma } from "@prisma/client";
-import type { SessionUser } from "@/lib/auth";
 
 /** Records an audit trail entry. Call from within the same Prisma transaction where possible
- *  by passing `tx` in place of `db`, so the log write can never diverge from the record it describes. */
+ *  by passing `tx` in place of `db`, so the log write can never diverge from the record it describes.
+ *  `user` only needs `id`/`name` structurally, so a customer-portal actor can be passed too. */
 export async function logAudit(
   client: Prisma.TransactionClient | typeof db,
   params: {
-    user: SessionUser | null;
+    user: { id?: string; name: string } | null;
     action: AuditAction;
     module: string;
     recordId?: string;

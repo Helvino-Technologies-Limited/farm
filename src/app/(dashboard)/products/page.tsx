@@ -5,6 +5,8 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ProductFormDialog } from "@/components/products/product-form-dialog";
+import { ProductPhotoCell } from "@/components/products/product-photo-cell";
+import { PubliclyListedToggle } from "@/components/products/publicly-listed-toggle";
 import { formatCurrency, formatNumber } from "@/lib/format";
 import { canWrite } from "@/lib/permissions";
 
@@ -18,36 +20,46 @@ export default async function ProductsPage() {
     db.unit.findMany({ orderBy: { name: "asc" } }),
   ]);
   const stock = await calculateStockForProducts(db, products.map((p) => p.id));
+  const canEdit = canWrite(user.role, "products");
 
   return (
     <div>
       <PageHeader
         title="Products"
-        description="Product catalogue, units and stock tracking."
-        action={canWrite(user.role, "products") ? <ProductFormDialog categories={categories} units={units} /> : undefined}
+        description="Product catalogue, photos, units and stock tracking. Listed products with photos appear on the public catalog."
+        action={canEdit ? <ProductFormDialog categories={categories} units={units} /> : undefined}
       />
       <div className="rounded-lg border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Photo</TableHead>
               <TableHead>SKU</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Category</TableHead>
-              <TableHead>Unit</TableHead>
               <TableHead className="text-right">Selling Price</TableHead>
               <TableHead className="text-right">Stock</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Catalog</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {products.map((p) => (
               <TableRow key={p.id}>
+                <TableCell>
+                  {canEdit ? (
+                    <ProductPhotoCell productId={p.id} imageUrl={p.imageUrl} />
+                  ) : p.imageUrl ? (
+                    <span className="text-xs text-muted-foreground">Has photo</span>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">No photo</span>
+                  )}
+                </TableCell>
                 <TableCell className="font-mono text-xs">{p.sku}</TableCell>
                 <TableCell className="font-medium">
                   {p.name} {p.isPoultry && <Badge variant="outline" className="ml-1">Poultry</Badge>}
                 </TableCell>
                 <TableCell>{p.category.name}</TableCell>
-                <TableCell>{p.unit.abbreviation}</TableCell>
                 <TableCell className="text-right">{formatCurrency(Number(p.sellingPrice))}</TableCell>
                 <TableCell className="text-right">
                   {p.trackInventory ? (
@@ -61,10 +73,17 @@ export default async function ProductsPage() {
                 <TableCell>
                   {p.active ? <Badge className="bg-green-600">Active</Badge> : <Badge variant="destructive">Inactive</Badge>}
                 </TableCell>
+                <TableCell>
+                  {canEdit ? (
+                    <PubliclyListedToggle productId={p.id} publiclyListed={p.publiclyListed} />
+                  ) : (
+                    <Badge variant={p.publiclyListed ? "default" : "secondary"}>{p.publiclyListed ? "Listed" : "Hidden"}</Badge>
+                  )}
+                </TableCell>
               </TableRow>
             ))}
             {products.length === 0 && (
-              <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No products yet. Add your first product to get started.</TableCell></TableRow>
+              <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-8">No products yet. Add your first product to get started.</TableCell></TableRow>
             )}
           </TableBody>
         </Table>

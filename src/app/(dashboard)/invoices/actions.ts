@@ -1,10 +1,16 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { requireModuleWrite } from "@/lib/auth";
+import { requireModuleWrite, requireModuleAccess } from "@/lib/auth";
 import { canCancelInvoice } from "@/lib/permissions";
 import { logAudit } from "@/services/audit";
+import { buildInvoicePdfData } from "@/services/documentData";
 import { revalidatePath } from "next/cache";
+
+export async function getInvoicePdfDataAction(invoiceId: string) {
+  await requireModuleAccess("invoices");
+  return buildInvoicePdfData(invoiceId);
+}
 
 export async function cancelInvoiceAction(invoiceId: string, reason: string) {
   const user = await requireModuleWrite("invoices");

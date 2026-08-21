@@ -82,6 +82,26 @@ async function main() {
     console.log(`User: ${u.email} (${u.role})`);
   }
 
+  // Technical system account used as the "createdBy"/"receivedBy" actor for records the
+  // customer self-service portal creates on a customer's behalf. Never used to log in
+  // (inactive + unguessable random password), so it carries no privilege risk.
+  const systemPortalPassword = await bcrypt.hash(
+    `system-${Math.random().toString(36).slice(2)}${Date.now()}`,
+    12
+  );
+  await db.user.upsert({
+    where: { email: "portal-system@avepo.co.ke" },
+    create: {
+      email: "portal-system@avepo.co.ke",
+      name: "Customer Self-Service Portal",
+      passwordHash: systemPortalPassword,
+      role: "MANAGEMENT",
+      active: false,
+    },
+    update: {},
+  });
+  console.log("System portal account ready (inactive, not for login).");
+
   if (admin) {
     await db.customer.upsert({
       where: { customerNumber: "AVP-CUS-000000" },

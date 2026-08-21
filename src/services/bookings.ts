@@ -78,6 +78,40 @@ export async function createBooking(params: CreateBookingParams, actingUser: Ses
       include: { items: true },
     });
 
+    // Spec §14: invoices are generated from bookings too, so the customer (staff or self-service
+    // portal) can pay part or all of it before the booking is fulfilled into a physical sale.
+    const productNames = await tx.product.findMany({
+      where: { id: { in: params.items.map((i) => i.productId) } },
+      select: { id: true, name: true },
+    });
+    const nameById = new Map(productNames.map((p) => [p.id, p.name]));
+    const invoiceNumber = await nextDocumentNumber(tx, "INVOICE");
+    await tx.invoice.create({
+      data: {
+        invoiceNumber,
+        customerId: params.customerId,
+        bookingId: booking.id,
+        dueDate: params.requiredDate,
+        subtotal: totals.subtotal,
+        discount: totals.discount,
+        total: totals.total,
+        amountPaid: 0,
+        balance: totals.total,
+        status: "ISSUED",
+        createdById: actingUser.id,
+        items: {
+          create: booking.items.map((i) => ({
+            productId: i.productId,
+            description: nameById.get(i.productId) ?? "Item",
+            quantity: i.quantity,
+            unitPrice: i.unitPrice,
+            discount: 0,
+            total: i.total,
+          })),
+        },
+      },
+    });
+
     if (params.quotationId) {
       await tx.quotation.update({ where: { id: params.quotationId }, data: { status: "CONVERTED" } });
     }
@@ -102,6 +136,19 @@ export async function updateBookingStatus(
   return withTransaction(async (tx) => {
     const booking = await tx.booking.findUniqueOrThrow({ where: { id: bookingId } });
     await tx.booking.update({ where: { id: bookingId }, data: { status } });
+
+    if (status === "CANCELLED") {
+      const invoice = await tx.invoice.findFirst({ where: { bookingId, status: { not: "CANCELLED" } } });
+      if (invoice) {
+        if (Number(invoice.amountPaid) > 0) {
+          throw new Error(
+            `Booking has payments allocated to invoice ${invoice.invoiceNumber} — reverse the payment(s) before cancelling.`
+          );
+        }
+        await tx.invoice.update({ where: { id: invoice.id }, data: { status: "CANCELLED", cancelReason: "Booking cancelled" } });
+      }
+    }
+
     await logAudit(tx, {
       user: actingUser,
       action: "UPDATE",

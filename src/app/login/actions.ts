@@ -43,7 +43,7 @@ export async function loginAction(_prevState: LoginState, formData: FormData): P
   await resetFailedLogins(user.id);
   await createSession(user.id);
   await logAudit(db, {
-    user: { id: user.id, name: user.name, email: user.email, role: user.role, active: user.active },
+    user: { id: user.id, name: user.name },
     action: "LOGIN",
     module: "auth",
     recordId: user.id,

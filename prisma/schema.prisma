@@ -234,7 +234,7 @@ model Customer {
   customerNumber String   @unique
   name           String
   phone          String
-  email          String?
+  email          String?  @unique
   location       String?
   address        String?
   customerType   String   @default("RETAIL")
@@ -244,15 +244,34 @@ model Customer {
   createdById    String
   createdBy      User     @relation("CustomerCreatedBy", fields: [createdById], references: [id])
 
+  // Customer self-service portal login (null until they register / an admin sets a password)
+  passwordHash String?
+  portalActive Boolean  @default(true)
+
   quotations Quotation[]
   bookings   Booking[]
   sales      Sale[]
   invoices   Invoice[]
   payments   Payment[]
   priceRules PriceRule[]
+  sessions   CustomerSession[]
 
   @@index([name])
   @@map("customers")
+}
+
+model CustomerSession {
+  id         String   @id @default(cuid())
+  token      String   @unique
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  userAgent  String?
+  ipAddress  String?
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  @@index([customerId])
+  @@map("customer_sessions")
 }
 
 model ProductCategory {
@@ -295,6 +314,8 @@ model Product {
   active         Boolean  @default(true)
   trackInventory Boolean  @default(true)
   isPoultry      Boolean  @default(false)
+  imageUrl       String?  @db.Text
+  publiclyListed Boolean  @default(true)
   createdById    String
   createdBy      User     @relation("ProductCreatedBy", fields: [createdById], references: [id])
   createdAt      DateTime @default(now())
@@ -779,7 +800,7 @@ model DocumentSequence {
 model SystemSetting {
   id                        Int      @id @default(1)
   farmName                  String   @default("Avepo Smart Farm")
-  logoUrl                   String?
+  logoUrl                   String?  @db.Text
   address                   String?
   phone                     String?
   email                     String?
