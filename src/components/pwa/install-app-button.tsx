@@ -49,8 +49,9 @@ export function InstallAppButton() {
 
   if (deferredPrompt) {
     return (
-      <Button variant="ghost" size="sm" onClick={handleInstall}>
-        <Download className="h-4 w-4" /> Install App
+      <Button variant="ghost" size="sm" onClick={handleInstall} title="Install App">
+        <Download className="h-4 w-4" />
+        <span className="hidden sm:inline">Install App</span>
       </Button>
     );
   }

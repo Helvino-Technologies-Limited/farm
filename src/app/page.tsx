@@ -102,12 +102,13 @@ export default async function Home() {
             <a href="#tips" className="hover:text-foreground">Farming Tips</a>
             <a href="#contact" className="hover:text-foreground">Contact</a>
           </nav>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <InstallAppButton />
             <Button render={<Link href="/portal/login" />} nativeButton={false} variant="outline" size="sm">
-              Customer Login
+              <span className="sm:hidden">Login</span>
+              <span className="hidden sm:inline">Customer Login</span>
             </Button>
-            <Button render={<Link href="/login" />} nativeButton={false} variant="ghost" size="sm" className="hidden sm:inline-flex">
+            <Button render={<Link href="/login" />} nativeButton={false} variant="ghost" size="sm">
               Staff
             </Button>
           </div>
@@ -202,8 +203,9 @@ export default async function Home() {
             )}
           </div>
         </div>
-        <div className="mx-auto mt-8 max-w-6xl border-t px-6 pt-6 text-xs text-muted-foreground">
-          Developed by Helvino Technologies LTD
+        <div className="mx-auto mt-8 flex max-w-6xl flex-wrap items-center justify-between gap-2 border-t px-6 pt-6 text-xs text-muted-foreground">
+          <span>Developed by Helvino Technologies LTD</span>
+          <Link href="/login" className="hover:text-foreground hover:underline">Staff Login</Link>
         </div>
       </footer>
     </div>
