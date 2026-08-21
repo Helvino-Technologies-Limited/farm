@@ -40,7 +40,7 @@ export function ProductCard({
         <h3 className="font-semibold">{name}</h3>
         {description && <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{description}</p>}
         <div className="mt-3 flex flex-1 items-end justify-between gap-2">
-          <p className="font-semibold text-green-700">
+          <p className="font-semibold text-avepo-green">
             {isPoultry ? "Priced by age" : formatCurrency(price)}
             {!isPoultry && <span className="text-xs font-normal text-muted-foreground"> / {unitAbbr}</span>}
           </p>

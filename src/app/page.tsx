@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/marketing/product-card";
 import { InstallAppButton } from "@/components/pwa/install-app-button";
+import { AvepoLogo } from "@/components/layout/avepo-logo";
 import {
-  Leaf,
   Bird,
   Sprout,
   Apple,
@@ -97,10 +97,7 @@ export default async function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <div className="flex items-center gap-2">
-            <Leaf className="h-6 w-6 text-green-700" />
-            <span className="font-semibold">{farmName}</span>
-          </div>
+          <AvepoLogo size={36} />
           <nav className="hidden gap-6 text-sm font-medium text-muted-foreground md:flex">
             <a href="#catalog" className="hover:text-foreground">Products & Services</a>
             <a href="#capabilities" className="hover:text-foreground">Capabilities</a>
@@ -118,15 +115,15 @@ export default async function Home() {
         </div>
       </header>
 
-      <section className="relative overflow-hidden bg-gradient-to-br from-green-900 via-green-800 to-emerald-700 text-white">
+      <section className="relative overflow-hidden bg-gradient-to-br from-avepo-green via-avepo-green-light to-avepo-green text-white">
         <div className="mx-auto max-w-6xl px-6 py-24 sm:py-32">
-          <p className="mb-3 text-sm font-medium uppercase tracking-wider text-green-200">
+          <p className="mb-3 text-sm font-medium uppercase tracking-wider text-avepo-yellow-light">
             {settings?.location ?? "Kenya"} · Order Online
           </p>
           <h1 className="max-w-2xl text-4xl font-bold leading-tight sm:text-5xl">
             Fresh from {farmName} — book poultry, produce and farm services online.
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-green-100">
+          <p className="mt-6 max-w-xl text-lg text-white/85">
             Browse what&rsquo;s available, book what you need, and pay by M-Pesa or bank — track
             your order and download your receipt, all from one account.
           </p>
@@ -166,7 +163,7 @@ export default async function Home() {
               return (
                 <div key={centre}>
                   <h3 className="mb-5 flex items-center gap-2 text-xl font-semibold">
-                    <style.icon className="h-5 w-5 text-green-700" />
+                    <style.icon className="h-5 w-5 text-avepo-green" />
                     {style.label}
                   </h3>
                   <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -203,7 +200,7 @@ export default async function Home() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {CAPABILITIES.map((c) => (
               <div key={c.label} className="flex gap-4 rounded-xl border bg-card p-5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-100 text-green-700">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-avepo-yellow-light text-avepo-green">
                   <c.icon className="h-5 w-5" />
                 </div>
                 <div>
@@ -219,10 +216,7 @@ export default async function Home() {
       <footer id="contact" className="border-t bg-background py-12">
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <div className="flex items-center gap-2">
-              <Leaf className="h-5 w-5 text-green-700" />
-              <span className="font-semibold">{farmName}</span>
-            </div>
+            <AvepoLogo size={28} />
             <p className="mt-2 max-w-sm text-sm text-muted-foreground">
               Order online, or sign in as staff to manage the full farm operation.
             </p>

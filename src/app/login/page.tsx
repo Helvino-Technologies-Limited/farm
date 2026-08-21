@@ -6,7 +6,7 @@ import { loginAction, type LoginState } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Leaf } from "lucide-react";
+import { AvepoLogo } from "@/components/layout/avepo-logo";
 
 const initialState: LoginState = {};
 
@@ -15,28 +15,24 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen">
-      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-gradient-to-br from-green-800 via-green-700 to-emerald-600 p-12 text-white">
-        <div className="flex items-center gap-2">
-          <Leaf className="h-7 w-7" />
-          <span className="text-xl font-semibold">Avepo Smart Farm</span>
-        </div>
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-gradient-to-br from-avepo-green via-avepo-green-light to-avepo-green p-12 text-white">
+        <AvepoLogo size={40} className="rounded bg-white/95 p-1.5" />
         <div>
           <h1 className="text-4xl font-bold leading-tight mb-4">
             Smart Farm Management, from field to finance.
           </h1>
-          <p className="text-green-100 max-w-md">
+          <p className="text-white/85 max-w-md">
             One system for sales, poultry, production, inventory, and finance across the entire
             Avepo Smart Farm operation.
           </p>
         </div>
-        <p className="text-sm text-green-200">Developed by Helvino Technologies LTD</p>
+        <p className="text-sm text-avepo-yellow-light">Developed by Helvino Technologies LTD</p>
       </div>
 
       <div className="flex w-full lg:w-1/2 items-center justify-center p-8">
         <div className="w-full max-w-sm space-y-6">
-          <div className="lg:hidden flex items-center gap-2 justify-center mb-4">
-            <Leaf className="h-6 w-6 text-green-700" />
-            <span className="text-lg font-semibold">Avepo Smart Farm</span>
+          <div className="lg:hidden flex items-center justify-center mb-4">
+            <AvepoLogo size={36} />
           </div>
           <div className="space-y-1 text-center lg:text-left">
             <h2 className="text-2xl font-semibold">Sign in</h2>

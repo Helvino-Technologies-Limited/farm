@@ -37,7 +37,7 @@ export default async function BookProductPage({ params }: { params: Promise<{ pr
         </div>
         <h1 className="mt-6 text-2xl font-semibold">{product.name}</h1>
         <p className="text-sm text-muted-foreground">{product.category.name}</p>
-        <p className="mt-4 text-2xl font-semibold text-green-700">
+        <p className="mt-4 text-2xl font-semibold text-avepo-green">
           {product.isPoultry ? "Priced by age at booking" : formatCurrency(Number(product.sellingPrice))}
           {!product.isPoultry && <span className="text-sm text-muted-foreground font-normal"> / {product.unit.abbreviation}</span>}
         </p>

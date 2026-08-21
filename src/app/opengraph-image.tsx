@@ -5,6 +5,8 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export default async function OpengraphImage() {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
   return new ImageResponse(
     (
       <div
@@ -16,31 +18,29 @@ export default async function OpengraphImage() {
           justifyContent: "center",
           alignItems: "flex-start",
           padding: "80px",
-          background: "linear-gradient(135deg, #14532d 0%, #166534 50%, #059669 100%)",
+          background: "linear-gradient(135deg, #003b4c 0%, #0e6472 55%, #003b4c 100%)",
           color: "white",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 32 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 36 }}>
           <div
             style={{
-              width: 56,
-              height: 56,
-              borderRadius: 14,
+              padding: 12,
+              borderRadius: 16,
               background: "white",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 32,
             }}
           >
-            🌿
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`${siteUrl}/brand/avepo-logo.png`} width={90} height={70} alt="Avepo" />
           </div>
-          <div style={{ fontSize: 32, fontWeight: 600 }}>Avepo Smart Farm</div>
         </div>
         <div style={{ fontSize: 56, fontWeight: 700, lineHeight: 1.1, maxWidth: 900, display: "flex" }}>
-          Order farm products & services online
+          Order farm products &amp; services online
         </div>
-        <div style={{ fontSize: 26, marginTop: 24, color: "#dcfce7", maxWidth: 800, display: "flex" }}>
+        <div style={{ fontSize: 26, marginTop: 24, color: "#fde68a", maxWidth: 800, display: "flex" }}>
           Poultry · Seedlings · Crops · Dairy · Drip Irrigation · Training
         </div>
       </div>

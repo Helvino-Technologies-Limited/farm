@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Leaf } from "lucide-react";
+import { AvepoLogo } from "./avepo-logo";
 import type { ModuleKey } from "@/lib/permissions";
 import { MODULE_ROUTES, MODULE_ICONS, MODULE_LABELS, NAV_ORDER } from "./nav-config";
 
@@ -14,11 +14,8 @@ export function Sidebar({ modules }: { modules: ModuleKey[] }) {
   return (
     <aside className="hidden md:flex md:w-64 md:flex-col border-r bg-sidebar text-sidebar-foreground shrink-0">
       <div className="flex items-center gap-2 px-5 h-16 border-b">
-        <Leaf className="h-6 w-6 text-green-700" />
-        <div className="leading-tight">
-          <p className="font-semibold text-sm">Avepo Smart Farm</p>
-          <p className="text-xs text-muted-foreground">Management System</p>
-        </div>
+        <AvepoLogo size={30} />
+        <p className="text-xs text-muted-foreground">Management System</p>
       </div>
       <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
         {visible.map((mod) => {
@@ -32,7 +29,7 @@ export function Sidebar({ modules }: { modules: ModuleKey[] }) {
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                 active
-                  ? "bg-green-700 text-white"
+                  ? "bg-avepo-green text-white"
                   : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               )}
             >

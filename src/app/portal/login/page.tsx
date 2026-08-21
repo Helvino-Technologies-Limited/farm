@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Leaf } from "lucide-react";
+import { AvepoLogo } from "@/components/layout/avepo-logo";
 import { PortalLoginForm } from "@/components/portal/login-form";
 
 export default async function PortalLoginPage({
@@ -12,9 +12,8 @@ export default async function PortalLoginPage({
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30 p-6">
       <div className="w-full max-w-sm space-y-6 rounded-xl border bg-card p-8 shadow-sm">
-        <div className="flex items-center gap-2 justify-center">
-          <Leaf className="h-6 w-6 text-green-700" />
-          <span className="text-lg font-semibold">Avepo Smart Farm</span>
+        <div className="flex items-center justify-center">
+          <AvepoLogo size={40} />
         </div>
         <div className="space-y-1 text-center">
           <h1 className="text-2xl font-semibold">Customer Login</h1>

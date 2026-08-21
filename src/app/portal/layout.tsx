@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Leaf } from "lucide-react";
 import { getCustomerSession } from "@/lib/customer-auth";
 import { Button } from "@/components/ui/button";
+import { AvepoLogo } from "@/components/layout/avepo-logo";
 import { portalLogoutAction } from "./actions";
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
@@ -11,9 +11,8 @@ export default async function PortalLayout({ children }: { children: React.React
     <div className="min-h-screen flex flex-col bg-muted/20">
       <header className="border-b bg-background">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2">
-            <Leaf className="h-6 w-6 text-green-700" />
-            <span className="font-semibold">Avepo Smart Farm</span>
+          <Link href="/">
+            <AvepoLogo size={32} />
           </Link>
           {customer ? (
             <div className="flex items-center gap-4">

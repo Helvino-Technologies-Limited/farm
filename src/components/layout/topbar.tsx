@@ -27,7 +27,7 @@ export function Topbar({ user }: { user: SessionUser }) {
           <p className="text-xs text-muted-foreground">{roleLabel(user.role)}</p>
         </div>
         <Avatar>
-          <AvatarFallback className="bg-green-700 text-white">{initials(user.name)}</AvatarFallback>
+          <AvatarFallback className="bg-avepo-green text-white">{initials(user.name)}</AvatarFallback>
         </Avatar>
         <form action={logoutAction}>
           <Button type="submit" variant="ghost" size="icon" title="Sign out">

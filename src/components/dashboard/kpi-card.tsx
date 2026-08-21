@@ -14,7 +14,7 @@ export function KpiCard({
   tone?: "default" | "warning" | "danger" | "success";
 }) {
   const toneClasses: Record<string, string> = {
-    default: "text-green-700 bg-green-50",
+    default: "text-avepo-green bg-avepo-yellow-light/40",
     warning: "text-amber-700 bg-amber-50",
     danger: "text-red-700 bg-red-50",
     success: "text-emerald-700 bg-emerald-50",

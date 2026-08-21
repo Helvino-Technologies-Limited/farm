@@ -56,7 +56,7 @@ export function buildDocumentPdf(data: DocumentPdfData): jsPDF {
 
   if (data.logoDataUrl) {
     try {
-      doc.addImage(data.logoDataUrl, "PNG", 14, y, 22, 22);
+      doc.addImage(data.logoDataUrl, "PNG", 14, y, 28, 21.75);
     } catch {
       // ignore malformed image data — header text still renders
     }
@@ -65,15 +65,15 @@ export function buildDocumentPdf(data: DocumentPdfData): jsPDF {
   doc.setTextColor(20, 20, 20);
   doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
-  doc.text(data.farmName, data.logoDataUrl ? 40 : 14, y + 8);
+  doc.text(data.farmName, data.logoDataUrl ? 46 : 14, y + 8);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(90, 90, 90);
   const contactLines = [data.farmAddress, [data.farmPhone, data.farmEmail].filter(Boolean).join("  ·  ")].filter(Boolean);
-  contactLines.forEach((line, i) => doc.text(line as string, data.logoDataUrl ? 40 : 14, y + 14 + i * 4.5));
+  contactLines.forEach((line, i) => doc.text(line as string, data.logoDataUrl ? 46 : 14, y + 14 + i * 4.5));
 
   doc.setFontSize(18);
-  doc.setTextColor(21, 128, 61);
+  doc.setTextColor(0, 59, 76);
   doc.setFont("helvetica", "bold");
   doc.text(data.type === "INVOICE" ? "INVOICE" : data.type === "QUOTATION" ? "QUOTATION" : "RECEIPT", pageWidth - 14, y + 8, { align: "right" });
   doc.setFontSize(10);
@@ -114,7 +114,7 @@ export function buildDocumentPdf(data: DocumentPdfData): jsPDF {
       i.discount ? money(i.discount) : "-",
       money(i.total),
     ]),
-    headStyles: { fillColor: [21, 128, 61] },
+    headStyles: { fillColor: [0, 59, 76] },
     styles: { fontSize: 9.5 },
     columnStyles: { 1: { halign: "right" }, 2: { halign: "right" }, 3: { halign: "right" }, 4: { halign: "right" } },
   });
