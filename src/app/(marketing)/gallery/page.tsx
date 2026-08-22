@@ -16,13 +16,13 @@ export default async function GalleryPage() {
   return (
     <div className="mx-auto max-w-6xl px-6 py-16">
       <p className="text-sm font-semibold uppercase tracking-wider text-avepo-green">Gallery</p>
-      <h1 className="mt-2 text-4xl font-bold">A look at our farm</h1>
+      <h1 className="mt-2 text-4xl font-bold sm:text-5xl">A look at our farm</h1>
       {categories.length > 0 && (
-        <p className="mt-3 text-sm text-muted-foreground">Categories: {categories.join(" · ")}</p>
+        <p className="mt-3 text-base text-muted-foreground">Categories: {categories.join(" · ")}</p>
       )}
 
       {images.length === 0 ? (
-        <div className="mt-10 rounded-xl border border-dashed p-12 text-center text-muted-foreground">
+        <div className="mt-10 rounded-xl border border-dashed p-12 text-center text-base text-muted-foreground">
           Photos will be added here soon.
         </div>
       ) : (

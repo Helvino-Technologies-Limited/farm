@@ -31,8 +31,8 @@ export default async function ServicesPage() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-16">
       <p className="text-sm font-semibold uppercase tracking-wider text-avepo-green">Our Services</p>
-      <h1 className="mt-2 text-4xl font-bold">More than just products</h1>
-      <p className="mt-4 max-w-2xl text-muted-foreground">
+      <h1 className="mt-2 text-4xl font-bold sm:text-5xl">More than just products</h1>
+      <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
         Alongside our produce and poultry, we offer agricultural services to support your own farm — book online
         and we&apos;ll be in touch to confirm details.
       </p>
@@ -41,16 +41,16 @@ export default async function ServicesPage() {
         <div className="mt-10 grid gap-6 sm:grid-cols-2">
           {serviceEntries.map((s) => (
             <div key={s.id} className="rounded-xl border bg-card p-6">
-              <h2 className="text-lg font-semibold">{s.title}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{s.description}</p>
+              <h2 className="text-xl font-semibold">{s.title}</h2>
+              <p className="mt-2 text-base leading-relaxed text-muted-foreground">{s.description}</p>
             </div>
           ))}
         </div>
       )}
 
-      <h2 className="mt-14 text-2xl font-bold">Book a service</h2>
+      <h2 className="mt-14 text-3xl font-bold">Book a service</h2>
       {serviceProducts.length === 0 ? (
-        <div className="mt-6 rounded-xl border border-dashed p-12 text-center text-muted-foreground">
+        <div className="mt-6 rounded-xl border border-dashed p-12 text-center text-base text-muted-foreground">
           Bookable services will be listed here soon.
         </div>
       ) : (
@@ -66,14 +66,14 @@ export default async function ServicesPage() {
             const bookable = p.bookingEnabled && status !== "UNAVAILABLE";
             return (
               <div key={p.id} className="flex flex-col rounded-xl border bg-card p-6">
-                <p className="text-xs font-medium uppercase tracking-wide text-avepo-green">{p.category.name}</p>
-                <h3 className="mt-1 text-lg font-semibold">{p.name}</h3>
+                <p className="text-sm font-medium uppercase tracking-wide text-avepo-green">{p.category.name}</p>
+                <h3 className="mt-1 text-xl font-semibold">{p.name}</h3>
                 {(p.shortDescription || p.description) && (
-                  <p className="mt-2 flex-1 text-sm text-muted-foreground">{p.shortDescription || p.description}</p>
+                  <p className="mt-2 flex-1 text-base leading-relaxed text-muted-foreground">{p.shortDescription || p.description}</p>
                 )}
-                <p className="mt-4 text-xl font-semibold text-avepo-green">
+                <p className="mt-4 text-2xl font-semibold text-avepo-green">
                   {formatCurrency(Number(p.sellingPrice))}
-                  <span className="text-sm font-normal text-muted-foreground"> / {p.unit.abbreviation}</span>
+                  <span className="text-base font-normal text-muted-foreground"> / {p.unit.abbreviation}</span>
                 </p>
                 <Button
                   render={<Link href={`/shop/${p.id}`} />}
@@ -90,8 +90,8 @@ export default async function ServicesPage() {
       )}
 
       <div className="mt-12 rounded-xl bg-avepo-green p-8 text-center text-white">
-        <h2 className="text-xl font-semibold">Not sure which service you need?</h2>
-        <p className="mt-2 text-white/80">Get in touch and we&apos;ll get back to you.</p>
+        <h2 className="text-2xl font-semibold">Not sure which service you need?</h2>
+        <p className="mt-2 text-lg text-white/80">Get in touch and we&apos;ll get back to you.</p>
         <Button render={<Link href="/contact" />} nativeButton={false} variant="secondary" className="mt-4">Contact Us</Button>
       </div>
     </div>

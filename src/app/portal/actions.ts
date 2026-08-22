@@ -94,9 +94,19 @@ export async function portalCreateBookingAction(input: unknown) {
   const data = portalBookingSchema.parse(input);
   const systemActor = await getPortalSystemActor();
 
+  // The public UI only shows active, publicly-listed, booking-enabled products — but this action
+  // is reachable directly with any productId, so the same rules must be enforced server-side.
+  const product = await db.product.findUniqueOrThrow({ where: { id: data.productId } });
+  if (!product.active || !product.publiclyListed || !product.bookingEnabled) {
+    throw new Error("This product is not available for online booking.");
+  }
+
   let unitPrice: number;
   if (data.poultryBatchId) {
     const batch = await db.poultryBatch.findUniqueOrThrow({ where: { id: data.poultryBatchId } });
+    if (batch.productId !== data.productId || batch.status !== "ACTIVE") {
+      throw new Error("This poultry batch is not available for booking.");
+    }
     const age = calculatePoultryAge(batch.hatchDate);
     const resolved = await calculatePoultryPrice(db, batch, age);
     unitPrice = resolved.price;

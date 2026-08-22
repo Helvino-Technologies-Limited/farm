@@ -69,8 +69,8 @@ export default async function ShopPage() {
   return (
     <div className="mx-auto max-w-6xl px-6 py-16">
       <p className="text-sm font-semibold uppercase tracking-wider text-avepo-green">Products</p>
-      <h1 className="mt-2 text-4xl font-bold">Full Catalogue</h1>
-      <p className="mt-3 max-w-2xl text-muted-foreground">
+      <h1 className="mt-2 text-4xl font-bold sm:text-5xl">Full Catalogue</h1>
+      <p className="mt-3 max-w-2xl text-lg text-muted-foreground">
         Search or filter by category. Sign in or create a free account to book.
       </p>
       <div className="mt-10">

@@ -28,7 +28,7 @@ export function PortalRegisterForm({ next }: { next?: string }) {
           required
           className="mt-0.5"
         />
-        <Label htmlFor="acceptTerms" className="text-xs font-normal text-muted-foreground">
+        <Label htmlFor="acceptTerms" className="text-sm font-normal text-muted-foreground">
           I have read and agree to the{" "}
           <Link href="/terms" target="_blank" className="font-medium text-avepo-green underline underline-offset-2">
             Terms of Service

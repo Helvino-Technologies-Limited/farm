@@ -17,8 +17,8 @@ export default async function PortalLoginPage({
           <AvepoLogo size={40} src={logoUrl} />
         </div>
         <div className="space-y-1 text-center">
-          <h1 className="text-2xl font-semibold">Customer Login</h1>
-          <p className="text-sm text-muted-foreground">Sign in to book products and manage your orders.</p>
+          <h1 className="text-3xl font-semibold">Customer Login</h1>
+          <p className="text-base text-muted-foreground">Sign in to book products and manage your orders.</p>
         </div>
         <PortalLoginForm next={next} />
         <p className="text-center text-sm text-muted-foreground">

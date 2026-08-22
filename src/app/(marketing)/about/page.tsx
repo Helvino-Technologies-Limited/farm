@@ -19,9 +19,9 @@ export default async function AboutPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-16">
-      <p className="text-sm font-semibold uppercase tracking-wider text-avepo-green">About Us</p>
-      <h1 className="mt-2 text-4xl font-bold">Who is {farmName}?</h1>
-      <p className="mt-6 whitespace-pre-line text-lg text-muted-foreground">
+      <p className="text-base font-semibold uppercase tracking-wider text-avepo-green">About Us</p>
+      <h1 className="mt-2 text-4xl font-bold sm:text-5xl">Who is {farmName}?</h1>
+      <p className="mt-6 whitespace-pre-line text-xl leading-relaxed text-muted-foreground">
         {settings?.aboutBody ||
           `${farmName} runs integrated farm operations — poultry, seedlings, crops, dairy, feeds and agricultural services — supplying customers directly through an online booking platform, and supporting other farmers through training and advisory services.${settings?.location ? ` Based in ${settings.location}, Kenya.` : ""}`}
       </p>
@@ -31,15 +31,15 @@ export default async function AboutPage() {
           {settings?.mission && (
             <div className="rounded-xl border bg-card p-6">
               <Target className="h-6 w-6 text-avepo-green" />
-              <h2 className="mt-3 text-lg font-semibold">Our Mission</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{settings.mission}</p>
+              <h2 className="mt-3 text-xl font-semibold">Our Mission</h2>
+              <p className="mt-2 text-base leading-relaxed text-muted-foreground">{settings.mission}</p>
             </div>
           )}
           {settings?.vision && (
             <div className="rounded-xl border bg-card p-6">
               <Eye className="h-6 w-6 text-avepo-green" />
-              <h2 className="mt-3 text-lg font-semibold">Our Vision</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{settings.vision}</p>
+              <h2 className="mt-3 text-xl font-semibold">Our Vision</h2>
+              <p className="mt-2 text-base leading-relaxed text-muted-foreground">{settings.vision}</p>
             </div>
           )}
         </div>

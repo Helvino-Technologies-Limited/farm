@@ -173,7 +173,7 @@ export default async function Home() {
               return (
                 <div key={c} className={`flex flex-col items-center justify-center gap-2 rounded-xl p-4 text-center text-white ${CENTRE_STYLE[c].gradient}`}>
                   <Icon className="h-6 w-6" />
-                  <span className="text-xs font-medium">{CENTRE_STYLE[c].label}</span>
+                  <span className="text-sm font-medium">{CENTRE_STYLE[c].label}</span>
                 </div>
               );
             })}
@@ -225,8 +225,8 @@ export default async function Home() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {services.map((s) => (
               <div key={s.id} className="rounded-xl border bg-card p-6">
-                <h3 className="font-semibold">{s.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{s.description}</p>
+                <h3 className="text-lg font-semibold">{s.title}</h3>
+                <p className="mt-2 text-base leading-relaxed text-muted-foreground">{s.description}</p>
               </div>
             ))}
           </div>
@@ -245,7 +245,7 @@ export default async function Home() {
                 <div key={"id" in f ? f.id : i} className="rounded-xl bg-white/10 p-6 backdrop-blur-sm">
                   <Icon className="h-7 w-7 text-avepo-yellow" />
                   <h3 className="mt-3 font-semibold">{f.title}</h3>
-                  {f.description && <p className="mt-1 text-sm text-white/80">{f.description}</p>}
+                  {f.description && <p className="mt-1 text-base leading-relaxed text-white/80">{f.description}</p>}
                 </div>
               );
             })}
@@ -262,7 +262,7 @@ export default async function Home() {
             <div key={s.step} className="rounded-xl border bg-card p-6 text-center">
               <span className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-avepo-yellow font-bold text-avepo-green">{s.step}</span>
               <h3 className="mt-3 font-semibold">{s.title}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{s.description}</p>
+              <p className="mt-1 text-base leading-relaxed text-muted-foreground">{s.description}</p>
             </div>
           ))}
         </div>
@@ -303,7 +303,7 @@ export default async function Home() {
             {faqs.map((f) => (
               <details key={f.id} className="group rounded-lg border bg-card p-4">
                 <summary className="cursor-pointer list-none font-medium">{f.question}</summary>
-                <p className="mt-2 text-sm text-muted-foreground">{f.answer}</p>
+                <p className="mt-2 text-base leading-relaxed text-muted-foreground">{f.answer}</p>
               </details>
             ))}
           </div>

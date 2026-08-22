@@ -117,7 +117,7 @@ export default async function ShopProductPage({ params }: { params: Promise<{ id
 
         <div>
           <div className="flex items-start justify-between gap-3">
-            <h1 className="text-3xl font-bold">{product.name}</h1>
+            <h1 className="text-3xl font-bold sm:text-4xl">{product.name}</h1>
             <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${STATUS_STYLE[status].className}`}>
               {STATUS_STYLE[status].label}
             </span>
@@ -135,10 +135,10 @@ export default async function ShopProductPage({ params }: { params: Promise<{ id
             <p className="mt-4 text-muted-foreground">{product.shortDescription || product.description}</p>
           )}
           {product.shortDescription && product.description && (
-            <p className="mt-2 text-sm text-muted-foreground">{product.description}</p>
+            <p className="mt-2 text-base leading-relaxed text-muted-foreground">{product.description}</p>
           )}
           {product.specifications && (
-            <div className="mt-4 rounded-lg border bg-muted/30 p-4 text-sm text-muted-foreground whitespace-pre-line">
+            <div className="mt-4 rounded-lg border bg-muted/30 p-4 text-base leading-relaxed text-muted-foreground whitespace-pre-line">
               {product.specifications}
             </div>
           )}

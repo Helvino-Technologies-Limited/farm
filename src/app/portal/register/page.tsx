@@ -17,8 +17,8 @@ export default async function PortalRegisterPage({
           <AvepoLogo size={40} src={logoUrl} />
         </div>
         <div className="space-y-1 text-center">
-          <h1 className="text-2xl font-semibold">Create Account</h1>
-          <p className="text-sm text-muted-foreground">Register to book products and services online.</p>
+          <h1 className="text-3xl font-semibold">Create Account</h1>
+          <p className="text-base text-muted-foreground">Register to book products and services online.</p>
         </div>
         <PortalRegisterForm next={next} />
         <p className="text-center text-sm text-muted-foreground">

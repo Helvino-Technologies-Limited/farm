@@ -35,12 +35,12 @@ export default async function FaqPage() {
       {/* eslint-disable-next-line react/no-danger */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <p className="text-sm font-semibold uppercase tracking-wider text-avepo-green">FAQ</p>
-      <h1 className="mt-2 text-4xl font-bold">Frequently Asked Questions</h1>
+      <h1 className="mt-2 text-4xl font-bold sm:text-5xl">Frequently Asked Questions</h1>
       <div className="mt-10 space-y-4">
         {faqs.map((f, i) => (
-          <details key={f.question} className="group rounded-lg border bg-card p-4" open={i === 0}>
-            <summary className="cursor-pointer list-none font-medium">{f.question}</summary>
-            <p className="mt-2 text-sm text-muted-foreground">{f.answer}</p>
+          <details key={f.question} className="group rounded-lg border bg-card p-5" open={i === 0}>
+            <summary className="cursor-pointer list-none text-lg font-medium">{f.question}</summary>
+            <p className="mt-2 text-base leading-relaxed text-muted-foreground">{f.answer}</p>
           </details>
         ))}
       </div>

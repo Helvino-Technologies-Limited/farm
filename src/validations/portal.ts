@@ -6,11 +6,10 @@ export const portalRegisterSchema = z.object({
   email: z.string().email("Enter a valid email"),
   phone: z.string().min(7, "A valid phone number is required"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  acceptTerms: z
-    .union([z.literal("on"), z.literal("true")])
-    .refine((v) => v === "on" || v === "true", {
-      message: "You must accept the Terms of Service and Privacy Policy to create an account.",
-    }),
+  acceptTerms: z.preprocess(
+    (v) => v === "on" || v === "true",
+    z.literal(true, { message: "You must accept the Terms of Service and Privacy Policy to create an account." })
+  ),
 });
 export type PortalRegisterInput = z.infer<typeof portalRegisterSchema>;
 
