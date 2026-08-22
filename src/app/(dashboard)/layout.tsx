@@ -3,6 +3,7 @@ import { visibleModules } from "@/lib/permissions";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import { getFarmLogoUrl } from "@/lib/branding";
+import { IdleLogoutWatcher } from "@/components/dashboard/idle-logout-watcher";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [user, logoUrl] = await Promise.all([requireUser(), getFarmLogoUrl()]);
@@ -10,6 +11,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="flex min-h-screen w-full">
+      <IdleLogoutWatcher />
       <Sidebar modules={modules} logoUrl={logoUrl} />
       <div className="flex flex-1 flex-col min-w-0">
         <Topbar user={user} modules={modules} logoUrl={logoUrl} />
