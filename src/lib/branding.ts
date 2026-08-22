@@ -57,6 +57,12 @@ export async function getFarmLogoUrl(): Promise<string | null> {
   return settings?.logoUrl ?? null;
 }
 
+/** Phone/email customers should be told to contact for support (e.g. forgotten portal password). */
+export async function getFarmSupportContact(): Promise<{ phone: string | null; email: string | null }> {
+  const settings = await db.systemSetting.findUnique({ where: { id: 1 }, select: { phone: true, email: true } });
+  return { phone: settings?.phone ?? null, email: settings?.email ?? null };
+}
+
 /** Logo URL + display name + WhatsApp number, for headers/layouts that need all three. */
 export async function getFarmBranding(): Promise<{ logoUrl: string | null; farmName: string; whatsappNumber: string | null }> {
   const settings = await db.systemSetting.findUnique({
