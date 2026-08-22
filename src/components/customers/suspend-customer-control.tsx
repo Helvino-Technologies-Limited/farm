@@ -12,8 +12,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 import { formatDate } from "@/lib/format";
 import { suspendCustomerAction, reactivateCustomerAction } from "@/app/(dashboard)/customers/actions";
 
-export function SuspendCustomerControl({ customerId, suspended }: { customerId: string; suspended: boolean }) {
-  return suspended ? <ReactivateButton customerId={customerId} /> : <SuspendButton customerId={customerId} />;
+export function SuspendCustomerControl({
+  customerId,
+  suspended,
+  compact = false,
+}: {
+  customerId: string;
+  suspended: boolean;
+  compact?: boolean;
+}) {
+  return suspended ? (
+    <ReactivateButton customerId={customerId} compact={compact} />
+  ) : (
+    <SuspendButton customerId={customerId} compact={compact} />
+  );
 }
 
 export function SuspensionNotice({
@@ -32,7 +44,7 @@ export function SuspensionNotice({
   );
 }
 
-function SuspendButton({ customerId }: { customerId: string }) {
+function SuspendButton({ customerId, compact }: { customerId: string; compact: boolean }) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [pending, setPending] = useState(false);
@@ -55,8 +67,16 @@ function SuspendButton({ customerId }: { customerId: string }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button variant="destructive" size="sm" />}>
-        <ShieldAlert className="h-4 w-4" /> Suspend Account
+      <DialogTrigger
+        render={
+          <Button
+            variant="destructive"
+            size={compact ? "icon" : "sm"}
+            title={compact ? "Suspend account" : undefined}
+          />
+        }
+      >
+        <ShieldAlert className="h-4 w-4" /> {!compact && "Suspend Account"}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -88,7 +108,7 @@ function SuspendButton({ customerId }: { customerId: string }) {
   );
 }
 
-function ReactivateButton({ customerId }: { customerId: string }) {
+function ReactivateButton({ customerId, compact }: { customerId: string; compact: boolean }) {
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const router = useRouter();
@@ -109,8 +129,16 @@ function ReactivateButton({ customerId }: { customerId: string }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button variant="outline" size="sm" />}>
-        <ShieldCheck className="h-4 w-4" /> Reactivate Account
+      <DialogTrigger
+        render={
+          <Button
+            variant="outline"
+            size={compact ? "icon" : "sm"}
+            title={compact ? "Reactivate account" : undefined}
+          />
+        }
+      >
+        <ShieldCheck className="h-4 w-4" /> {!compact && "Reactivate Account"}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

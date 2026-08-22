@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { CustomerFormDialog } from "@/components/customers/customer-form-dialog";
+import { SuspendCustomerControl } from "@/components/customers/suspend-customer-control";
 import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { formatCurrency } from "@/lib/format";
 import { canWrite } from "@/lib/permissions";
@@ -59,7 +60,14 @@ export default async function CustomersPage() {
                 </TableCell>
                 {user.role === "ADMIN" && (
                   <TableCell className="text-right">
-                    <DeleteRecordButton module="customers" id={c.id} label={c.name} />
+                    <div className="flex justify-end gap-1">
+                      <SuspendCustomerControl
+                        customerId={c.id}
+                        suspended={!c.portalActive && !!c.suspensionReason}
+                        compact
+                      />
+                      <DeleteRecordButton module="customers" id={c.id} label={c.name} />
+                    </div>
                   </TableCell>
                 )}
               </TableRow>

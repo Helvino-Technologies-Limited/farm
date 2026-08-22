@@ -60,7 +60,7 @@ export default async function SettingsPage() {
             slot="about"
             currentVideoUrl={settings?.aboutVideoUrl ?? null}
             uploadLabel="Upload About Video"
-            helpText="Shown on the public About Us page. Upload a file (MP4/WebM, up to 200MB) or paste a YouTube link."
+            helpText="Plays as the background video behind the header on the public About Us page. Upload a file (MP4/WebM, up to 200MB) or paste a YouTube link."
           />
         </CardContent>
       </Card>
@@ -72,7 +72,7 @@ export default async function SettingsPage() {
             slot="services"
             currentVideoUrl={settings?.servicesVideoUrl ?? null}
             uploadLabel="Upload Services Video"
-            helpText="Shown on the public Services page. Upload a file (MP4/WebM, up to 200MB) or paste a YouTube link."
+            helpText="Plays as the background video behind the header on the public Services page. Upload a file (MP4/WebM, up to 200MB) or paste a YouTube link."
           />
         </CardContent>
       </Card>
