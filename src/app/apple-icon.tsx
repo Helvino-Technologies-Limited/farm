@@ -1,15 +1,16 @@
 import { ImageResponse } from "next/og";
-import { getFarmLogo } from "@/lib/branding";
+import { getAppIconDataUrl } from "@/lib/branding";
 
 export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
-export default async function AppleIcon() {
-  const logo = await getFarmLogo();
+export default function AppleIcon() {
+  const icon = getAppIconDataUrl();
   return new ImageResponse(
     (
+      // iOS applies its own rounded-corner mask and doesn't composite transparency well,
+      // so give the icon a solid backdrop matching the tile's own black face.
       <div
         style={{
           width: "100%",
@@ -17,11 +18,11 @@ export default async function AppleIcon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#000000",
+          background: "#0a0a0a",
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        {logo && <img src={logo.dataUrl} width={180} height={180} style={{ objectFit: "contain" }} alt="" />}
+        {icon && <img src={icon} width={180} height={180} style={{ objectFit: "contain" }} alt="" />}
       </div>
     ),
     { ...size }

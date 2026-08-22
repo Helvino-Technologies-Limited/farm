@@ -1,13 +1,42 @@
 {
-  "name": "Avepo Smart Farm Management System",
+  "id": "/",
+  "name": "Avepo Smart Farm — Order Farm Products & Services Online",
   "short_name": "Avepo Smart Farm",
-  "description": "Farm operations, sales and finance management for Avepo Smart Farm.",
-  "start_url": "/dashboard",
+  "description": "Browse and order poultry, seedlings, crops, dairy and farm services from Avepo Smart Farm — book online, pay by M-Pesa or bank, and track your orders and receipts.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "/?source=pwa",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#000000",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#0a0a0a",
   "theme_color": "#f5a300",
+  "categories": ["business", "shopping", "food", "productivity"],
   "icons": [
     { "src": "/api/pwa-icon/192", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/api/pwa-icon/512", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+    { "src": "/api/pwa-icon/512", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/api/pwa-icon/192?purpose=maskable", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/api/pwa-icon/512?purpose=maskable", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Browse Products",
+      "short_name": "Shop",
+      "url": "/shop?source=pwa-shortcut",
+      "icons": [{ "src": "/api/pwa-icon/192", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Book Now",
+      "short_name": "Book",
+      "url": "/portal/register?source=pwa-shortcut",
+      "icons": [{ "src": "/api/pwa-icon/192", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "My Bookings",
+      "short_name": "Bookings",
+      "url": "/portal/bookings?source=pwa-shortcut",
+      "icons": [{ "src": "/api/pwa-icon/192", "sizes": "192x192", "type": "image/png" }]
+    }
   ]
 }

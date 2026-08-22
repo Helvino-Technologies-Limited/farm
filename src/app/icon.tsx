@@ -1,13 +1,12 @@
 import { ImageResponse } from "next/og";
-import { getFarmLogo } from "@/lib/branding";
+import { getAppIconDataUrl } from "@/lib/branding";
 
 export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
-export default async function Icon() {
-  const logo = await getFarmLogo();
+export default function Icon() {
+  const icon = getAppIconDataUrl();
   return new ImageResponse(
     (
       <div
@@ -17,11 +16,10 @@ export default async function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#000000",
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        {logo && <img src={logo.dataUrl} width={32} height={32} style={{ objectFit: "contain" }} alt="" />}
+        {icon && <img src={icon} width={32} height={32} style={{ objectFit: "contain" }} alt="" />}
       </div>
     ),
     { ...size }

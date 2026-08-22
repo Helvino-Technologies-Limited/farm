@@ -24,6 +24,24 @@ function defaultLogo(): { dataUrl: string; format: LogoFormat } | null {
   return cachedDefault;
 }
 
+let cachedAppIcon: string | null | undefined;
+
+/**
+ * The fixed app/favicon/home-screen icon — a dedicated square glyph, distinct from the
+ * (admin-configurable) full logo used in the header, PDFs and OG image. Not swappable via
+ * Settings since favicon/PWA icon assets need a specific trimmed, square composition.
+ */
+export function getAppIconDataUrl(): string | null {
+  if (cachedAppIcon !== undefined) return cachedAppIcon;
+  try {
+    const buf = fs.readFileSync(path.join(process.cwd(), "public", "brand", "avepo-app-icon.png"));
+    cachedAppIcon = `data:image/png;base64,${buf.toString("base64")}`;
+  } catch {
+    cachedAppIcon = null;
+  }
+  return cachedAppIcon;
+}
+
 /**
  * Resolves the farm's current logo — the one uploaded via Settings if set, otherwise the
  * bundled default — as a base64 data URI with its real format detected from Content-Type.
