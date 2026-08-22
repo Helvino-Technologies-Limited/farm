@@ -15,6 +15,14 @@ export interface CreateCustomerParams {
 }
 
 export async function createCustomer(params: CreateCustomerParams, actingUser: SessionUser) {
+  const existingByPhone = await db.customer.findUnique({ where: { phone: params.phone } });
+  if (existingByPhone) {
+    if (!existingByPhone.portalActive && existingByPhone.suspensionReason) {
+      throw new Error(`This phone number belongs to a suspended customer (${existingByPhone.name}, ${existingByPhone.customerNumber}). Reactivate that account instead of creating a new one.`);
+    }
+    throw new Error(`This phone number is already used by ${existingByPhone.name} (${existingByPhone.customerNumber}). A phone number can only be linked to one customer.`);
+  }
+
   return withTransaction(async (tx) => {
     const customerNumber = await nextDocumentNumber(tx, "CUSTOMER");
     const customer = await tx.customer.create({

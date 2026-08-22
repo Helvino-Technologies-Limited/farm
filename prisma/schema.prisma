@@ -248,7 +248,7 @@ model Customer {
   id             String   @id @default(cuid())
   customerNumber String   @unique
   name           String
-  phone          String
+  phone          String   @unique
   email          String?  @unique
   location       String?
   address        String?

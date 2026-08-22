@@ -35,6 +35,19 @@ export async function portalRegisterAction(_prev: PortalFormState, formData: For
   if (existing?.passwordHash) {
     return { error: "An account with this email already exists. Please sign in instead." };
   }
+  if (existing && !existing.portalActive && existing.suspensionReason) {
+    return { error: "This account has been suspended and cannot be activated through registration. Please contact us if you believe this is a mistake." };
+  }
+
+  const existingByPhone = await db.customer.findUnique({ where: { phone } });
+  if (existingByPhone && existingByPhone.id !== existing?.id) {
+    if (!existingByPhone.portalActive && existingByPhone.suspensionReason) {
+      return {
+        error: "This phone number is linked to a suspended account and cannot be used to register a new account. Please contact us if you believe this is a mistake.",
+      };
+    }
+    return { error: "An account with this phone number already exists. Please sign in with that account, or use a different phone number." };
+  }
 
   const passwordHash = await hashCustomerPassword(password);
   const consent = { termsAcceptedAt: new Date(), termsVersion: CURRENT_TERMS_VERSION };

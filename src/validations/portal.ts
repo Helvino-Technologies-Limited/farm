@@ -4,7 +4,7 @@ import { optionalDate } from "./helpers";
 export const portalRegisterSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Enter a valid email"),
-  phone: z.string().min(7, "A valid phone number is required"),
+  phone: z.string().trim().min(7, "A valid phone number is required"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   acceptTerms: z.preprocess(
     (v) => v === "on" || v === "true",
