@@ -96,6 +96,27 @@ export async function reactivateCustomer(customerId: string, actingUser: Session
   });
 }
 
+/** Lets Admin/Manager set a customer's portal password directly — used for phone support when a
+ *  customer has forgotten theirs and can't reset it themselves. Ends any session they currently
+ *  have open, so the new password takes effect immediately. */
+export async function setCustomerPassword(customerId: string, password: string, actingUser: SessionUser) {
+  const { hashCustomerPassword } = await import("@/lib/customer-auth");
+  const passwordHash = await hashCustomerPassword(password);
+
+  return withTransaction(async (tx) => {
+    const customer = await tx.customer.update({ where: { id: customerId }, data: { passwordHash } });
+    await tx.customerSession.deleteMany({ where: { customerId } });
+    await logAudit(tx, {
+      user: actingUser,
+      action: "UPDATE",
+      module: "customers",
+      recordId: customerId,
+      newValue: { passwordResetByStaff: true },
+    });
+    return customer;
+  });
+}
+
 export interface CustomerStatementEntry {
   date: Date;
   type: "INVOICE" | "PAYMENT";

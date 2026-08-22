@@ -20,3 +20,8 @@ export const suspendCustomerSchema = z.object({
     .max(1000, "Keep the reason under 1000 characters."),
 });
 export type SuspendCustomerInput = z.infer<typeof suspendCustomerSchema>;
+
+export const setCustomerPasswordSchema = z.object({
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+export type SetCustomerPasswordInput = z.infer<typeof setCustomerPasswordSchema>;

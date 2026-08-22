@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { SuspendCustomerControl, SuspensionNotice } from "@/components/customers/suspend-customer-control";
+import { ChangeCustomerPasswordButton } from "@/components/customers/change-customer-password";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { startOfMonth, endOfDay } from "date-fns";
 
@@ -54,6 +55,9 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
         action={
           <div className="flex items-center gap-2">
             {suspended && <Badge variant="destructive">Suspended</Badge>}
+            {(user.role === "ADMIN" || user.role === "MANAGER") && (
+              <ChangeCustomerPasswordButton customerId={customer.id} />
+            )}
             {user.role === "ADMIN" && <SuspendCustomerControl customerId={customer.id} suspended={suspended} />}
           </div>
         }

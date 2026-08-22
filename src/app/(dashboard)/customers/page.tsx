@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { CustomerFormDialog } from "@/components/customers/customer-form-dialog";
 import { SuspendCustomerControl } from "@/components/customers/suspend-customer-control";
+import { ChangeCustomerPasswordButton } from "@/components/customers/change-customer-password";
 import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { formatCurrency } from "@/lib/format";
 import { canWrite } from "@/lib/permissions";
@@ -17,6 +18,7 @@ export default async function CustomersPage() {
   const user = await requireModuleAccess("customers");
   const customers = await db.customer.findMany({ orderBy: { registeredAt: "desc" } });
   const balances = await Promise.all(customers.map((c) => calculateCustomerBalance(db, c.id)));
+  const canManagePasswords = user.role === "ADMIN" || user.role === "MANAGER";
 
   return (
     <div>
@@ -35,7 +37,7 @@ export default async function CustomersPage() {
               <TableHead>Type</TableHead>
               <TableHead className="text-right">Credit Limit</TableHead>
               <TableHead className="text-right">Balance</TableHead>
-              {user.role === "ADMIN" && <TableHead className="text-right">Actions</TableHead>}
+              {canManagePasswords && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -58,15 +60,20 @@ export default async function CustomersPage() {
                     {formatCurrency(balances[i])}
                   </span>
                 </TableCell>
-                {user.role === "ADMIN" && (
+                {canManagePasswords && (
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
-                      <SuspendCustomerControl
-                        customerId={c.id}
-                        suspended={!c.portalActive && !!c.suspensionReason}
-                        compact
-                      />
-                      <DeleteRecordButton module="customers" id={c.id} label={c.name} />
+                      <ChangeCustomerPasswordButton customerId={c.id} compact />
+                      {user.role === "ADMIN" && (
+                        <>
+                          <SuspendCustomerControl
+                            customerId={c.id}
+                            suspended={!c.portalActive && !!c.suspensionReason}
+                            compact
+                          />
+                          <DeleteRecordButton module="customers" id={c.id} label={c.name} />
+                        </>
+                      )}
                     </div>
                   </TableCell>
                 )}

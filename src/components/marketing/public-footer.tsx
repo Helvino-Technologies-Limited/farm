@@ -16,6 +16,8 @@ export function PublicFooter({
   email?: string | null;
   location?: string | null;
 }) {
+  const year = new Date().getFullYear();
+
   return (
     <footer id="contact" className="border-t bg-background py-12">
       <div className="mx-auto grid max-w-6xl gap-8 px-6 sm:grid-cols-3">
@@ -43,9 +45,12 @@ export function PublicFooter({
         </div>
       </div>
       <div className="mx-auto mt-8 flex max-w-6xl flex-col gap-4 border-t px-6 pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-        <a href="https://helvino.org" target="_blank" rel="noopener noreferrer" className="hover:text-foreground hover:underline">
-          Developed by Helvino Technologies LTD
-        </a>
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
+          <span>&copy; {year} {farmName}. All rights reserved.</span>
+          <a href="https://helvino.org" target="_blank" rel="noopener noreferrer" className="hover:text-foreground hover:underline">
+            Developed by Helvino Technologies LTD
+          </a>
+        </div>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <Link href="/terms" className="hover:text-foreground hover:underline">Terms of Service</Link>
           <Link href="/privacy" className="hover:text-foreground hover:underline">Privacy Policy</Link>
