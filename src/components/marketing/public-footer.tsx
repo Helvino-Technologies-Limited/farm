@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AvepoLogo } from "@/components/layout/avepo-logo";
 import { MapPin, Phone, Mail } from "lucide-react";
+import { CookieSettingsLink } from "@/components/marketing/cookie-settings-link";
 
 export function PublicFooter({
   farmName,
@@ -41,11 +42,17 @@ export function PublicFooter({
           {email && <div className="flex items-center gap-2"><Mail className="h-4 w-4" /> {email}</div>}
         </div>
       </div>
-      <div className="mx-auto mt-8 flex max-w-6xl flex-wrap items-center justify-between gap-2 border-t px-6 pt-6 text-xs text-muted-foreground">
+      <div className="mx-auto mt-8 flex max-w-6xl flex-col gap-4 border-t px-6 pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <a href="https://helvino.org" target="_blank" rel="noopener noreferrer" className="hover:text-foreground hover:underline">
           Developed by Helvino Technologies LTD
         </a>
-        <Link href="/login" className="hover:text-foreground hover:underline">Staff Login</Link>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <Link href="/terms" className="hover:text-foreground hover:underline">Terms of Service</Link>
+          <Link href="/privacy" className="hover:text-foreground hover:underline">Privacy Policy</Link>
+          <Link href="/cookies" className="hover:text-foreground hover:underline">Cookie Policy</Link>
+          <CookieSettingsLink />
+          <Link href="/login" className="hover:text-foreground hover:underline">Staff Login</Link>
+        </div>
       </div>
     </footer>
   );

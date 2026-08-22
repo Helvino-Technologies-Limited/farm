@@ -20,6 +20,7 @@ import { portalRegisterSchema, portalLoginSchema, portalBookingSchema, portalPay
 import { withTransaction } from "@/lib/db";
 import { buildInvoicePdfData } from "@/services/documentData";
 import { notifyCustomer, notifyStaff } from "@/services/notifications";
+import { CURRENT_TERMS_VERSION } from "@/lib/legal";
 
 export interface PortalFormState {
   error?: string;
@@ -36,18 +37,19 @@ export async function portalRegisterAction(_prev: PortalFormState, formData: For
   }
 
   const passwordHash = await hashCustomerPassword(password);
+  const consent = { termsAcceptedAt: new Date(), termsVersion: CURRENT_TERMS_VERSION };
 
   let customerId: string;
   if (existing) {
     // Claim a customer record staff already created (e.g. from a walk-in sale) for portal access.
-    await db.customer.update({ where: { id: existing.id }, data: { passwordHash, name, phone } });
+    await db.customer.update({ where: { id: existing.id }, data: { passwordHash, name, phone, ...consent } });
     customerId = existing.id;
   } else {
     const systemActor = await getPortalSystemActor();
     const customer = await withTransaction(async (tx) => {
       const customerNumber = await nextDocumentNumber(tx, "CUSTOMER");
       return tx.customer.create({
-        data: { customerNumber, name, email: email.toLowerCase(), phone, passwordHash, createdById: systemActor.id },
+        data: { customerNumber, name, email: email.toLowerCase(), phone, passwordHash, createdById: systemActor.id, ...consent },
       });
     });
     customerId = customer.id;

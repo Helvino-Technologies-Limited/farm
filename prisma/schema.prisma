@@ -262,6 +262,11 @@ model Customer {
   passwordHash String?
   portalActive Boolean @default(true)
 
+  // Consent captured at self-registration (Terms of Service + Privacy Policy) — required by the
+  // Kenya Data Protection Act, 2019 and GDPR-equivalent standards before we process personal data.
+  termsAcceptedAt DateTime?
+  termsVersion    String?
+
   quotations    Quotation[]
   bookings      Booking[]
   sales         Sale[]

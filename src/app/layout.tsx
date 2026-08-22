@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ServiceWorkerRegister } from "@/components/pwa/sw-register";
+import { CookieConsentBanner } from "@/components/marketing/cookie-consent";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -67,6 +68,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
           <Toaster richColors position="top-right" />
           <ServiceWorkerRegister />
+          <CookieConsentBanner />
         </TooltipProvider>
       </body>
     </html>
