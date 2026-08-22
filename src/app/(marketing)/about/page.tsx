@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { db } from "@/lib/db";
 import { Target, Eye } from "lucide-react";
+import { VideoEmbed } from "@/components/marketing/video-embed";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,12 @@ export default async function AboutPage() {
         {settings?.aboutBody ||
           `${farmName} runs integrated farm operations — poultry, seedlings, crops, dairy, feeds and agricultural services — supplying customers directly through an online booking platform, and supporting other farmers through training and advisory services.${settings?.location ? ` Based in ${settings.location}, Kenya.` : ""}`}
       </p>
+
+      {settings?.aboutVideoUrl && (
+        <div className="mt-10">
+          <VideoEmbed url={settings.aboutVideoUrl} title={`About ${farmName}`} />
+        </div>
+      )}
 
       {(settings?.mission || settings?.vision) && (
         <div className="mt-12 grid gap-6 sm:grid-cols-2">

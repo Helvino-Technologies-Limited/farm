@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SettingsForm } from "@/components/settings/settings-form";
 import { LogoUpload } from "@/components/settings/logo-upload";
-import { HeroVideoUpload } from "@/components/settings/hero-video-upload";
+import { VideoUpload } from "@/components/settings/video-upload";
 import { QuickAddCategory, QuickAddUnit } from "@/components/settings/quick-add-forms";
 import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import {
@@ -43,7 +43,38 @@ export default async function SettingsPage() {
 
       <Card>
         <CardHeader><CardTitle>Welcome Page Entrance Video</CardTitle></CardHeader>
-        <CardContent><HeroVideoUpload currentVideoUrl={settings?.heroVideoUrl ?? null} /></CardContent>
+        <CardContent>
+          <VideoUpload
+            slot="hero"
+            currentVideoUrl={settings?.heroVideoUrl ?? null}
+            uploadLabel="Upload Entrance Video"
+            helpText="Plays as the background/entrance video on the public welcome page. Upload a file (MP4/WebM, up to 200MB) or paste a YouTube link."
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader><CardTitle>About Page Video</CardTitle></CardHeader>
+        <CardContent>
+          <VideoUpload
+            slot="about"
+            currentVideoUrl={settings?.aboutVideoUrl ?? null}
+            uploadLabel="Upload About Video"
+            helpText="Shown on the public About Us page. Upload a file (MP4/WebM, up to 200MB) or paste a YouTube link."
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader><CardTitle>Services Page Video</CardTitle></CardHeader>
+        <CardContent>
+          <VideoUpload
+            slot="services"
+            currentVideoUrl={settings?.servicesVideoUrl ?? null}
+            uploadLabel="Upload Services Video"
+            helpText="Shown on the public Services page. Upload a file (MP4/WebM, up to 200MB) or paste a YouTube link."
+          />
+        </CardContent>
       </Card>
 
       {isAdmin ? (

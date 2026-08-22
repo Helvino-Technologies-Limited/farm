@@ -11,6 +11,8 @@ function canManageBranding(role: Role | undefined): boolean {
   return role === "ADMIN" || role === "MANAGER";
 }
 
+const BRANDING_VIDEO_PAYLOADS = ["hero-video", "about-video", "services-video"];
+
 /** Issues short-lived client upload tokens for Vercel Blob, so photos/videos go straight from the
  * admin's browser to Blob storage without passing through a Server Action (which has a small body
  * limit) — this route only ever sees metadata, never the file bytes. */
@@ -25,7 +27,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         const user = await getSession();
         const kind =
           clientPayload === "video" ? "video" :
-          clientPayload === "logo" || clientPayload === "hero-video" || clientPayload === "gallery" ? "branding" :
+          clientPayload === "logo" || clientPayload === "gallery" || BRANDING_VIDEO_PAYLOADS.includes(clientPayload ?? "") ? "branding" :
           "image";
 
         const allowed =
@@ -34,7 +36,7 @@ export async function POST(request: Request): Promise<NextResponse> {
           throw new Error("You do not have permission to upload media.");
         }
 
-        const isVideo = clientPayload === "video" || clientPayload === "hero-video";
+        const isVideo = clientPayload === "video" || BRANDING_VIDEO_PAYLOADS.includes(clientPayload ?? "");
         return {
           allowedContentTypes: isVideo
             ? ["video/mp4", "video/webm", "video/quicktime"]

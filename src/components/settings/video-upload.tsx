@@ -7,10 +7,20 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
-import { saveHeroVideoUrlAction, saveHeroVideoLinkAction, removeHeroVideoAction } from "@/app/(dashboard)/settings/actions";
+import { saveVideoUrlAction, saveVideoLinkAction, removeVideoAction, type VideoSlot } from "@/app/(dashboard)/settings/actions";
 import { getYouTubeVideoId, isYouTubeUrl } from "@/lib/youtube";
 
-export function HeroVideoUpload({ currentVideoUrl }: { currentVideoUrl: string | null }) {
+export function VideoUpload({
+  slot,
+  currentVideoUrl,
+  helpText,
+  uploadLabel,
+}: {
+  slot: VideoSlot;
+  currentVideoUrl: string | null;
+  helpText: string;
+  uploadLabel: string;
+}) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState("");
@@ -24,13 +34,13 @@ export function HeroVideoUpload({ currentVideoUrl }: { currentVideoUrl: string |
     if (!file) return;
     setUploading(true);
     try {
-      const blob = await upload(`branding/hero-${file.name}`, file, {
+      const blob = await upload(`branding/${slot}-${file.name}`, file, {
         access: "public",
         handleUploadUrl: "/api/upload",
-        clientPayload: "hero-video",
+        clientPayload: `${slot}-video`,
       });
-      await saveHeroVideoUrlAction(blob.url);
-      toast.success("Entrance video updated.");
+      await saveVideoUrlAction(slot, blob.url);
+      toast.success("Video updated.");
       router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to upload video.");
@@ -47,8 +57,8 @@ export function HeroVideoUpload({ currentVideoUrl }: { currentVideoUrl: string |
     }
     setSavingLink(true);
     try {
-      await saveHeroVideoLinkAction(youtubeUrl);
-      toast.success("Entrance video updated from YouTube.");
+      await saveVideoLinkAction(slot, youtubeUrl);
+      toast.success("Video updated from YouTube.");
       setYoutubeUrl("");
       router.refresh();
     } catch (err) {
@@ -60,8 +70,8 @@ export function HeroVideoUpload({ currentVideoUrl }: { currentVideoUrl: string |
 
   async function onRemove() {
     try {
-      await removeHeroVideoAction();
-      toast.success("Entrance video removed.");
+      await removeVideoAction(slot);
+      toast.success("Video removed.");
       router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to remove video.");
@@ -70,16 +80,14 @@ export function HeroVideoUpload({ currentVideoUrl }: { currentVideoUrl: string |
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-muted-foreground">
-        Plays as the background/entrance video on the public welcome page. Upload a file (MP4/WebM, up to 200MB) or paste a YouTube link.
-      </p>
+      <p className="text-sm text-muted-foreground">{helpText}</p>
 
       {currentVideoUrl && (
         currentYouTubeId ? (
           <div className="aspect-video w-full max-w-md overflow-hidden rounded-lg border">
             <iframe
               src={`https://www.youtube.com/embed/${currentYouTubeId}`}
-              title="Entrance video preview"
+              title="Video preview"
               className="h-full w-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -94,7 +102,7 @@ export function HeroVideoUpload({ currentVideoUrl }: { currentVideoUrl: string |
       <div className="flex flex-wrap items-center gap-2">
         <input ref={inputRef} type="file" accept="video/*" className="hidden" onChange={onChange} />
         <Button type="button" variant="outline" size="sm" disabled={uploading} onClick={() => inputRef.current?.click()}>
-          {uploading ? "Uploading..." : currentVideoUrl ? "Replace with Uploaded Video" : "Upload Entrance Video"}
+          {uploading ? "Uploading..." : currentVideoUrl ? "Replace with Uploaded Video" : uploadLabel}
         </Button>
         {currentVideoUrl && (
           <Button type="button" variant="ghost" size="sm" onClick={onRemove}>

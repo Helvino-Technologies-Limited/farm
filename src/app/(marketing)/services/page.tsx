@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { calculateStockForProducts } from "@/services/inventory";
 import { computeStockStatus } from "@/lib/product-availability";
 import { formatCurrency } from "@/lib/format";
+import { VideoEmbed } from "@/components/marketing/video-embed";
 import type { SalesCentre } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +18,8 @@ export const metadata: Metadata = {
 const SERVICE_CENTRES: SalesCentre[] = ["DRIP_INSTALLATION", "WATER", "TRAINING_ADVISORY"];
 
 export default async function ServicesPage() {
-  const [serviceEntries, serviceProducts] = await Promise.all([
+  const [settings, serviceEntries, serviceProducts] = await Promise.all([
+    db.systemSetting.findUnique({ where: { id: 1 } }),
     db.websiteServiceEntry.findMany({ where: { active: true }, orderBy: { sortOrder: "asc" } }),
     db.product.findMany({
       where: { active: true, publiclyListed: true, category: { salesCentre: { in: SERVICE_CENTRES } } },
@@ -36,6 +38,12 @@ export default async function ServicesPage() {
         Alongside our produce and poultry, we offer agricultural services to support your own farm — book online
         and we&apos;ll be in touch to confirm details.
       </p>
+
+      {settings?.servicesVideoUrl && (
+        <div className="mt-10">
+          <VideoEmbed url={settings.servicesVideoUrl} title="Our Services" />
+        </div>
+      )}
 
       {serviceEntries.length > 0 && (
         <div className="mt-10 grid gap-6 sm:grid-cols-2">

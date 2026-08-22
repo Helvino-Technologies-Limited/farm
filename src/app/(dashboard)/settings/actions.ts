@@ -78,67 +78,68 @@ export async function saveFarmLogoUrlAction(url: string) {
   revalidatePath("/");
 }
 
-export async function saveHeroVideoUrlAction(url: string) {
-  const user = await requireRole("ADMIN", "MANAGER");
-  if (!url.includes(".public.blob.vercel-storage.com")) throw new Error("Invalid upload URL.");
+export type VideoSlot = "hero" | "about" | "services";
 
+const VIDEO_SLOT_REVALIDATE: Record<VideoSlot, string> = { hero: "/", about: "/about", services: "/services" };
+
+function videoSlotData(slot: VideoSlot, url: string | null) {
+  switch (slot) {
+    case "hero": return { heroVideoUrl: url };
+    case "about": return { aboutVideoUrl: url };
+    case "services": return { servicesVideoUrl: url };
+  }
+}
+
+function videoSlotUrl(settings: { heroVideoUrl: string | null; aboutVideoUrl: string | null; servicesVideoUrl: string | null } | null, slot: VideoSlot) {
+  if (!settings) return null;
+  switch (slot) {
+    case "hero": return settings.heroVideoUrl;
+    case "about": return settings.aboutVideoUrl;
+    case "services": return settings.servicesVideoUrl;
+  }
+}
+
+async function replaceVideo(slot: VideoSlot, url: string | null, user: Awaited<ReturnType<typeof requireRole>>, source?: "youtube") {
   const existing = await db.systemSetting.findUnique({ where: { id: 1 } });
-  await db.systemSetting.upsert({
-    where: { id: 1 },
-    create: { id: 1, heroVideoUrl: url },
-    update: { heroVideoUrl: url },
-  });
-  if (existing?.heroVideoUrl?.includes(".public.blob.vercel-storage.com")) {
+  const data = videoSlotData(slot, url);
+  await db.systemSetting.upsert({ where: { id: 1 }, create: { id: 1, ...data }, update: data });
+
+  const existingUrl = videoSlotUrl(existing, slot);
+  if (existingUrl?.includes(".public.blob.vercel-storage.com")) {
     try {
-      await del(existing.heroVideoUrl);
+      await del(existingUrl);
     } catch {
       // best-effort cleanup
     }
   }
 
-  await logAudit(db, { user, action: "UPDATE", module: "settings", recordId: "system", newValue: { heroVideoUpdated: true } });
+  await logAudit(db, {
+    user,
+    action: "UPDATE",
+    module: "settings",
+    recordId: "system",
+    newValue: url ? { videoSlot: slot, videoUpdated: true, source } : { videoSlot: slot, videoRemoved: true },
+  });
   revalidatePath("/settings");
-  revalidatePath("/");
+  revalidatePath(VIDEO_SLOT_REVALIDATE[slot]);
 }
 
-export async function saveHeroVideoLinkAction(url: string) {
+export async function saveVideoUrlAction(slot: VideoSlot, url: string) {
+  const user = await requireRole("ADMIN", "MANAGER");
+  if (!url.includes(".public.blob.vercel-storage.com")) throw new Error("Invalid upload URL.");
+  await replaceVideo(slot, url, user);
+}
+
+export async function saveVideoLinkAction(slot: VideoSlot, url: string) {
   const user = await requireRole("ADMIN", "MANAGER");
   const { isYouTubeUrl } = await import("@/lib/youtube");
   if (!isYouTubeUrl(url)) throw new Error("Enter a valid YouTube video link.");
-
-  const existing = await db.systemSetting.findUnique({ where: { id: 1 } });
-  await db.systemSetting.upsert({
-    where: { id: 1 },
-    create: { id: 1, heroVideoUrl: url },
-    update: { heroVideoUrl: url },
-  });
-  if (existing?.heroVideoUrl?.includes(".public.blob.vercel-storage.com")) {
-    try {
-      await del(existing.heroVideoUrl);
-    } catch {
-      // best-effort cleanup
-    }
-  }
-
-  await logAudit(db, { user, action: "UPDATE", module: "settings", recordId: "system", newValue: { heroVideoUpdated: true, source: "youtube" } });
-  revalidatePath("/settings");
-  revalidatePath("/");
+  await replaceVideo(slot, url, user, "youtube");
 }
 
-export async function removeHeroVideoAction() {
+export async function removeVideoAction(slot: VideoSlot) {
   const user = await requireRole("ADMIN", "MANAGER");
-  const existing = await db.systemSetting.findUnique({ where: { id: 1 } });
-  await db.systemSetting.update({ where: { id: 1 }, data: { heroVideoUrl: null } });
-  if (existing?.heroVideoUrl?.includes(".public.blob.vercel-storage.com")) {
-    try {
-      await del(existing.heroVideoUrl);
-    } catch {
-      // best-effort cleanup
-    }
-  }
-  await logAudit(db, { user, action: "UPDATE", module: "settings", recordId: "system", newValue: { heroVideoRemoved: true } });
-  revalidatePath("/settings");
-  revalidatePath("/");
+  await replaceVideo(slot, null, user);
 }
 
 export async function createCategoryAction(input: { name: string; code: string; salesCentre: string }) {

@@ -928,6 +928,8 @@ model SystemSetting {
   farmName                   String  @default("Avepo Smart Farm")
   logoUrl                    String? @db.Text
   heroVideoUrl               String? @db.Text
+  aboutVideoUrl              String? @db.Text
+  servicesVideoUrl           String? @db.Text
   address                    String?
   phone                      String?
   email                      String?
