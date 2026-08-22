@@ -2,16 +2,18 @@ import type { Metadata } from "next";
 import { db } from "@/lib/db";
 import { Target, Eye } from "lucide-react";
 import { HeroBackgroundVideo } from "@/components/marketing/hero-background-video";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await db.systemSetting.findUnique({ where: { id: 1 } });
   const farmName = settings?.farmName ?? "Avepo Smart Farm";
-  return {
+  return pageMetadata({
     title: `About Us — ${farmName}`,
     description: settings?.aboutBody?.slice(0, 155) ?? `Learn about ${farmName}'s farm operations and agricultural services.`,
-  };
+    path: "/about",
+  });
 }
 
 export default async function AboutPage() {

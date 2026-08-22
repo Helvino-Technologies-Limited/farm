@@ -2,12 +2,15 @@
 // navigation only. Deliberately does NOT cache app data/HTML — this is a live business system,
 // so serving stale sales/inventory data offline would be actively harmful. Full offline
 // transaction support (sync queue) is a tracked future phase, not implemented here.
-const CACHE = "avepo-shell-v1";
+const CACHE = "avepo-shell-v2";
 const OFFLINE_URL = "/offline.html";
 
 self.addEventListener("install", (event) => {
+  // Only precache static, hash-free paths — the favicon/apple-icon routes are served at a
+  // build-hashed URL (e.g. /icon?<hash>) so they can't be listed here reliably, and a single
+  // failed addAll() entry rejects the whole install step.
   event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll([OFFLINE_URL, "/manifest.json", "/icon.svg"]))
+    caches.open(CACHE).then((cache) => cache.addAll([OFFLINE_URL, "/manifest.json"]))
   );
   self.skipWaiting();
 });

@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { db } from "@/lib/db";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Gallery — Avepo Smart Farm",
   description: "Photos from Avepo Smart Farm's poultry, seedling, crop and dairy operations.",
-};
+  path: "/gallery",
+});
 
 export default async function GalleryPage() {
   const images = await db.galleryImage.findMany({ orderBy: [{ featured: "desc" }, { sortOrder: "asc" }] });

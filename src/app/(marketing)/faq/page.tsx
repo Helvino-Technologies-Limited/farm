@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { db } from "@/lib/db";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "FAQ — Avepo Smart Farm",
   description: "Frequently asked questions about booking, payment and delivery at Avepo Smart Farm.",
-};
+  path: "/faq",
+});
 
 const DEFAULT_FAQS = [
   { question: "Do I need an account to browse products?", answer: "No — anyone can browse products, services and prices without an account." },

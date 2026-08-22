@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import { db } from "@/lib/db";
 import { ContactForm } from "@/components/marketing/contact-form";
+import { pageMetadata } from "@/lib/seo";
 import { MapPin, Phone, Mail } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact Us — Avepo Smart Farm",
   description: "Get in touch with Avepo Smart Farm — call, WhatsApp or send us an enquiry.",
-};
+  path: "/contact",
+});
 
 export default async function ContactPage() {
   const settings = await db.systemSetting.findUnique({ where: { id: 1 } });

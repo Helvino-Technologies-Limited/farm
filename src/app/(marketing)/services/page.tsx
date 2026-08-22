@@ -6,14 +6,16 @@ import { calculateStockForProducts } from "@/services/inventory";
 import { computeStockStatus } from "@/lib/product-availability";
 import { formatCurrency } from "@/lib/format";
 import { HeroBackgroundVideo } from "@/components/marketing/hero-background-video";
+import { pageMetadata } from "@/lib/seo";
 import type { SalesCentre } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Our Services — Avepo Smart Farm",
   description: "Drip irrigation installation, farmer training, farm advisory and water services from Avepo Smart Farm. Book online and pay by M-Pesa or bank.",
-};
+  path: "/services",
+});
 
 const SERVICE_CENTRES: SalesCentre[] = ["DRIP_INSTALLATION", "WATER", "TRAINING_ADVISORY"];
 

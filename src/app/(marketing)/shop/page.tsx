@@ -6,15 +6,17 @@ import { ProductBrowser, type BrowserProduct } from "@/components/marketing/prod
 import {
   Bird, Sprout, Apple, Milk, Wheat, Droplets, GraduationCap, Carrot, Waves, Package,
 } from "lucide-react";
+import { pageMetadata } from "@/lib/seo";
 import type { SalesCentre } from "@prisma/client";
 import type { LucideIcon } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Products — Avepo Smart Farm",
   description: "Browse poultry, seedlings, crops, vegetables, fruits, dairy and more from Avepo Smart Farm. Book online and pay by M-Pesa or bank.",
-};
+  path: "/shop",
+});
 
 const CENTRE_STYLE: Record<SalesCentre, { icon: LucideIcon; gradient: string; label: string }> = {
   SEEDLINGS: { icon: Sprout, gradient: "bg-gradient-to-br from-lime-600 to-green-700", label: "Seedlings" },

@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import { db } from "@/lib/db";
 import { LegalPage, LegalSection } from "@/components/marketing/legal-page";
 import { CURRENT_TERMS_VERSION } from "@/lib/legal";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Cookie Policy",
   description: "How Avepo Smart Farm uses cookies and similar technologies, and how you can control them.",
-};
+  path: "/cookies",
+});
 
 export default async function CookiesPage() {
   const settings = await db.systemSetting.findUnique({ where: { id: 1 } });

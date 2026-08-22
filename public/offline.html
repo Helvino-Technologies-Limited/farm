@@ -2,19 +2,35 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Offline — Avepo Smart Farm</title>
 <style>
-  body { font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f4f6f4; color: #1a2e1a; text-align: center; padding: 24px; }
-  .card { max-width: 420px; }
-  h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
-  p { color: #4b5c4b; }
+  :root { color-scheme: light; }
+  body {
+    font-family: -apple-system, system-ui, sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; margin: 0; padding: 24px;
+    background: linear-gradient(160deg, #003b4c 0%, #0e6472 100%);
+    color: #fff; text-align: center;
+  }
+  .card { max-width: 380px; display: flex; flex-direction: column; align-items: center; }
+  .icon { width: 88px; height: 88px; border-radius: 22px; margin-bottom: 20px; box-shadow: 0 12px 32px rgba(0,0,0,0.35); }
+  h1 { font-size: 1.4rem; margin: 0 0 0.5rem; }
+  p { color: rgba(255,255,255,0.8); line-height: 1.5; margin: 0 0 24px; }
+  button {
+    font: inherit; font-weight: 600; cursor: pointer;
+    background: #f5a300; color: #062024; border: none;
+    padding: 12px 28px; border-radius: 999px; font-size: 0.95rem;
+  }
+  button:active { background: #d98f00; }
 </style>
 </head>
 <body>
   <div class="card">
+    <img class="icon" src="/brand/avepo-app-icon.png" alt="" />
     <h1>You're offline</h1>
-    <p>Avepo Smart Farm needs a connection to load new data. Please reconnect and try again.</p>
+    <p>Avepo Smart Farm needs a connection to load new data. Reconnect and try again.</p>
+    <button onclick="location.reload()">Try Again</button>
   </div>
 </body>
 </html>

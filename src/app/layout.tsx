@@ -34,6 +34,7 @@ export const metadata: Metadata = {
     "Kienyeji chicken", "farm booking online",
   ],
   authors: [{ name: "Helvino Technologies LTD" }],
+  alternates: { canonical: "/" },
   manifest: "/manifest.json",
   applicationName: SITE_NAME,
   appleWebApp: { capable: true, statusBarStyle: "default", title: SITE_NAME },

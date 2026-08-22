@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import { db } from "@/lib/db";
 import { LegalPage, LegalSection } from "@/components/marketing/legal-page";
 import { CURRENT_TERMS_VERSION } from "@/lib/legal";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Terms of Service",
   description: "The terms and conditions that govern use of the Avepo Smart Farm website, customer portal and bookings.",
-};
+  path: "/terms",
+});
 
 export default async function TermsPage() {
   const settings = await db.systemSetting.findUnique({ where: { id: 1 } });

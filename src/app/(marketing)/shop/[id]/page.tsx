@@ -10,6 +10,7 @@ import { calculatePoultryAge, calculatePoultryPrice, calculatePoultryBatchStock 
 import { PoultryPricePreview, type BatchOption } from "@/components/marketing/poultry-price-preview";
 import { ShareButtons } from "@/components/marketing/share-buttons";
 import { formatCurrency } from "@/lib/format";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -21,11 +22,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const product = await getProduct(id);
   if (!product || !product.publiclyListed) return { title: "Product not found" };
-  return {
+  return pageMetadata({
     title: `${product.name} — Avepo Smart Farm`,
     description: product.shortDescription || product.description || `${product.name} available from Avepo Smart Farm.`,
-    openGraph: product.imageUrl ? { images: [{ url: product.imageUrl }] } : undefined,
-  };
+    path: `/shop/${product.id}`,
+    images: product.imageUrl ? [product.imageUrl] : undefined,
+  });
 }
 
 const STATUS_STYLE: Record<string, { label: string; className: string }> = {
