@@ -1,8 +1,8 @@
 "use server";
 
-import { requireModuleWrite } from "@/lib/auth";
-import { createCustomer, type CreateCustomerParams } from "@/services/customers";
-import { customerSchema } from "@/validations/customer";
+import { requireModuleWrite, requireRole } from "@/lib/auth";
+import { createCustomer, suspendCustomer, reactivateCustomer, type CreateCustomerParams } from "@/services/customers";
+import { customerSchema, suspendCustomerSchema } from "@/validations/customer";
 import { revalidatePath } from "next/cache";
 
 export async function createCustomerAction(input: CreateCustomerParams) {
@@ -11,4 +11,19 @@ export async function createCustomerAction(input: CreateCustomerParams) {
   const customer = await createCustomer(data, user);
   revalidatePath("/customers");
   return { id: customer.id, customerNumber: customer.customerNumber, name: customer.name };
+}
+
+export async function suspendCustomerAction(customerId: string, input: unknown) {
+  const user = await requireRole("ADMIN");
+  const { reason } = suspendCustomerSchema.parse(input);
+  await suspendCustomer(customerId, reason, user);
+  revalidatePath("/customers");
+  revalidatePath(`/customers/${customerId}`);
+}
+
+export async function reactivateCustomerAction(customerId: string) {
+  const user = await requireRole("ADMIN");
+  await reactivateCustomer(customerId, user);
+  revalidatePath("/customers");
+  revalidatePath(`/customers/${customerId}`);
 }

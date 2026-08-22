@@ -200,6 +200,7 @@ model User {
   cashSessionsVerify CashSession[]       @relation("CashSessionVerifiedBy")
   auditLogs          AuditLog[]
   galleryImages      GalleryImage[]      @relation("GalleryUploadedBy")
+  suspendedCustomers Customer[]          @relation("CustomerSuspendedBy")
 
   @@map("users")
 }
@@ -266,6 +267,14 @@ model Customer {
   // Kenya Data Protection Act, 2019 and GDPR-equivalent standards before we process personal data.
   termsAcceptedAt DateTime?
   termsVersion    String?
+
+  // Set when Admin suspends the account (e.g. for a Terms of Service breach) — blocks portal
+  // login and any existing session, and the reason is shown back to the customer at login so
+  // they know how to appeal. Cleared on reactivation.
+  suspensionReason String?   @db.Text
+  suspendedAt      DateTime?
+  suspendedById    String?
+  suspendedBy      User?     @relation("CustomerSuspendedBy", fields: [suspendedById], references: [id])
 
   quotations    Quotation[]
   bookings      Booking[]

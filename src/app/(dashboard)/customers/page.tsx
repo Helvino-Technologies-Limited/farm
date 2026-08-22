@@ -45,6 +45,9 @@ export default async function CustomersPage() {
                   <Link href={`/customers/${c.id}`} className="font-medium hover:underline">
                     {c.name}
                   </Link>
+                  {!c.portalActive && c.suspensionReason && (
+                    <Badge variant="destructive" className="ml-2">Suspended</Badge>
+                  )}
                 </TableCell>
                 <TableCell>{c.phone}</TableCell>
                 <TableCell><Badge variant="secondary">{c.customerType}</Badge></TableCell>

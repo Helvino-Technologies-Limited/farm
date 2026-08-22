@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { SuspendCustomerControl, SuspensionNotice } from "@/components/customers/suspend-customer-control";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { startOfMonth, endOfDay } from "date-fns";
 
@@ -22,10 +23,11 @@ const AGEING_LABELS: Record<string, string> = {
 };
 
 export default async function CustomerDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  await requireModuleAccess("customers");
+  const user = await requireModuleAccess("customers");
   const { id } = await params;
   const customer = await db.customer.findUnique({ where: { id } });
   if (!customer) notFound();
+  const suspended = !customer.portalActive && !!customer.suspensionReason;
 
   const now = new Date();
   const [balance, ageing, statement, invoices, payments] = await Promise.all([
@@ -49,7 +51,19 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
       <PageHeader
         title={customer.name}
         description={`${customer.customerNumber} · ${customer.phone}${customer.location ? " · " + customer.location : ""}`}
+        action={
+          <div className="flex items-center gap-2">
+            {suspended && <Badge variant="destructive">Suspended</Badge>}
+            {user.role === "ADMIN" && <SuspendCustomerControl customerId={customer.id} suspended={suspended} />}
+          </div>
+        }
       />
+
+      {suspended && (
+        <div className="mb-6">
+          <SuspensionNotice suspensionReason={customer.suspensionReason} suspendedAt={customer.suspendedAt} />
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-3 mb-6">
         <Card>

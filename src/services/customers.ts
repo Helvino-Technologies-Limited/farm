@@ -41,6 +41,53 @@ export async function createCustomer(params: CreateCustomerParams, actingUser: S
   });
 }
 
+export async function suspendCustomer(customerId: string, reason: string, actingUser: SessionUser) {
+  return withTransaction(async (tx) => {
+    const customer = await tx.customer.update({
+      where: { id: customerId },
+      data: {
+        portalActive: false,
+        suspensionReason: reason,
+        suspendedAt: new Date(),
+        suspendedById: actingUser.id,
+      },
+    });
+    // Force out any active portal session immediately rather than waiting for it to be
+    // rejected on the customer's next request.
+    await tx.customerSession.deleteMany({ where: { customerId } });
+    await logAudit(tx, {
+      user: actingUser,
+      action: "UPDATE",
+      module: "customers",
+      recordId: customerId,
+      newValue: { suspended: true, reason },
+    });
+    return customer;
+  });
+}
+
+export async function reactivateCustomer(customerId: string, actingUser: SessionUser) {
+  return withTransaction(async (tx) => {
+    const customer = await tx.customer.update({
+      where: { id: customerId },
+      data: {
+        portalActive: true,
+        suspensionReason: null,
+        suspendedAt: null,
+        suspendedById: null,
+      },
+    });
+    await logAudit(tx, {
+      user: actingUser,
+      action: "UPDATE",
+      module: "customers",
+      recordId: customerId,
+      newValue: { suspended: false },
+    });
+    return customer;
+  });
+}
+
 export interface CustomerStatementEntry {
   date: Date;
   type: "INVOICE" | "PAYMENT";

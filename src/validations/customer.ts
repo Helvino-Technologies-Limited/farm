@@ -11,3 +11,12 @@ export const customerSchema = z.object({
 });
 
 export type CustomerInput = z.infer<typeof customerSchema>;
+
+export const suspendCustomerSchema = z.object({
+  reason: z
+    .string()
+    .trim()
+    .min(10, "Give a specific reason (at least 10 characters) — the customer will see this.")
+    .max(1000, "Keep the reason under 1000 characters."),
+});
+export type SuspendCustomerInput = z.infer<typeof suspendCustomerSchema>;

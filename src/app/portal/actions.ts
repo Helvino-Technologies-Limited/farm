@@ -73,11 +73,30 @@ export async function portalLoginAction(_prev: PortalFormState, formData: FormDa
   const { email, password } = parsed.data;
 
   const customer = await db.customer.findUnique({ where: { email: email.toLowerCase() } });
-  if (!customer || !customer.passwordHash || !customer.portalActive) {
+  if (!customer || !customer.passwordHash) {
     return { error: "Invalid email or password." };
   }
+  // Check the password before revealing anything about account status — otherwise someone
+  // without the password could probe whether an account exists or is suspended.
   const valid = await verifyCustomerPassword(password, customer.passwordHash);
   if (!valid) return { error: "Invalid email or password." };
+
+  if (!customer.portalActive) {
+    if (customer.suspensionReason) {
+      const settings = await db.systemSetting.findUnique({ where: { id: 1 } });
+      const contactBits = [
+        settings?.phone ? `call ${settings.phone}` : null,
+        settings?.email ? `email ${settings.email}` : null,
+      ].filter(Boolean);
+      const contactLine = contactBits.length > 0
+        ? `To appeal this, please ${contactBits.join(" or ")}.`
+        : "To appeal this, please use the contact details on our Contact page.";
+      return {
+        error: `Your account has been suspended: "${customer.suspensionReason}". ${contactLine}`,
+      };
+    }
+    return { error: "This account is currently unable to log in. Please contact us for assistance." };
+  }
 
   await createCustomerSession(customer.id);
   const next = formData.get("next");
