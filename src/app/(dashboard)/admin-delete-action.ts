@@ -14,6 +14,8 @@ const REVALIDATE_PATHS: Record<DeletableModule, string[]> = {
   "expense-categories": ["/settings", "/expenses"],
   "poultry-batches": ["/poultry"],
   "poultry-price-rules": ["/poultry"],
+  plots: ["/plots"],
+  "crop-cycles": ["/plots"],
   quotations: ["/quotations"],
   bookings: ["/bookings"],
   "purchase-orders": ["/purchases"],

@@ -16,6 +16,7 @@ export const SEQUENCE_PREFIXES = {
   POULTRY_BATCH: "AVP-PLT-",
   SUPPLIER: "AVP-SUP-",
   PURCHASE_ORDER: "AVP-PO-",
+  CROP_CYCLE: "AVP-CRP-",
 } as const;
 
 export type SequenceKey = keyof typeof SEQUENCE_PREFIXES;

@@ -144,6 +144,25 @@ enum CashSessionStatus {
   VERIFIED
 }
 
+enum CropCycleStatus {
+  PLANNED
+  GROWING
+  HARVESTING
+  COMPLETED
+  ABANDONED
+}
+
+enum CropExpenseCategory {
+  LABOUR
+  SEEDS
+  FERTILIZER
+  CHEMICALS
+  IRRIGATION
+  EQUIPMENT
+  TRANSPORT
+  OTHER
+}
+
 enum AuditAction {
   CREATE
   UPDATE
@@ -184,6 +203,9 @@ model User {
   poultryBatches     PoultryBatch[]      @relation("PoultryBatchCreatedBy")
   mortalityRecords   PoultryMortality[]  @relation("MortalityRecordedBy")
   feedRecords        PoultryFeedRecord[] @relation("FeedRecordedBy")
+  cropCycles         CropCycle[]         @relation("CropCycleCreatedBy")
+  cropExpenses       CropExpense[]       @relation("CropExpenseRecordedBy")
+  harvests           Harvest[]           @relation("HarvestRecordedBy")
   quotations         Quotation[]         @relation("QuotationCreatedBy")
   bookings           Booking[]           @relation("BookingCreatedBy")
   sales              Sale[]              @relation("SaleCreatedBy")
@@ -395,6 +417,7 @@ model Product {
   stockAdjustments      StockAdjustment[]
   purchaseOrderItems    PurchaseOrderItem[]
   feedRecords           PoultryFeedRecord[]
+  cropCycles            CropCycle[]
 
   @@index([categoryId])
   @@map("products")
@@ -500,6 +523,88 @@ model PoultryFeedRecord {
   @@index([batchId])
   @@index([productId])
   @@map("poultry_feed_records")
+}
+
+// ============================================================
+// CROP ROTATION / PLOTS
+// ============================================================
+
+model Plot {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String?
+  sizeAcres Decimal? @db.Decimal(8, 3)
+  location  String?
+  notes     String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  cropCycles CropCycle[]
+
+  @@map("plots")
+}
+
+model CropCycle {
+  id                  String          @id @default(cuid())
+  cycleNumber         String          @unique
+  plotId              String
+  plot                Plot            @relation(fields: [plotId], references: [id])
+  productId           String?
+  product             Product?        @relation(fields: [productId], references: [id])
+  cropName            String
+  season              String?
+  plantedDate         DateTime
+  expectedHarvestDate DateTime?
+  closedDate          DateTime?
+  status              CropCycleStatus @default(PLANNED)
+  notes               String?
+  createdById         String
+  createdBy           User            @relation("CropCycleCreatedBy", fields: [createdById], references: [id])
+  createdAt           DateTime        @default(now())
+
+  expenses CropExpense[]
+  harvests Harvest[]
+
+  @@index([plotId])
+  @@index([status])
+  @@map("crop_cycles")
+}
+
+model CropExpense {
+  id            String               @id @default(cuid())
+  cropCycleId   String
+  cropCycle     CropCycle            @relation(fields: [cropCycleId], references: [id], onDelete: Cascade)
+  category      CropExpenseCategory
+  description   String?
+  amount        Decimal              @db.Decimal(14, 2)
+  quantity      Decimal?             @db.Decimal(12, 3)
+  quantityUnit  String?
+  date          DateTime             @default(now())
+  paymentMethod PaymentMethod?
+  recordedById  String
+  recordedBy    User                 @relation("CropExpenseRecordedBy", fields: [recordedById], references: [id])
+  createdAt     DateTime             @default(now())
+
+  @@index([cropCycleId])
+  @@map("crop_expenses")
+}
+
+model Harvest {
+  id             String    @id @default(cuid())
+  cropCycleId    String
+  cropCycle      CropCycle @relation(fields: [cropCycleId], references: [id], onDelete: Cascade)
+  date           DateTime  @default(now())
+  quantity       Decimal   @db.Decimal(12, 3)
+  unit           String
+  amountReceived Decimal   @default(0) @db.Decimal(14, 2)
+  buyer          String?
+  notes          String?
+  recordedById   String
+  recordedBy     User      @relation("HarvestRecordedBy", fields: [recordedById], references: [id])
+  createdAt      DateTime  @default(now())
+
+  @@index([cropCycleId])
+  @@map("harvests")
 }
 
 // ============================================================

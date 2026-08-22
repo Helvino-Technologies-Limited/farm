@@ -19,6 +19,8 @@ export const DELETABLE_MODULES = [
   "expense-categories",
   "poultry-batches",
   "poultry-price-rules",
+  "plots",
+  "crop-cycles",
   "quotations",
   "bookings",
   "purchase-orders",
@@ -130,6 +132,20 @@ export async function adminDeleteRecord(
           label = rec.label;
           snapshot = rec;
           await tx.poultryAgePriceRule.delete({ where: { id } });
+          break;
+        }
+        case "plots": {
+          const rec = await tx.plot.findUniqueOrThrow({ where: { id } });
+          label = rec.code;
+          snapshot = rec;
+          await tx.plot.delete({ where: { id } });
+          break;
+        }
+        case "crop-cycles": {
+          const rec = await tx.cropCycle.findUniqueOrThrow({ where: { id } });
+          label = rec.cropName;
+          snapshot = rec;
+          await tx.cropCycle.delete({ where: { id } });
           break;
         }
         case "quotations": {
